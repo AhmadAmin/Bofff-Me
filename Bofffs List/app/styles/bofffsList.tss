@@ -1,0 +1,40 @@
+
+".view_subViews":
+{
+	backgroundColor: "#fff",
+	top:0,
+	height: '100%',
+	width: '100%',
+	layout: "vertical",
+}
+
+"Label": {
+	width: Ti.UI.SIZE,
+	height: '30dp',
+	color: "blue",
+	font: {
+		fontSize: '20dp',
+		fontFamily: 'Helvetica Neue'
+	},
+	textAlign: 'center',
+	left:'5dp',
+} 
+
+
+".imageThumb" : {
+	width: '50dp',
+	height: '50dp',
+	left: 0
+},
+".title" : {
+	color: '#000',
+	left: '60dp',
+	top: 0,
+	textAlign: 'left'
+},
+".template1[platform=ios]" : {
+	height: '56dp'
+},
+".template1[platform=android]" : {
+	height: Ti.UI.SIZE
+}

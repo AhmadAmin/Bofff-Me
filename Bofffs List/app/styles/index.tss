@@ -1,0 +1,24 @@
+"Window": {
+	backgroundColor: "#fff",
+	layout: "vertical",
+},
+
+"#tab1[platform=ios]":{
+	icon:"/images/bofffios.png",
+	title:"Bofffs list",
+}
+
+"#tab1[platform=android]":{
+	icon:"/images/bofffandroid.png",
+}
+
+
+"View":{
+	
+	backgroundColor: "transparent",
+	height: Ti.UI.SIZE
+}
+
+
+
+

@@ -1,0 +1,28 @@
+<Alloy>
+	<ScrollView class="container">
+		<View class="view_userData" id="view_firstName">
+			<TextField class="txt_data" id="txt_firstName" value="Ahmed" hintText="first name"/>
+			</View>
+		<View class="view_userData" id="view_lastName">
+			<TextField class="txt_data" id="txt_lastName" value="Atif" hintText="last name"/>
+			</View>
+		<View class="view_userData" id="view_phoneNumber">
+			<TextField class="txt_data" id="txt_phoneNumber" value="0020109091995" hintText="phone number"/>
+		</View>
+		<View class="view_userData" id="view_mails">
+			<TextField class="txt_data" id="txt_mails" value="ahmed.atif15@gmail.com" hintText="mails"/>
+			<TextField class="txt_privacy" id="txt_mailsPrivacy" value="friends"/>
+		</View>
+		<View class="view_userData" id="view_socialLinks">
+			<TextField class="txt_data" id="txt_socialLinks" value= "https://www.facebook.com/zabadyy" hintText="social links"/>
+			<TextField class="txt_privacy" id="txt_socialLinksPrivacy" value="public"/>
+		</View>
+		<View class="view_userData" id="view_profilePicture">
+			<ImageView class ='img_profilePicture' id="img_profilePicture"/>
+			<TextField class="txt_privacy" id="txt_profilePicturePrivacy" value="favorites"/>
+		</View>
+		<View class="view_userData" id="view_btnConfirm">
+			<Button id="btn_confirm" title= "confirm" left="20" onClick="sendData"/>
+		</View>
+	</ScrollView>
+</Alloy>

@@ -1,0 +1,20 @@
+<Alloy>
+	<View id="view_allContacts" class="view_allContacts">
+		<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
+		<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1" onItemclick="showContact" >
+    		<Templates>
+      			<ItemTemplate  id="template1" name="template1"  class="template1">
+            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
+           		    <Label id="textLabel" bindId="textLabel" class="title"/>
+          		</ItemTemplate>
+    	    </Templates>
+    	    <!--> <ListSection id="listSection_allContacts"/>-->
+    	</ListView>
+    </View>
+</Alloy>
+
+
+
+
+			
+    	

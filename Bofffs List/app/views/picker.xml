@@ -1,0 +1,18 @@
+<Alloy>
+	<View platform="ios" id="pickerview" backgroundColor="transparent" visible="false" top="250">
+		
+		<Toolbar top="0">
+			<Items>
+            	<Button id="toolbarBtn_cancel" systemButton="Ti.UI.iPhone.SystemButton.CANCEL"/>
+            	<FlexSpace/>
+            	<Button id="toolbarBtn_done" systemButton="Ti.UI.iPhone.SystemButton.DONE"/>
+        	</Items>
+       	</Toolbar>
+       	
+    	<Picker id="picker"  selectionIndicator="true" top=40 />
+		
+  	</View>
+  	
+  	<Picker platform="android" id="picker" selectionIndicator="true" backgroundColor="white" />
+  	
+</Alloy>

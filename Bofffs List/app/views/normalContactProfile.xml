@@ -1,0 +1,8 @@
+<Alloy>
+	<ScrollView class="view_container" id ="view_container">
+		<Label class="contactInfo" id="lbl_contactName"/>
+		<ImageView class="contactInfo" id="img_contactImage" onClick="enlargeImage"/>
+		<View class="view_dynamicLabels" id="view_dynamicLabels">
+			<AlertDialog id="dialog" onClick="dialog_Click" title="Confirm"/>
+	</ScrollView>
+</Alloy>
