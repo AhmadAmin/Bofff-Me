@@ -1,15 +1,30 @@
 <Alloy>
-	<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" >
-		<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
-		<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1" onItemclick="showContact" >
-    		<Templates>
-      			<ItemTemplate  id="template1" name="template1"  class="template1">
-            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
-           		    <Label id="textLabel" bindId="textLabel" class="title"/>
-          		</ItemTemplate>
-    	    </Templates>
-    	 </ListView>
-    </View>
+	<View id="view_container" class="view_container" top="0">
+		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" >
+			<Picker id="picker" left="0" selectionIndicator="true" useSpinner="true" top="0dp" onChange="updateSearchableText">
+			    <PickerRow title="Bananas"/>
+			    <PickerRow title="Strawberries"/>
+			    <PickerRow title="Mangos"/>
+			    <PickerRow title="Grapes"/>
+				<Row title="red"/>
+			    <Row title="green"/>
+			    <Row title="blue"/>
+			    <Row title="orange"/>
+			</Picker>
+		</View>
+    
+		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" >
+			<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
+			<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1" onItemclick="showContact" >
+	    		<Templates>
+	      			<ItemTemplate  id="template1" name="template1"  class="template1">
+	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
+	           		    <Label id="textLabel" bindId="textLabel" class="title"/>
+	          		</ItemTemplate>
+	    	    </Templates>
+	    	 </ListView>
+	    </View>
+	</View>
 </Alloy>
 
 

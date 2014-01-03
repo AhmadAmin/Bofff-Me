@@ -4,7 +4,7 @@
 	backgroundColor: "white",
 	height: Ti.UI.FILL,
 	width: Ti.UI.FILL,
-	//opacity:0,
+	layout:"vertical",
 }
 
 "Label": {
@@ -17,12 +17,9 @@
 	},
 	textAlign: 'center',
 	left:'5dp',
-	top:0,
+	
 } 
 
-".list_bofffContacts":{
-	top:"30dp",
-}
 ".imageThumb" : {
 	width: '50dp',
 	height: '50dp',

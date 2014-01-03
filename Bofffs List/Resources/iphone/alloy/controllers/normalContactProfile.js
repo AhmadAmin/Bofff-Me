@@ -92,14 +92,14 @@ function Controller() {
         id: "view_container"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
-    $.__views.__alloyId14 = Ti.UI.createView({
+    $.__views.__alloyId23 = Ti.UI.createView({
         backgroundColor: "#2279bc",
         top: 0,
         width: "100%",
         height: Ti.UI.SIZE,
-        id: "__alloyId14"
+        id: "__alloyId23"
     });
-    $.__views.view_container.add($.__views.__alloyId14);
+    $.__views.view_container.add($.__views.__alloyId23);
     $.__views.lbl_contactName = Ti.UI.createLabel({
         left: "10",
         width: Ti.UI.SIZE,
@@ -109,14 +109,14 @@ function Controller() {
         },
         id: "lbl_contactName"
     });
-    $.__views.__alloyId14.add($.__views.lbl_contactName);
-    $.__views.__alloyId15 = Ti.UI.createImageView({
+    $.__views.__alloyId23.add($.__views.lbl_contactName);
+    $.__views.__alloyId24 = Ti.UI.createImageView({
         image: "/images/close-icon.png",
         right: "10",
-        id: "__alloyId15"
+        id: "__alloyId24"
     });
-    $.__views.__alloyId14.add($.__views.__alloyId15);
-    close ? $.__views.__alloyId15.addEventListener("click", close) : __defers["$.__views.__alloyId15!click!close"] = true;
+    $.__views.__alloyId23.add($.__views.__alloyId24);
+    close ? $.__views.__alloyId24.addEventListener("click", close) : __defers["$.__views.__alloyId24!click!close"] = true;
     $.__views.view_contactInfo = Ti.UI.createScrollView({
         backgroundColor: "transparent",
         layout: "vertical",
@@ -158,7 +158,7 @@ function Controller() {
     importNumbers();
     var imageEnlarged = false;
     require("bencoding.sms").createSMSDialog();
-    __defers["$.__views.__alloyId15!click!close"] && $.__views.__alloyId15.addEventListener("click", close);
+    __defers["$.__views.__alloyId24!click!close"] && $.__views.__alloyId24.addEventListener("click", close);
     __defers["$.__views.img_contactImage!click!enlargeImage"] && $.__views.img_contactImage.addEventListener("click", enlargeImage);
     __defers["$.__views.dialog!click!dialog_Click"] && $.__views.dialog.addEventListener("click", dialog_Click);
     _.extend($, exports);

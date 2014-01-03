@@ -1,9 +1,20 @@
+".view_container":{
+	layout:"horizontal",
+}
+
+".view_contactFieldsPicker":{
+	top:0,
+	height: Ti.UI.FILL,
+	width: 0,
+	backgroundColor:"gray",
+}
+
 ".view_allContacts":
 {
 	backgroundColor: "white",
 	height: Ti.UI.SIZE,
 	width: Ti.UI.FILL,
-	//opacity:0,
+	layout:"vertical",
 }
 
 ".lbl_allContacts": {
@@ -16,13 +27,9 @@
 	},
 	textAlign: 'center',
 	left:'5dp',
-	top:"0"
+	
 } 
 
-".list_allContacts":
-{
-	top:"30dp",	
-}
 ".imageThumb" : {
 	width: '50dp',
 	height: '50dp',

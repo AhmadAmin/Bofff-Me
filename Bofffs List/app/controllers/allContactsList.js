@@ -4,7 +4,6 @@ var view_bofffContacts= args.view_bofffContacts;
 // use this when viewing new views to view them with an animation like fadeIn, fadeOut, popIn
 var animation = require('alloy/animation');
 
-
 //This happens when the user click on the user clicks on all contact label to open bofff contacts and fadeout all contacts
 function allContactsFadeOut(e)
 {
@@ -18,6 +17,7 @@ function allContactsFadeOut(e)
 	mainWindow.view_container.remove(view_bofffContacts);
 	mainWindow.view_container.add(view_bofffContacts);
 	animation.popIn(view_bofffContacts);
+	search.blur(0);
 }
 
 //This is to check if the user allows the access to his phonebook or not
@@ -37,18 +37,19 @@ if (Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_AUTHORIZED){
 //This is in case the user didn't allow to access his phonebook
 function addressBookDisallowed(){alert("Failed");};
 
+var sortedContacts ;
 //This is to collect the contacts from the user's phonebook
 function performAddressBookFunction()
 {  
 	var contacts = Ti.Contacts.getAllPeople();
- 	var sortedContacts = [];
+ 	sortedContacts = [];
     for (var x = 0; x < contacts.length; x++)
     {
         sortedContacts.push(contacts[x]);
     }
  	sortedContacts.sort(sort);
  	//This is to put the sorted contacts into a list
-	createListView(sortedContacts);
+	createListView(sortedContacts,"fullName");
 };
 
 //This is not used now it is an example on how to update a contact
@@ -66,13 +67,13 @@ Ti.Contacts.addEventListener('reload', function(e)
 {
     //alert('Reloading contacts. Your contacts were changed externally!');
     var contacts = Ti.Contacts.getAllPeople();
-    var sortedContacts = [];
+    sortedContacts = [];
     for (var x = 0; x < contacts.length; x++) 
     {
         sortedContacts.push(contacts[x]);
     }
  	sortedContacts.sort(sort);
-	createListView(sortedContacts);
+	createListView(sortedContacts, "fullName");
 });
 
 // This is to sort the contacts alphabetically
@@ -89,25 +90,28 @@ function sort(a, b) {
 }
 
 var search = Titanium.UI.createSearchBar({
-    barColor:'#fff',
-    borderColor:'#000',
+    barColor:'black',
     showCancel:true,
     height:43,
     top:0,
-   // width:"50%",
     left:0,
 });
 search.addEventListener('cancel', function(){
     search.blur();
-});
+ });
 // for textSearch, use the change event to update the search value
- search.addEventListener('change', function(e){
+search.addEventListener('change', function(e){
      $.list_allContacts.searchText = e.value;
  });
- 
+
+search.addEventListener('blur',function(e){
+	 $.view_contactFieldsPicker.width=0;
+});
+search.addEventListener('focus', function(e){
+     $.view_contactFieldsPicker.width="50%";
+}); 
 
 $.list_allContacts.searchView= search;
-//$.list_allContacts.searchView.width="50%";
 $.list_allContacts.caseInsensitiveSearch=true;
 $.list_allContacts.keepSectionsInSearch=true;
 // for textSearch, add the search bar or text field as a header view
@@ -115,7 +119,7 @@ $.list_allContacts.keepSectionsInSearch=true;
 
 
 //Here is to put the contacts in a list
-function createListView(_data)
+function createListView(_data, textToSearchFor)
 {
 	var listSections=[];
 	
@@ -152,25 +156,47 @@ function createListView(_data)
      	{
      		contactId= _data[i].id;
       	}
-    	// add items to an array
-        items.push({
-            template : "template1",            // set the template
-            textLabel : {
-                text : _data[i].fullName           // assign the values from the data
-            },
-            pic : {
-                image : _data[i].image   // assign the values from the data
-            },
-            properties : {
-            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
-            searchableText: _data[i].fullName ,
-            }
-            
-        });
+      	// if (textToSearchFor==1)
+      	// {
+	    	// // add items to an array
+	        // items.push({
+	            // template : "template1",            // set the template
+	            // textLabel : {
+	                // text : _data[i].fullName           // assign the values from the data
+	            // },
+	            // pic : {
+	                // image : _data[i].image   // assign the values from the data
+	            // },
+	            // properties : {
+	            // itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
+	            // searchableText: number ,
+	            // }
+// 	            
+	        // });
+       // }
+       // else
+       // {
+       		// add items to an array
+	        items.push({
+	            template : "template1",            // set the template
+	            textLabel : {
+	                text : _data[i].fullName           // assign the values from the data
+	            },
+	            pic : {
+	                image : _data[i].image   // assign the values from the data
+	            },
+	            properties : {
+	            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
+	            searchableText: _data[i][textToSearchFor] ,
+	            }
+	            
+	        });
+      // }
         
        
      }
       $.list_allContacts.sections=listSections;
+
      
 	//TODO: Save this list to open in offline mode
 	// This is to save the list to be views offline when needed
@@ -181,7 +207,9 @@ function createListView(_data)
 	var your_object = JSON.parse(test);*/ 
 }
 
-
+function updateSearchableText(e){
+	createListView(sortedContacts , "fullName");
+}
 
 
 //Here is when the current contact is saved
