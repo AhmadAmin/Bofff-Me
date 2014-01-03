@@ -1,7 +1,7 @@
 <Alloy>
-	<View id="view_bofffContacts" class="view_subViews">
+	<View id="view_bofffContacts" class="view_bofffContacts">
 		<Label id="lbl_bofffContacts" onClick="bofffContactsFadeOut">my bofffs</Label>
-		<ListView id="list_bofffContacts" defaultItemTemplate="template1" onItemclick="openProfile" >
+		<ListView id="list_bofffContacts" class="list_bofffContacts" defaultItemTemplate="template1" onItemclick="openProfile" >
     		<Templates>
       			<ItemTemplate  id="template1" name="template1"  class="template1">
             		<ImageView id="pic"  bindId="pic" class="imageThumb"/>

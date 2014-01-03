@@ -38,11 +38,9 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_bofffContacts = Ti.UI.createView({
-        backgroundColor: "#fff",
-        top: 0,
-        height: "100%",
-        width: "100%",
-        layout: "vertical",
+        backgroundColor: "white",
+        height: Ti.UI.FILL,
+        width: Ti.UI.FILL,
         id: "view_bofffContacts"
     });
     $.__views.view_bofffContacts && $.addTopLevelView($.__views.view_bofffContacts);
@@ -56,6 +54,7 @@ function Controller() {
         },
         textAlign: "center",
         left: "5dp",
+        top: 0,
         text: "my bofffs",
         id: "lbl_bofffContacts"
     });
@@ -106,6 +105,7 @@ function Controller() {
     var __alloyId12 = [];
     __alloyId12.push($.__views.listSection_bofffContacts);
     $.__views.list_bofffContacts = Ti.UI.createListView({
+        top: "30dp",
         sections: __alloyId12,
         templates: __alloyId6,
         id: "list_bofffContacts",

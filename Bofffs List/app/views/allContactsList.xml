@@ -1,5 +1,5 @@
 <Alloy>
-	<View id="view_allContacts" class="view_allContacts">
+	<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" >
 		<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
 		<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1" onItemclick="showContact" >
     		<Templates>
@@ -8,8 +8,7 @@
            		    <Label id="textLabel" bindId="textLabel" class="title"/>
           		</ItemTemplate>
     	    </Templates>
-    	    <!--> <ListSection id="listSection_allContacts"/>-->
-    	</ListView>
+    	 </ListView>
     </View>
 </Alloy>
 

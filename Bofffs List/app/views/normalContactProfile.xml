@@ -1,8 +1,13 @@
 <Alloy>
-	<ScrollView class="view_container" id ="view_container">
-		<Label class="contactInfo" id="lbl_contactName"/>
-		<ImageView class="contactInfo" id="img_contactImage" onClick="enlargeImage"/>
-		<View class="view_dynamicLabels" id="view_dynamicLabels">
-			<AlertDialog id="dialog" onClick="dialog_Click" title="Confirm"/>
-	</ScrollView>
+	<View class="view_container" id ="view_container">
+		<View class="view_header">
+			<Label class="lbl_contactName" id="lbl_contactName" left="10"/>
+			<ImageView image="/images/close-icon.png" right="10" onClick="close"/>
+		</View>
+		<ScrollView class="view_contactInfo" id ="view_contactInfo">
+			<ImageView class="img_contactImage" id="img_contactImage" onClick="enlargeImage"/>
+			<View class="view_dynamicLabels" id="view_dynamicLabels"/>
+				<AlertDialog id="dialog" onClick="dialog_Click" title="Confirm"/>
+		</ScrollView>
+	</View>
 </Alloy>

@@ -1,10 +1,16 @@
 
 var args=arguments[0] || {};
 var contact= args.contact;
+var close = args.close;
 //Here is to know whether to open invite or call dialog
 var inviteOrCall;
 //Here is to save the number that the user want to call
 var numberToCall;
+
+function close(e)
+{
+	close();
+}
 
 //Here is to fill the interface objects in the profileView controller
 $.lbl_contactName.text=contact.getFullName();

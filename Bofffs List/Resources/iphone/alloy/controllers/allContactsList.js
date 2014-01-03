@@ -62,13 +62,17 @@ function Controller() {
             $.view_allContacts.opacity = 1;
             profileOpen = false;
         }
+        alert(mainWindow.view_container.children.length);
+        mainWindow.view_container.remove(view_bofffContacts);
+        mainWindow.view_container.add(view_bofffContacts);
         animation.popIn(view_bofffContacts);
     }
     function showContact(e) {
         if (profileOpen) closeProfile(); else {
             contact = Ti.Contacts.getPersonByID(e.itemId);
             var params = {
-                contact: contact
+                contact: contact,
+                close: closeProfile
             };
             view_contactInfo = Alloy.createController("normalContactProfile", params).getView();
             mainWindow.view_container.add(view_contactInfo);
@@ -83,6 +87,9 @@ function Controller() {
         $.view_allContacts.opacity = 1;
         profileOpen = false;
     }
+    function closeOpenProfile() {
+        profileOpen && closeProfile();
+    }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "allContactsList";
     arguments[0] ? arguments[0]["__parentSymbol"] : null;
@@ -92,12 +99,13 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_allContacts = Ti.UI.createView({
-        backgroundColor: "transparent",
+        backgroundColor: "white",
         height: Ti.UI.SIZE,
         width: Ti.UI.FILL,
         id: "view_allContacts"
     });
     $.__views.view_allContacts && $.addTopLevelView($.__views.view_allContacts);
+    closeOpenProfile ? $.__views.view_allContacts.addEventListener("click", closeOpenProfile) : __defers["$.__views.view_allContacts!click!closeOpenProfile"] = true;
     $.__views.__alloyId0 = Ti.UI.createLabel({
         width: Ti.UI.SIZE,
         height: "30dp",
@@ -175,7 +183,8 @@ function Controller() {
         createListView(sortedContacts);
     });
     var search = Titanium.UI.createSearchBar({
-        barColor: "#000",
+        barColor: "#fff",
+        borderColor: "#000",
         showCancel: true,
         height: 43,
         top: 0,
@@ -193,6 +202,7 @@ function Controller() {
     var contact;
     var profileOpen = false;
     var view_contactInfo;
+    __defers["$.__views.view_allContacts!click!closeOpenProfile"] && $.__views.view_allContacts.addEventListener("click", closeOpenProfile);
     __defers["$.__views.__alloyId0!click!allContactsFadeOut"] && $.__views.__alloyId0.addEventListener("click", allContactsFadeOut);
     __defers["$.__views.list_allContacts!itemclick!showContact"] && $.__views.list_allContacts.addEventListener("itemclick", showContact);
     _.extend($, exports);

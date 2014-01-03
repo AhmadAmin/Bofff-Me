@@ -1,3 +1,10 @@
+".view_allContacts":
+{
+	backgroundColor: "white",
+	height: Ti.UI.SIZE,
+	width: Ti.UI.FILL,
+	//opacity:0,
+}
 
 ".lbl_allContacts": {
 	width: Ti.UI.SIZE,
@@ -12,12 +19,6 @@
 	top:"0"
 } 
 
-".view_allContacts":
-{
-	backgroundColor: "transparent",
-	height: Ti.UI.SIZE,
-	width: Ti.UI.FILL,
-}
 ".list_allContacts":
 {
 	top:"30dp",	

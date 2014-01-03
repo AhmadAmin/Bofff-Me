@@ -1,1 +1,1 @@
-module.exports = [{"isApi":true,"priority":1000.0024,"key":"Label","style":{top:"10",font:{fontSize:"14dp",},}}];
+module.exports = [{"isApi":true,"priority":1000.0025,"key":"Label","style":{top:"10",font:{fontSize:"14dp",},}}];

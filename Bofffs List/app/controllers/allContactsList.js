@@ -73,7 +73,8 @@ function sort(a, b) {
 }
 
 var search = Titanium.UI.createSearchBar({
-    barColor:'#000', 
+    barColor:'#fff',
+    borderColor:'#000',
     showCancel:true,
     height:43,
     top:0,
@@ -87,6 +88,7 @@ search.addEventListener('cancel', function(){
  search.addEventListener('change', function(e){
      $.list_allContacts.searchText = e.value;
  });
+ 
 
 $.list_allContacts.searchView= search;
 //$.list_allContacts.searchView.width="50%";
@@ -173,6 +175,10 @@ function allContactsFadeOut(e)
 		$.view_allContacts.opacity=1;
 		profileOpen= false;
 	}
+	//animation.fadeOut($.view_allContacts, 200);
+	alert(mainWindow.view_container.children.length);
+	mainWindow.view_container.remove(view_bofffContacts);
+	mainWindow.view_container.add(view_bofffContacts);
 	animation.popIn(view_bofffContacts);
 }
 
@@ -199,6 +205,7 @@ function showContact(e)
 		var params=
 		{
 			contact: contact,
+			close: 	 closeProfile,
 		};
 		view_contactInfo =  Alloy.createController("normalContactProfile",params).getView();
 		//Here is to add the new view to the main view
@@ -216,4 +223,12 @@ function closeProfile()
 	mainWindow.view_container.remove(view_contactInfo);
 	$.view_allContacts.opacity=1;
 	profileOpen= false;
+};
+
+function closeOpenProfile(e)
+{
+	if (profileOpen)
+	{
+		closeProfile();
+	}
 }

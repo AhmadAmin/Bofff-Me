@@ -20,6 +20,7 @@ $.list_bofffContacts.sections=sections;
 
 
 var args=arguments[0] || {};
+//var view_allContacts = args.view_allContacts;
 
 // use this when viewing new views to view them with an animation like fadeIn, fadeOut, popIn
 var animation = require('alloy/animation');

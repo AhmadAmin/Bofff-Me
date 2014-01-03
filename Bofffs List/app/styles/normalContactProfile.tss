@@ -1,15 +1,23 @@
-
-".view_container" : {
- 	backgroundColor: "#CEECF5",
+".view_container":{
+	backgroundColor: "#CEECF5",
 	layout: "vertical",
 	borderRadius :'10',
 	borderColor:"black",
 	width: '90%',
 	height: '70%',
 	opacity:'0',
+}
+".view_header":{
+	backgroundColor: "#2279bc",
+	top:0,
+	width: "100%",
+	height: Ti.UI.SIZE,	
+}
+
+".view_contactInfo" : {
+ 	backgroundColor: "transparent",
+	layout: "vertical",
 	showVerticalScrollIndicator: true,
-	
-	
 }
 
 ".view_dynamicLabels":{
@@ -19,11 +27,16 @@
 	height: Ti.UI.SIZE,	
 }
 
-".contactInfo":{
+".lbl_contactName":{
 	left:10,
-	top:'30',
 	width:Ti.UI.SIZE,
 	height:Ti.UI.SIZE,
 	font:{fontSize:"20dp"},
 }
 
+".img_contactImage":{
+	left:10,
+	top:'30',
+	width:Ti.UI.SIZE,
+	height:Ti.UI.SIZE,
+}
