@@ -4,6 +4,22 @@ var view_bofffContacts= args.view_bofffContacts;
 // use this when viewing new views to view them with an animation like fadeIn, fadeOut, popIn
 var animation = require('alloy/animation');
 
+
+//This happens when the user click on the user clicks on all contact label to open bofff contacts and fadeout all contacts
+function allContactsFadeOut(e)
+{
+	//Here is to check if a profile is open or not before I close thi view
+	if (profileOpen)
+	{
+		animation.fadeOut(view_contactInfo,200);
+		$.view_allContacts.opacity=1;
+		profileOpen= false;
+	}
+	mainWindow.view_container.remove(view_bofffContacts);
+	mainWindow.view_container.add(view_bofffContacts);
+	animation.popIn(view_bofffContacts);
+}
+
 //This is to check if the user allows the access to his phonebook or not
 if (Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_AUTHORIZED){
     performAddressBookFunction();
@@ -165,22 +181,7 @@ function createListView(_data)
 	var your_object = JSON.parse(test);*/ 
 }
 
-//This happens when the user click on the user clicks on all contact label to open bofff contacts and fadeout all contacts
-function allContactsFadeOut(e)
-{
-	//Here is to check if a profile is open or not before I close thi view
-	if (profileOpen)
-	{
-		animation.fadeOut(view_contactInfo,200);
-		$.view_allContacts.opacity=1;
-		profileOpen= false;
-	}
-	//animation.fadeOut($.view_allContacts, 200);
-	alert(mainWindow.view_container.children.length);
-	mainWindow.view_container.remove(view_bofffContacts);
-	mainWindow.view_container.add(view_bofffContacts);
-	animation.popIn(view_bofffContacts);
-}
+
 
 
 //Here is when the current contact is saved
