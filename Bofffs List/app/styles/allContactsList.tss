@@ -1,12 +1,14 @@
 ".view_container":{
-	layout:"horizontal",
+	//layout:"horizontal",
 }
 
 ".view_contactFieldsPicker":{
 	top:0,
 	height: Ti.UI.FILL,
-	width: 0,
-	backgroundColor:"gray",
+	width: Ti.Platform.displayCaps.platformWidth,
+	backgroundColor:"transparent",
+	left:"-100%",
+	layout:"vertical",
 }
 
 ".view_allContacts":
@@ -34,6 +36,9 @@
 	width: '50dp',
 	height: '50dp',
 	left: 0
+},
+".bofffThumb":{
+	right:0,
 },
 ".title" : {
 	color: '#000',

@@ -1,24 +1,38 @@
 <Alloy>
 	<View id="view_container" class="view_container" top="0">
-		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" >
-			<Picker id="picker" left="0" selectionIndicator="true" useSpinner="true" top="0dp" onChange="updateSearchableText">
-			    <PickerRow title="Bananas"/>
-			    <PickerRow title="Strawberries"/>
-			    <PickerRow title="Mangos"/>
-			    <PickerRow title="Grapes"/>
-				<Row title="red"/>
-			    <Row title="green"/>
-			    <Row title="blue"/>
-			    <Row title="orange"/>
-			</Picker>
+		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" onClick="openPickerView" >
+		 	<Toolbar platform="ios" class="toolbar">
+				<Items>
+					<Label left ="0">Find by</Label>
+					<Label id="lbl_searchableField" color="#2279bc" >Name</Label>
+					<FlexSpace/>
+					<FlexSpace/>
+					<Button id="btn_donePicker" title="Done" style="Ti.UI.iPhone.SystemButtonStyle.DONE" onClick="closePicker"  />
+                </Items>
+            </Toolbar>
+            <View >
+	            <Picker id="picker" left="0" selectionIndicator="true"  useSpinner="true" top="0dp" onChange="updateSearchableText" width="70%" >
+					    <Row title="Name"/>
+					    <Row title="Job Title"/>
+					    <Row title="Company"/>
+					    <Row title="Interests"/>
+						<Row title="Education"/>
+					    <Row title="Favorite Places"/>
+					    <Row title="Marital Status"/>
+					    <Row title="Residence"/>
+				</Picker>
+				<ImageView id="img_pickerShow" image="/images/bofff.png" right="0" top="25%" ></ImageView>
+			</View>
 		</View>
     
 		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" >
 			<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
-			<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1" onItemclick="showContact" >
+			<SearchBar id="search" hintText="find a bofff" showCancel="true" height="43"  />
+			<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1"  onItemclick="showContact" >
 	    		<Templates>
 	      			<ItemTemplate  id="template1" name="template1"  class="template1">
 	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
+	            		<ImageView id="bofff_pic"  bindId="bofff_pic" class="bofffThumb"/>
 	           		    <Label id="textLabel" bindId="textLabel" class="title"/>
 	          		</ItemTemplate>
 	    	    </Templates>

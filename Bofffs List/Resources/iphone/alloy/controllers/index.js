@@ -6,7 +6,7 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId22 = [];
+    var __alloyId30 = [];
     $.__views.win_contactList = Ti.UI.createWindow({
         backgroundColor: "#fff",
         layout: "vertical",
@@ -25,7 +25,7 @@ function Controller() {
         window: $.__views.win_contactList,
         id: "tab1"
     });
-    __alloyId22.push($.__views.tab1);
+    __alloyId30.push($.__views.tab1);
     $.__views.win_addContact = Ti.UI.createWindow({
         backgroundColor: "#fff",
         layout: "vertical",
@@ -38,9 +38,9 @@ function Controller() {
         icon: "KS_nav_views.png",
         id: "tab_addContact"
     });
-    __alloyId22.push($.__views.tab_addContact);
+    __alloyId30.push($.__views.tab_addContact);
     $.__views.index = Ti.UI.createTabGroup({
-        tabs: __alloyId22,
+        tabs: __alloyId30,
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);

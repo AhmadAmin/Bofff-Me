@@ -17,7 +17,7 @@ function allContactsFadeOut(e)
 	mainWindow.view_container.remove(view_bofffContacts);
 	mainWindow.view_container.add(view_bofffContacts);
 	animation.popIn(view_bofffContacts);
-	search.blur(0);
+	$.search.blur(0);
 }
 
 //This is to check if the user allows the access to his phonebook or not
@@ -88,30 +88,39 @@ function sort(a, b) {
     }
     return 0;
 }
+$.picker.setSelectedRow(0,0,true);
+function openPickerView(e)
+{
+	$.img_pickerShow.visible=false;
+	$.view_contactFieldsPicker.width=Ti.Platform.displayCaps.platformWidth-50;
+	$.view_contactFieldsPicker.animate({left:"0dp", duration:500});
+	$.view_allContacts.animate({left:Ti.Platform.displayCaps.platformWidth-50, duration:500});
+}
 
-var search = Titanium.UI.createSearchBar({
-    barColor:'black',
-    showCancel:true,
-    height:43,
-    top:0,
-    left:0,
-});
-search.addEventListener('cancel', function(){
-    search.blur();
+function closePicker(e)
+{
+	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
+	$.view_allContacts.animate({left:'0', duration:500});
+}
+$.search.addEventListener('cancel', function(){
+    $.search.blur();
  });
 // for textSearch, use the change event to update the search value
-search.addEventListener('change', function(e){
+$.search.addEventListener('change', function(e){
      $.list_allContacts.searchText = e.value;
  });
 
-search.addEventListener('blur',function(e){
-	 $.view_contactFieldsPicker.width=0;
+$.search.addEventListener('blur',function(e){
+	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
+	$.view_allContacts.animate({left:'0', duration:500});
 });
-search.addEventListener('focus', function(e){
-     $.view_contactFieldsPicker.width="50%";
+
+$.search.addEventListener('focus', function(e){
+	$.img_pickerShow.visible=true;
+	$.view_contactFieldsPicker.animate({left: -$.view_contactFieldsPicker.width+50, duration:500});
+	$.view_allContacts.animate({left:"50dp", duration:500});
 }); 
 
-$.list_allContacts.searchView= search;
 $.list_allContacts.caseInsensitiveSearch=true;
 $.list_allContacts.keepSectionsInSearch=true;
 // for textSearch, add the search bar or text field as a header view
@@ -185,6 +194,9 @@ function createListView(_data, textToSearchFor)
 	            pic : {
 	                image : _data[i].image   // assign the values from the data
 	            },
+	            bofff_pic:{
+	            	image:"/images/bofffios.png"
+	            },
 	            properties : {
 	            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
 	            searchableText: _data[i][textToSearchFor] ,
@@ -209,6 +221,7 @@ function createListView(_data, textToSearchFor)
 
 function updateSearchableText(e){
 	createListView(sortedContacts , "fullName");
+	$.lbl_searchableField.text= e.selectedValue[0];
 }
 
 
@@ -226,6 +239,7 @@ function showContact(e)
 	}
 	else
 	{
+		$.search.blur();
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
 		contact =Ti.Contacts.getPersonByID(e.itemId);
