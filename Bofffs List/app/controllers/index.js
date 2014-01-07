@@ -8,6 +8,7 @@ var allContactsPayload={
 	};
 var view_allContacts = Alloy.createController("allContactsList",allContactsPayload).getView();
 $.view_container.add(view_allContacts);
+//$.view_container.add(view_bofffContacts);
 
 
 

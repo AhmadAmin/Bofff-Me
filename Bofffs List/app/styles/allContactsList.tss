@@ -31,6 +31,9 @@
 	left:'5dp',
 	
 } 
+".list_allContacts":{
+	width:Ti.Platform.displayCaps.platformWidth,
+}
 
 ".imageThumb" : {
 	width: '50dp',

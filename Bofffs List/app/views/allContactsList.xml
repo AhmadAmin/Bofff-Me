@@ -1,34 +1,43 @@
 <Alloy>
-	<View id="view_container" class="view_container" top="0">
-		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" onClick="openPickerView" >
+	<View id="view_container" class="view_container" top="0" backgroundColor="lightgray">
+		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" onClick="openPickerView" onSwipe="narrowPickerView" >
 		 	<Toolbar platform="ios" class="toolbar">
 				<Items>
-					<Label left ="0">Find by</Label>
-					<Label id="lbl_searchableField" color="#2279bc" >Name</Label>
+					<Label left ="0" width="Ti.UI.SIZE" textAlign="">Find by</Label>
 					<FlexSpace/>
+					<Label id="lbl_searchableField" width="100dp" color="#2279bc" >Name</Label>
 					<FlexSpace/>
 					<Button id="btn_donePicker" title="Done" style="Ti.UI.iPhone.SystemButtonStyle.DONE" onClick="closePicker"  />
                 </Items>
             </Toolbar>
-            <View >
-	            <Picker id="picker" left="0" selectionIndicator="true"  useSpinner="true" top="0dp" onChange="updateSearchableText" width="70%" >
-					    <Row title="Name"/>
-					    <Row title="Job Title"/>
-					    <Row title="Company"/>
-					    <Row title="Interests"/>
-						<Row title="Education"/>
-					    <Row title="Favorite Places"/>
-					    <Row title="Marital Status"/>
-					    <Row title="Residence"/>
-				</Picker>
-				<ImageView id="img_pickerShow" image="/images/bofff.png" right="0" top="25%" ></ImageView>
+            <View height="Ti.UI.FILL">
+            	
+	            <TableView id="table" width="220" left="0" backgroundColor="transparent" showVerticalScrollIndicator ="false" onClick="updateSearchableText">
+		        	<TableViewSection >
+		        	    <TableViewRow title="Name" leftImage="/images/name.png" selectedBackgroundColor="darkgray"/>
+		        	    <TableViewRow title="Phone Number" leftImage="/images/phone.png" selectedBackgroundColor="darkgray"/>
+		        	    <TableViewRow title="E-mail" leftImage="/images/e-mail.png" selectedBackgroundColor="darkgray"/>
+		        	    <TableViewRow title="Social Network" leftImage="/images/social.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Job Title" leftImage="/images/job.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Company" leftImage="/images/company.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Interests" leftImage="/images/interests.png" selectedBackgroundColor="darkgray"/>
+						<TableViewRow title="Education" leftImage="/images/education.ico" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Favorite Places" leftImage="/images/favorite.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Marital Status" leftImage="/images/marital.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Residence" leftImage="/images/residence.png" selectedBackgroundColor="darkgray"/>
+					    <TableViewRow title="Custom" leftImage="/images/custom.png" height="Ti.UI.FILL" selectedBackgroundColor="darkgray">
+					    	<TextField id="txt_customField" hintText="custom field" left="130dp" borderColor="darkgray"  visible="false" borderRadius="5dp" />
+					    </TableViewRow>
+					</TableViewSection>
+				</TableView>
+				<ImageView id="img_pickerShow"  right="0" top="100dp" bubbleParent="false" onClick="manipulatePicerView"></ImageView>
 			</View>
 		</View>
     
-		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" >
+		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" onSwipe="openPickerViewWithSwipe" >
 			<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
-			<SearchBar id="search" hintText="find a bofff" showCancel="true" height="43"  />
-			<ListView id="list_allContacts" class="list_allContacts" defaultItemTemplate="template1"  onItemclick="showContact" >
+			<SearchBar id="search" left="0" hintText="find a bofff" showCancel="true" height="43" width="Ti.UI.FILL"  />
+			<ListView id="list_allContacts" left="0" class="list_allContacts" defaultItemTemplate="template1"  onItemclick="showContact" >
 	    		<Templates>
 	      			<ItemTemplate  id="template1" name="template1"  class="template1">
 	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>

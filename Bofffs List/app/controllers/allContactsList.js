@@ -17,7 +17,11 @@ function allContactsFadeOut(e)
 	mainWindow.view_container.remove(view_bofffContacts);
 	mainWindow.view_container.add(view_bofffContacts);
 	animation.popIn(view_bofffContacts);
-	$.search.blur(0);
+	pickerIsOpen=false;
+	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
+	$.view_allContacts.animate({left:'0', duration:500});
+	$.search.blur();
+	searchbarIsOnFocus=false;
 }
 
 //This is to check if the user allows the access to his phonebook or not
@@ -88,37 +92,102 @@ function sort(a, b) {
     }
     return 0;
 }
-$.picker.setSelectedRow(0,0,true);
+
+function showPickerView()
+{
+	if (!pickerIsOpen)
+	{
+		$.search.width=Ti.Platform.displayCaps.platformWidth;
+		$.search.blur();
+		$.img_pickerShow.image="/images/left arrow.png";
+		pickerIsOpen= true;
+		$.view_contactFieldsPicker.width=Ti.Platform.displayCaps.platformWidth-50;
+		$.view_contactFieldsPicker.animate({left:"0dp", duration:500});
+		$.view_allContacts.animate({left:Ti.Platform.displayCaps.platformWidth-50, duration:500});
+	}
+}
+
+function showPartOfPickerView()
+{
+	if (searchbarIsOnFocus)
+	{
+		$.search.focus();
+	}
+	$.txt_customField.blur();
+	$.search.width=Ti.UI.FILL;
+	$.img_pickerShow.image="/images/right arrow.png";
+	pickerIsOpen=false;
+	$.view_contactFieldsPicker.animate({left: -$.view_contactFieldsPicker.width+50, duration:500});
+	$.view_allContacts.animate({left:"50dp", duration:500});
+}
+
+function hidePickerView()
+{
+	$.txt_customField.blur();
+	$.search.width=Ti.UI.FILL;
+	pickerIsOpen= false;
+	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
+	$.view_allContacts.animate({left:'0', duration:500});
+}
+
+var pickerIsOpen= false;
+
 function openPickerView(e)
 {
-	$.img_pickerShow.visible=false;
-	$.view_contactFieldsPicker.width=Ti.Platform.displayCaps.platformWidth-50;
-	$.view_contactFieldsPicker.animate({left:"0dp", duration:500});
-	$.view_allContacts.animate({left:Ti.Platform.displayCaps.platformWidth-50, duration:500});
+	showPickerView();
+}
+
+function openPickerViewWithSwipe(e)
+{
+	if(e.direction=="right")
+	{
+		showPickerView();
+	}
+	else
+	if (e.direction=="left")
+	{
+		hidePickerView();
+	}
+}
+
+function manipulatePicerView(e)
+{
+	if(pickerIsOpen)
+	{
+		showPartOfPickerView();
+	}
+	else
+	{
+		showPickerView();
+	}
+}
+
+function narrowPickerView(e)
+{
+	if(e.direction=="left")
+	{
+		showPartOfPickerView();
+	}
 }
 
 function closePicker(e)
 {
-	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
-	$.view_allContacts.animate({left:'0', duration:500});
+	hidePickerView();
 }
 $.search.addEventListener('cancel', function(){
     $.search.blur();
+    hidePickerView();
+    searchbarIsOnFocus=false;
  });
 // for textSearch, use the change event to update the search value
 $.search.addEventListener('change', function(e){
      $.list_allContacts.searchText = e.value;
  });
 
-$.search.addEventListener('blur',function(e){
-	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
-	$.view_allContacts.animate({left:'0', duration:500});
-});
-
+var searchbarIsOnFocus= false;
 $.search.addEventListener('focus', function(e){
-	$.img_pickerShow.visible=true;
-	$.view_contactFieldsPicker.animate({left: -$.view_contactFieldsPicker.width+50, duration:500});
-	$.view_allContacts.animate({left:"50dp", duration:500});
+	showPartOfPickerView();
+	searchbarIsOnFocus=true;
 }); 
 
 $.list_allContacts.caseInsensitiveSearch=true;
@@ -219,9 +288,25 @@ function createListView(_data, textToSearchFor)
 	var your_object = JSON.parse(test);*/ 
 }
 
-function updateSearchableText(e){
+function updateSearchableText(e)
+{
 	createListView(sortedContacts , "fullName");
-	$.lbl_searchableField.text= e.selectedValue[0];
+	$.lbl_searchableField.text= e.row.title;
+	if(e.row.title=="Custom")
+	{
+		$.txt_customField.visible=true;
+		$.txt_customField.addEventListener("change", function(e){
+			$.lbl_searchableField.text="Custom: "+$.txt_customField.value;
+			if ($.txt_customField.value=="")
+			{
+				$.lbl_searchableField.text="Custom";
+			}
+		});
+	}
+	else
+	{
+		$.txt_customField.visible=false;
+	}
 }
 
 
@@ -239,7 +324,9 @@ function showContact(e)
 	}
 	else
 	{
+		hidePickerView();
 		$.search.blur();
+		searchbarIsOnFocus=false;
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
 		contact =Ti.Contacts.getPersonByID(e.itemId);

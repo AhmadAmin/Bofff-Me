@@ -8,7 +8,17 @@ function Controller() {
         mainWindow.view_container.remove(view_bofffContacts);
         mainWindow.view_container.add(view_bofffContacts);
         animation.popIn(view_bofffContacts);
-        $.search.blur(0);
+        pickerIsOpen = false;
+        $.view_contactFieldsPicker.animate({
+            left: -$.view_contactFieldsPicker.width,
+            duration: 500
+        });
+        $.view_allContacts.animate({
+            left: "0",
+            duration: 500
+        });
+        $.search.blur();
+        searchbarIsOnFocus = false;
     }
     function addressBookDisallowed() {
         alert("Failed");
@@ -25,19 +35,42 @@ function Controller() {
         if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
         return 0;
     }
-    function openPickerView() {
-        $.img_pickerShow.visible = false;
-        $.view_contactFieldsPicker.width = Ti.Platform.displayCaps.platformWidth - 50;
+    function showPickerView() {
+        if (!pickerIsOpen) {
+            $.search.width = Ti.Platform.displayCaps.platformWidth;
+            $.search.blur();
+            $.img_pickerShow.image = "/images/left arrow.png";
+            pickerIsOpen = true;
+            $.view_contactFieldsPicker.width = Ti.Platform.displayCaps.platformWidth - 50;
+            $.view_contactFieldsPicker.animate({
+                left: "0dp",
+                duration: 500
+            });
+            $.view_allContacts.animate({
+                left: Ti.Platform.displayCaps.platformWidth - 50,
+                duration: 500
+            });
+        }
+    }
+    function showPartOfPickerView() {
+        searchbarIsOnFocus && $.search.focus();
+        $.txt_customField.blur();
+        $.search.width = Ti.UI.FILL;
+        $.img_pickerShow.image = "/images/right arrow.png";
+        pickerIsOpen = false;
         $.view_contactFieldsPicker.animate({
-            left: "0dp",
+            left: -$.view_contactFieldsPicker.width + 50,
             duration: 500
         });
         $.view_allContacts.animate({
-            left: Ti.Platform.displayCaps.platformWidth - 50,
+            left: "50dp",
             duration: 500
         });
     }
-    function closePicker() {
+    function hidePickerView() {
+        $.txt_customField.blur();
+        $.search.width = Ti.UI.FILL;
+        pickerIsOpen = false;
         $.view_contactFieldsPicker.animate({
             left: -$.view_contactFieldsPicker.width,
             duration: 500
@@ -46,6 +79,21 @@ function Controller() {
             left: "0",
             duration: 500
         });
+    }
+    function openPickerView() {
+        showPickerView();
+    }
+    function openPickerViewWithSwipe(e) {
+        "right" == e.direction ? showPickerView() : "left" == e.direction && hidePickerView();
+    }
+    function manipulatePicerView() {
+        pickerIsOpen ? showPartOfPickerView() : showPickerView();
+    }
+    function narrowPickerView(e) {
+        "left" == e.direction && showPartOfPickerView();
+    }
+    function closePicker() {
+        hidePickerView();
     }
     function createListView(_data, textToSearchFor) {
         var listSections = [];
@@ -94,11 +142,20 @@ function Controller() {
     }
     function updateSearchableText(e) {
         createListView(sortedContacts, "fullName");
-        $.lbl_searchableField.text = e.selectedValue[0];
+        $.lbl_searchableField.text = e.row.title;
+        if ("Custom" == e.row.title) {
+            $.txt_customField.visible = true;
+            $.txt_customField.addEventListener("change", function() {
+                $.lbl_searchableField.text = "Custom: " + $.txt_customField.value;
+                "" == $.txt_customField.value && ($.lbl_searchableField.text = "Custom");
+            });
+        } else $.txt_customField.visible = false;
     }
     function showContact(e) {
         if (profileOpen) closeProfile(); else {
+            hidePickerView();
             $.search.blur();
+            searchbarIsOnFocus = false;
             contact = Ti.Contacts.getPersonByID(e.itemId);
             var params = {
                 contact: contact,
@@ -130,7 +187,8 @@ function Controller() {
     var __defers = {};
     $.__views.view_container = Ti.UI.createView({
         id: "view_container",
-        top: "0"
+        top: "0",
+        backgroundColor: "lightgray"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
     $.__views.view_contactFieldsPicker = Ti.UI.createView({
@@ -144,23 +202,27 @@ function Controller() {
     });
     $.__views.view_container.add($.__views.view_contactFieldsPicker);
     openPickerView ? $.__views.view_contactFieldsPicker.addEventListener("click", openPickerView) : __defers["$.__views.view_contactFieldsPicker!click!openPickerView"] = true;
+    narrowPickerView ? $.__views.view_contactFieldsPicker.addEventListener("swipe", narrowPickerView) : __defers["$.__views.view_contactFieldsPicker!swipe!narrowPickerView"] = true;
     var __alloyId2 = [];
     $.__views.__alloyId3 = Ti.UI.createLabel({
         text: "Find by",
         left: "0",
+        width: Ti.UI.SIZE,
+        textAlign: "",
         id: "__alloyId3"
     });
     __alloyId2.push($.__views.__alloyId3);
-    $.__views.lbl_searchableField = Ti.UI.createLabel({
-        text: "Name",
-        id: "lbl_searchableField",
-        color: "#2279bc"
-    });
-    __alloyId2.push($.__views.lbl_searchableField);
     $.__views.__alloyId4 = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
     });
     __alloyId2.push($.__views.__alloyId4);
+    $.__views.lbl_searchableField = Ti.UI.createLabel({
+        text: "Name",
+        id: "lbl_searchableField",
+        width: "100dp",
+        color: "#2279bc"
+    });
+    __alloyId2.push($.__views.lbl_searchableField);
     $.__views.__alloyId5 = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
     });
@@ -178,68 +240,127 @@ function Controller() {
     });
     $.__views.view_contactFieldsPicker.add($.__views.__alloyId0);
     $.__views.__alloyId6 = Ti.UI.createView({
+        height: Ti.UI.FILL,
         id: "__alloyId6"
     });
     $.__views.view_contactFieldsPicker.add($.__views.__alloyId6);
-    $.__views.picker = Ti.UI.createPicker({
-        id: "picker",
-        left: "0",
-        selectionIndicator: "true",
-        useSpinner: "true",
-        top: "0dp",
-        width: "70%"
-    });
-    $.__views.__alloyId6.add($.__views.picker);
     var __alloyId7 = [];
-    $.__views.__alloyId8 = Ti.UI.createPickerRow({
-        title: "Name",
+    $.__views.__alloyId8 = Ti.UI.createTableViewSection({
         id: "__alloyId8"
     });
     __alloyId7.push($.__views.__alloyId8);
-    $.__views.__alloyId9 = Ti.UI.createPickerRow({
-        title: "Job Title",
+    $.__views.__alloyId9 = Ti.UI.createTableViewRow({
+        title: "Name",
+        leftImage: "/images/name.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId9"
     });
-    __alloyId7.push($.__views.__alloyId9);
-    $.__views.__alloyId10 = Ti.UI.createPickerRow({
-        title: "Company",
+    $.__views.__alloyId8.add($.__views.__alloyId9);
+    $.__views.__alloyId10 = Ti.UI.createTableViewRow({
+        title: "Phone Number",
+        leftImage: "/images/phone.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId10"
     });
-    __alloyId7.push($.__views.__alloyId10);
-    $.__views.__alloyId11 = Ti.UI.createPickerRow({
-        title: "Interests",
+    $.__views.__alloyId8.add($.__views.__alloyId10);
+    $.__views.__alloyId11 = Ti.UI.createTableViewRow({
+        title: "E-mail",
+        leftImage: "/images/e-mail.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId11"
     });
-    __alloyId7.push($.__views.__alloyId11);
-    $.__views.__alloyId12 = Ti.UI.createPickerRow({
-        title: "Education",
+    $.__views.__alloyId8.add($.__views.__alloyId11);
+    $.__views.__alloyId12 = Ti.UI.createTableViewRow({
+        title: "Social Network",
+        leftImage: "/images/social.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId12"
     });
-    __alloyId7.push($.__views.__alloyId12);
-    $.__views.__alloyId13 = Ti.UI.createPickerRow({
-        title: "Favorite Places",
+    $.__views.__alloyId8.add($.__views.__alloyId12);
+    $.__views.__alloyId13 = Ti.UI.createTableViewRow({
+        title: "Job Title",
+        leftImage: "/images/job.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId13"
     });
-    __alloyId7.push($.__views.__alloyId13);
-    $.__views.__alloyId14 = Ti.UI.createPickerRow({
-        title: "Marital Status",
+    $.__views.__alloyId8.add($.__views.__alloyId13);
+    $.__views.__alloyId14 = Ti.UI.createTableViewRow({
+        title: "Company",
+        leftImage: "/images/company.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId14"
     });
-    __alloyId7.push($.__views.__alloyId14);
-    $.__views.__alloyId15 = Ti.UI.createPickerRow({
-        title: "Residence",
+    $.__views.__alloyId8.add($.__views.__alloyId14);
+    $.__views.__alloyId15 = Ti.UI.createTableViewRow({
+        title: "Interests",
+        leftImage: "/images/interests.png",
+        selectedBackgroundColor: "darkgray",
         id: "__alloyId15"
     });
-    __alloyId7.push($.__views.__alloyId15);
-    $.__views.picker.add(__alloyId7);
-    updateSearchableText ? $.__views.picker.addEventListener("change", updateSearchableText) : __defers["$.__views.picker!change!updateSearchableText"] = true;
+    $.__views.__alloyId8.add($.__views.__alloyId15);
+    $.__views.__alloyId16 = Ti.UI.createTableViewRow({
+        title: "Education",
+        leftImage: "/images/education.ico",
+        selectedBackgroundColor: "darkgray",
+        id: "__alloyId16"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId16);
+    $.__views.__alloyId17 = Ti.UI.createTableViewRow({
+        title: "Favorite Places",
+        leftImage: "/images/favorite.png",
+        selectedBackgroundColor: "darkgray",
+        id: "__alloyId17"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId17);
+    $.__views.__alloyId18 = Ti.UI.createTableViewRow({
+        title: "Marital Status",
+        leftImage: "/images/marital.png",
+        selectedBackgroundColor: "darkgray",
+        id: "__alloyId18"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId18);
+    $.__views.__alloyId19 = Ti.UI.createTableViewRow({
+        title: "Residence",
+        leftImage: "/images/residence.png",
+        selectedBackgroundColor: "darkgray",
+        id: "__alloyId19"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId19);
+    $.__views.__alloyId20 = Ti.UI.createTableViewRow({
+        title: "Custom",
+        leftImage: "/images/custom.png",
+        height: Ti.UI.FILL,
+        selectedBackgroundColor: "darkgray",
+        id: "__alloyId20"
+    });
+    $.__views.__alloyId8.add($.__views.__alloyId20);
+    $.__views.txt_customField = Ti.UI.createTextField({
+        id: "txt_customField",
+        hintText: "custom field",
+        left: "130dp",
+        borderColor: "darkgray",
+        visible: "false",
+        borderRadius: "5dp"
+    });
+    $.__views.__alloyId20.add($.__views.txt_customField);
+    $.__views.table = Ti.UI.createTableView({
+        data: __alloyId7,
+        id: "table",
+        width: "220",
+        left: "0",
+        backgroundColor: "transparent",
+        showVerticalScrollIndicator: "false"
+    });
+    $.__views.__alloyId6.add($.__views.table);
+    updateSearchableText ? $.__views.table.addEventListener("click", updateSearchableText) : __defers["$.__views.table!click!updateSearchableText"] = true;
     $.__views.img_pickerShow = Ti.UI.createImageView({
         id: "img_pickerShow",
-        image: "/images/bofff.png",
         right: "0",
-        top: "25%"
+        top: "100dp",
+        bubbleParent: "false"
     });
     $.__views.__alloyId6.add($.__views.img_pickerShow);
+    manipulatePicerView ? $.__views.img_pickerShow.addEventListener("click", manipulatePicerView) : __defers["$.__views.img_pickerShow!click!manipulatePicerView"] = true;
     $.__views.view_allContacts = Ti.UI.createView({
         backgroundColor: "white",
         height: Ti.UI.SIZE,
@@ -250,7 +371,8 @@ function Controller() {
     });
     $.__views.view_container.add($.__views.view_allContacts);
     closeOpenProfile ? $.__views.view_allContacts.addEventListener("click", closeOpenProfile) : __defers["$.__views.view_allContacts!click!closeOpenProfile"] = true;
-    $.__views.__alloyId16 = Ti.UI.createLabel({
+    openPickerViewWithSwipe ? $.__views.view_allContacts.addEventListener("swipe", openPickerViewWithSwipe) : __defers["$.__views.view_allContacts!swipe!openPickerViewWithSwipe"] = true;
+    $.__views.__alloyId21 = Ti.UI.createLabel({
         width: Ti.UI.SIZE,
         height: "30dp",
         color: "blue",
@@ -261,20 +383,22 @@ function Controller() {
         textAlign: "center",
         left: "5dp",
         text: "all contacts",
-        id: "__alloyId16"
+        id: "__alloyId21"
     });
-    $.__views.view_allContacts.add($.__views.__alloyId16);
-    allContactsFadeOut ? $.__views.__alloyId16.addEventListener("click", allContactsFadeOut) : __defers["$.__views.__alloyId16!click!allContactsFadeOut"] = true;
+    $.__views.view_allContacts.add($.__views.__alloyId21);
+    allContactsFadeOut ? $.__views.__alloyId21.addEventListener("click", allContactsFadeOut) : __defers["$.__views.__alloyId21!click!allContactsFadeOut"] = true;
     $.__views.search = Ti.UI.createSearchBar({
         id: "search",
+        left: "0",
         hintText: "find a bofff",
         showCancel: "true",
-        height: "43"
+        height: "43",
+        width: Ti.UI.FILL
     });
     $.__views.view_allContacts.add($.__views.search);
-    var __alloyId17 = {};
-    var __alloyId19 = [];
-    var __alloyId20 = {
+    var __alloyId22 = {};
+    var __alloyId24 = [];
+    var __alloyId25 = {
         type: "Ti.UI.ImageView",
         bindId: "pic",
         properties: {
@@ -284,8 +408,8 @@ function Controller() {
             bindId: "pic"
         }
     };
-    __alloyId19.push(__alloyId20);
-    var __alloyId21 = {
+    __alloyId24.push(__alloyId25);
+    var __alloyId26 = {
         type: "Ti.UI.ImageView",
         bindId: "bofff_pic",
         properties: {
@@ -293,8 +417,8 @@ function Controller() {
             bindId: "bofff_pic"
         }
     };
-    __alloyId19.push(__alloyId21);
-    var __alloyId22 = {
+    __alloyId24.push(__alloyId26);
+    var __alloyId27 = {
         type: "Ti.UI.Label",
         bindId: "textLabel",
         properties: {
@@ -308,18 +432,20 @@ function Controller() {
             bindId: "textLabel"
         }
     };
-    __alloyId19.push(__alloyId22);
-    var __alloyId18 = {
+    __alloyId24.push(__alloyId27);
+    var __alloyId23 = {
         properties: {
             height: "56dp",
             name: "template1"
         },
-        childTemplates: __alloyId19
+        childTemplates: __alloyId24
     };
-    __alloyId17["template1"] = __alloyId18;
+    __alloyId22["template1"] = __alloyId23;
     $.__views.list_allContacts = Ti.UI.createListView({
-        templates: __alloyId17,
+        width: Ti.Platform.displayCaps.platformWidth,
+        templates: __alloyId22,
         id: "list_allContacts",
+        left: "0",
         defaultItemTemplate: "template1"
     });
     $.__views.view_allContacts.add($.__views.list_allContacts);
@@ -341,33 +467,19 @@ function Controller() {
         sortedContacts.sort(sort);
         createListView(sortedContacts, "fullName");
     });
-    $.picker.setSelectedRow(0, 0, true);
+    var pickerIsOpen = false;
     $.search.addEventListener("cancel", function() {
         $.search.blur();
+        hidePickerView();
+        searchbarIsOnFocus = false;
     });
     $.search.addEventListener("change", function(e) {
         $.list_allContacts.searchText = e.value;
     });
-    $.search.addEventListener("blur", function() {
-        $.view_contactFieldsPicker.animate({
-            left: -$.view_contactFieldsPicker.width,
-            duration: 500
-        });
-        $.view_allContacts.animate({
-            left: "0",
-            duration: 500
-        });
-    });
+    var searchbarIsOnFocus = false;
     $.search.addEventListener("focus", function() {
-        $.img_pickerShow.visible = true;
-        $.view_contactFieldsPicker.animate({
-            left: -$.view_contactFieldsPicker.width + 50,
-            duration: 500
-        });
-        $.view_allContacts.animate({
-            left: "50dp",
-            duration: 500
-        });
+        showPartOfPickerView();
+        searchbarIsOnFocus = true;
     });
     $.list_allContacts.caseInsensitiveSearch = true;
     $.list_allContacts.keepSectionsInSearch = true;
@@ -375,10 +487,13 @@ function Controller() {
     var profileOpen = false;
     var view_contactInfo;
     __defers["$.__views.view_contactFieldsPicker!click!openPickerView"] && $.__views.view_contactFieldsPicker.addEventListener("click", openPickerView);
+    __defers["$.__views.view_contactFieldsPicker!swipe!narrowPickerView"] && $.__views.view_contactFieldsPicker.addEventListener("swipe", narrowPickerView);
     __defers["$.__views.btn_donePicker!click!closePicker"] && $.__views.btn_donePicker.addEventListener("click", closePicker);
-    __defers["$.__views.picker!change!updateSearchableText"] && $.__views.picker.addEventListener("change", updateSearchableText);
+    __defers["$.__views.table!click!updateSearchableText"] && $.__views.table.addEventListener("click", updateSearchableText);
+    __defers["$.__views.img_pickerShow!click!manipulatePicerView"] && $.__views.img_pickerShow.addEventListener("click", manipulatePicerView);
     __defers["$.__views.view_allContacts!click!closeOpenProfile"] && $.__views.view_allContacts.addEventListener("click", closeOpenProfile);
-    __defers["$.__views.__alloyId16!click!allContactsFadeOut"] && $.__views.__alloyId16.addEventListener("click", allContactsFadeOut);
+    __defers["$.__views.view_allContacts!swipe!openPickerViewWithSwipe"] && $.__views.view_allContacts.addEventListener("swipe", openPickerViewWithSwipe);
+    __defers["$.__views.__alloyId21!click!allContactsFadeOut"] && $.__views.__alloyId21.addEventListener("click", allContactsFadeOut);
     __defers["$.__views.list_allContacts!itemclick!showContact"] && $.__views.list_allContacts.addEventListener("itemclick", showContact);
     _.extend($, exports);
 }
