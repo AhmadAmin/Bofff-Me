@@ -1,6 +1,4 @@
-".view_container":{
-	//layout:"horizontal",
-}
+
 
 ".view_contactFieldsPicker":{
 	top:0,
@@ -17,6 +15,20 @@
 	height: Ti.UI.SIZE,
 	width: Ti.UI.FILL,
 	layout:"vertical",
+}
+
+"Button":{
+	font: {
+		fontSize: "20dp",
+		},
+}
+"Label":{
+	color:"black",
+	font: {
+		fontSize: "20dp",
+		fontFamily: 'Helvetica Neue'
+	},
+	left:50,
 }
 
 ".lbl_allContacts": {
@@ -41,6 +53,8 @@
 	left: 0
 },
 ".bofffThumb":{
+	width: '37dp',
+	height: '34dp',
 	right:0,
 },
 ".title" : {

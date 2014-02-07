@@ -1,9 +1,8 @@
 function Controller() {
     function bofffContactsFadeOut() {
-        animation.fadeOut($.view_bofffContacts, 200);
+        animation.fadeAndRemove($.view_bofffContacts, 200, $.view_bofffContacts);
     }
-    function openProfile(e) {
-        Ti.Contacts.getPeopleByID(e.itemId);
+    function openProfile() {
         var params = {
             fname: "Ahmad",
             lname: "Amin",
@@ -60,9 +59,9 @@ function Controller() {
     });
     $.__views.view_bofffContacts.add($.__views.lbl_bofffContacts);
     bofffContactsFadeOut ? $.__views.lbl_bofffContacts.addEventListener("click", bofffContactsFadeOut) : __defers["$.__views.lbl_bofffContacts!click!bofffContactsFadeOut"] = true;
-    var __alloyId28 = {};
-    var __alloyId30 = [];
-    var __alloyId31 = {
+    var __alloyId64 = {};
+    var __alloyId66 = [];
+    var __alloyId67 = {
         type: "Ti.UI.ImageView",
         bindId: "pic",
         properties: {
@@ -72,8 +71,8 @@ function Controller() {
             bindId: "pic"
         }
     };
-    __alloyId30.push(__alloyId31);
-    var __alloyId32 = {
+    __alloyId66.push(__alloyId67);
+    var __alloyId68 = {
         type: "Ti.UI.Label",
         bindId: "textLabel",
         properties: {
@@ -90,23 +89,23 @@ function Controller() {
             bindId: "textLabel"
         }
     };
-    __alloyId30.push(__alloyId32);
-    var __alloyId29 = {
+    __alloyId66.push(__alloyId68);
+    var __alloyId65 = {
         properties: {
             height: "56dp",
             name: "template1"
         },
-        childTemplates: __alloyId30
+        childTemplates: __alloyId66
     };
-    __alloyId28["template1"] = __alloyId29;
+    __alloyId64["template1"] = __alloyId65;
     $.__views.listSection_bofffContacts = Ti.UI.createListSection({
         id: "listSection_bofffContacts"
     });
-    var __alloyId34 = [];
-    __alloyId34.push($.__views.listSection_bofffContacts);
+    var __alloyId70 = [];
+    __alloyId70.push($.__views.listSection_bofffContacts);
     $.__views.list_bofffContacts = Ti.UI.createListView({
-        sections: __alloyId34,
-        templates: __alloyId28,
+        sections: __alloyId70,
+        templates: __alloyId64,
         id: "list_bofffContacts",
         defaultItemTemplate: "template1"
     });

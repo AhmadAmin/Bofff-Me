@@ -11,6 +11,7 @@ function Controller() {
         font: {
             fontSize: "14dp"
         },
+        color: "black",
         id: "label"
     });
     $.__views.label && $.addTopLevelView($.__views.label);

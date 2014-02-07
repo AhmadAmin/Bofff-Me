@@ -1,5 +1,6 @@
 
 "Label":{
 	top:"10",
-	font:{fontSize:"14dp"}
+	font:{fontSize:"14dp"},
+	color:"black",
 }

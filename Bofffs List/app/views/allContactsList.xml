@@ -1,45 +1,99 @@
 <Alloy>
 	<View id="view_container" class="view_container" top="0" backgroundColor="lightgray">
 		 <View id="view_contactFieldsPicker" class="view_contactFieldsPicker" onClick="openPickerView" onSwipe="narrowPickerView" >
-		 	<Toolbar platform="ios" class="toolbar">
-				<Items>
-					<Label left ="0" width="Ti.UI.SIZE" textAlign="">Find by</Label>
-					<FlexSpace/>
-					<Label id="lbl_searchableField" width="100dp" color="#2279bc" >Name</Label>
-					<FlexSpace/>
-					<Button id="btn_donePicker" title="Done" style="Ti.UI.iPhone.SystemButtonStyle.DONE" onClick="closePicker"  />
-                </Items>
-            </Toolbar>
-            <View height="Ti.UI.FILL">
-            	
-	            <TableView id="table" width="220" left="0" backgroundColor="transparent" showVerticalScrollIndicator ="false" onClick="updateSearchableText">
-		        	<TableViewSection >
-		        	    <TableViewRow title="Name" leftImage="/images/name.png" selectedBackgroundColor="darkgray"/>
-		        	    <TableViewRow title="Phone Number" leftImage="/images/phone.png" selectedBackgroundColor="darkgray"/>
-		        	    <TableViewRow title="E-mail" leftImage="/images/e-mail.png" selectedBackgroundColor="darkgray"/>
-		        	    <TableViewRow title="Social Network" leftImage="/images/social.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Job Title" leftImage="/images/job.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Company" leftImage="/images/company.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Interests" leftImage="/images/interests.png" selectedBackgroundColor="darkgray"/>
-						<TableViewRow title="Education" leftImage="/images/education.ico" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Favorite Places" leftImage="/images/favorite.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Marital Status" leftImage="/images/marital.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Residence" leftImage="/images/residence.png" selectedBackgroundColor="darkgray"/>
-					    <TableViewRow title="Custom" leftImage="/images/custom.png" height="Ti.UI.FILL" selectedBackgroundColor="darkgray">
-					    	<TextField id="txt_customField" hintText="custom field" left="130dp" borderColor="darkgray"  visible="false" borderRadius="5dp" />
+		 	<View  backgroundColor="gray" height="50" id="view_toolbar" left="0">
+				<Label left="10" width="Ti.UI.SIZE" >Find by</Label>
+				<Label id="lbl_searchableField" left="90" width="130" height="Ti.UI.FILL" color="#2279bc" >Name</Label>
+				<Button right="5" id="btn_donePicker" bubbleParent="false" title="Done"  onClick="closePicker"  />
+   			</View>
+            <View height="Ti.UI.FILL" id="view_tableview" left="0" >
+        	 <TableView id="table"  left="0" width="0"  backgroundColor="transparent"  >
+        	 	<TableViewSection>
+		        		<TableViewRow left="5" text="Name" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+		        	    	<ImageView  text="Name" left="15" width="25" height="25" image="/images/name.png"/>
+		        	    	<Label  >Name</Label>
+		        	    </TableViewRow>
+		        	    <TableViewRow text="Phone Number" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+		        	    	<ImageView text="Phone Number" left="5" width="25" height="25" image="/images/phone.png" />
+		        	    	<Label>Phone Number</Label>
+		        	    </TableViewRow>	
+		        	    <TableViewRow text="E-mail" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+		        	    	<ImageView text="E-mail" left="5" width="25" height="25" image="/images/e-mail.png"/>
+		        	    	<Label>E-mail</Label>
+		        	    </TableViewRow>
+		        	    <TableViewRow text="Social Network" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					    	<ImageView text="Social Network" left="5" width="25" height="25" image="/images/social.png"/>
+		        	    	<Label>Social Network</Label>
 					    </TableViewRow>
-					</TableViewSection>
+					    <TableViewRow text="Job Title" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					    	<ImageView text="Job Title" left="5" width="25" height="25" image="/images/job.png"/>
+		        	    	<Label>Job Title</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Company" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Company" left="5" width="25" height="25" image="/images/company.png"/>
+		        	    	<Label>Company</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Interests" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+						 	<ImageView text="Interests" left="5" width="25" height="25" image="/images/interests.png"/>
+		        	    	<Label>Interests</Label>
+						</TableViewRow>
+						<TableViewRow text="Education" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Education" left="5" width="25" height="25" image="/images/education.ico"/>
+		        	    	<Label>Education</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Favorite Places" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Favorite Places" left="5" width="25" height="25" image="/images/favorite.png"/>
+		        	    	<Label>Favorite Places</Label>
+					    </TableViewRow>
+					    <TableViewRow left="10" text="Marital Status" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Marital Status" left="5" width="25" height="25" image="/images/marital.png"/>
+		        	    	<Label>Marital Status</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Residence" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Residence" left="5" width="25" height="25" image="/images/residence.png"/>
+		        	    	<Label>Residence</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Gender" left="10" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					     	<ImageView text="Gender" left="5" width="25" height="25" image="/images/gender.png"/>
+		        	    	<Label>Gender</Label>
+					    </TableViewRow>
+					    <TableViewRow text="Custom" left="10" height="Ti.UI.FILL" selectedBackgroundColor="darkgray" color="black" height="50" onClick="updateSearchableText">
+					    	<ImageView text="Custom" left="5" width="25" height="25" image="/images/custom.png"/>
+		        	    	<Label>Custom</Label>
+		        	    	<View left="130dp">
+		        	     	<TextField id="txt_customField" hintText="custom field"  borderColor="darkgray"  visible="false" borderRadius="5dp" />
+		        	     	</View>
+					    </TableViewRow>
+				    </TableViewSection>
 				</TableView>
-				<ImageView id="img_pickerShow"  right="0" top="100dp" bubbleParent="false" onClick="manipulatePicerView"></ImageView>
+				<ImageView id="img_pickerShow" width="50" right="0" top="100dp" bubbleParent="false" onClick="manipulatePicerView"></ImageView>
 			</View>
 		</View>
     
-		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" onSwipe="openPickerViewWithSwipe" >
-			<Label class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
-			<SearchBar id="search" left="0" hintText="find a bofff" showCancel="true" height="43" width="Ti.UI.FILL"  />
-			<ListView id="list_allContacts" left="0" class="list_allContacts" defaultItemTemplate="template1"  onItemclick="showContact" >
+		<View id="view_allContacts" class="view_allContacts" onClick="closeOpenProfile" top="0" backgroundColor="#40bae9" onSwipe="openPickerViewWithSwipe" >
+			<Label backgroundColor="transparent" class="lbl_allContacts" onClick="allContactsFadeOut">all contacts</Label>
+			<Label id="lbl_findBy" onClick="openFieldsPicker" width="0" height="0">Find By\nName</Label>
+			<SearchBar backgroundColor="transparent" id="search" left="0" hintText="find a bofff"  height="43" width="Ti.UI.FILL"  />
+			<View id="view_picker" width="0" height="0" borderColor="green" left="100%">
+	    	<Picker id="picker" top="0" selectionIndicator="true" useSpinner="true" onChange="updateFieldSearch">
+            	<Row title="Name"/>
+            	<Row title="Phone Number"/>
+            	<Row title="E-mail"/>
+            	<Row title="Social Network"/>
+            	<Row title="Job Title"/>
+            	<Row title="Company"/>
+            	<Row title="Interests"/>
+            	<Row title="Education"/>
+            	<Row title="Favorite Places"/>
+            	<Row title="Marital Status"/>
+            	<Row title="Residence"/>
+            	<Row title="Gender"/>
+            	<Row title="Custom"/>
+        	</Picker>
+	    </View>
+			<ListView backgroundColor="#2279bc"  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1"  onItemclick="showContact" >
 	    		<Templates>
-	      			<ItemTemplate  id="template1" name="template1"  class="template1">
+	      			<ItemTemplate id="template1" name="template1"  class="template1">
 	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
 	            		<ImageView id="bofff_pic"  bindId="bofff_pic" class="bofffThumb"/>
 	           		    <Label id="textLabel" bindId="textLabel" class="title"/>
@@ -47,6 +101,7 @@
 	    	    </Templates>
 	    	 </ListView>
 	    </View>
+	    
 	</View>
 </Alloy>
 

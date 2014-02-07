@@ -6,7 +6,7 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId13 = [];
+    var __alloyId57 = [];
     $.__views.win_contactList = Ti.UI.createWindow({
         backgroundColor: "#fff",
         layout: "vertical",
@@ -22,9 +22,10 @@ function Controller() {
     $.__views.tab1 = Ti.UI.createTab({
         icon: "/images/bofffandroid.png",
         window: $.__views.win_contactList,
-        id: "tab1"
+        id: "tab1",
+        title: "Contacts"
     });
-    __alloyId13.push($.__views.tab1);
+    __alloyId57.push($.__views.tab1);
     $.__views.win_addContact = Ti.UI.createWindow({
         backgroundColor: "#fff",
         layout: "vertical",
@@ -37,9 +38,9 @@ function Controller() {
         icon: "KS_nav_views.png",
         id: "tab_addContact"
     });
-    __alloyId13.push($.__views.tab_addContact);
+    __alloyId57.push($.__views.tab_addContact);
     $.__views.index = Ti.UI.createTabGroup({
-        tabs: __alloyId13,
+        tabs: __alloyId57,
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);
@@ -49,13 +50,12 @@ function Controller() {
     var view_bofffContacts = Alloy.createController("bofffsList").getView();
     var view_addContact = Alloy.createController("addContact").getView();
     $.win_addContact.add(view_addContact);
-    var payload = {
+    var allContactsPayload = {
         mainWindow: $,
         view_bofffContacts: view_bofffContacts
     };
-    var view_allContacts = Alloy.createController("allContactsList", payload).getView();
+    var view_allContacts = Alloy.createController("allContactsList", allContactsPayload).getView();
     $.view_container.add(view_allContacts);
-    $.view_container.add(view_bofffContacts);
     _.extend($, exports);
 }
 

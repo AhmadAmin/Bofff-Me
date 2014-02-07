@@ -20,7 +20,7 @@ $.list_bofffContacts.sections=sections;
 
 
 var args=arguments[0] || {};
-//var view_allContacts = args.view_allContacts;
+
 
 // use this when viewing new views to view them with an animation like fadeIn, fadeOut, popIn
 var animation = require('alloy/animation');
@@ -28,12 +28,12 @@ var animation = require('alloy/animation');
 //This happens when the user click on the user clicks on bofff contacts label to open all contacts and fadeout bofff contacts
 function bofffContactsFadeOut(e)
 {
-	animation.fadeOut($.view_bofffContacts, 200);
+	animation.fadeAndRemove($.view_bofffContacts, 200,$.view_bofffContacts);
 }
 
 function openProfile(e)
 {
-	var contact =Ti.Contacts.getPeopleByID(e.itemId);
+	//var contact =Ti.Contacts.getPeopleByID(e.itemId);
 	
     var params ={
     	fname:"Ahmad",

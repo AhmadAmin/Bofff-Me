@@ -13,27 +13,27 @@ function Controller() {
         top: "250"
     });
     $.__views.pickerview && $.addTopLevelView($.__views.pickerview);
-    var __alloyId40 = [];
+    var __alloyId76 = [];
     $.__views.toolbarBtn_cancel = Ti.UI.createButton({
         id: "toolbarBtn_cancel",
         systemButton: Ti.UI.iPhone.SystemButton.CANCEL
     });
-    __alloyId40.push($.__views.toolbarBtn_cancel);
-    $.__views.__alloyId41 = Ti.UI.createButton({
+    __alloyId76.push($.__views.toolbarBtn_cancel);
+    $.__views.__alloyId77 = Ti.UI.createButton({
         systemButton: Ti.UI.iPhone.SystemButton.FLEXIBLE_SPACE
     });
-    __alloyId40.push($.__views.__alloyId41);
+    __alloyId76.push($.__views.__alloyId77);
     $.__views.toolbarBtn_done = Ti.UI.createButton({
         id: "toolbarBtn_done",
         systemButton: Ti.UI.iPhone.SystemButton.DONE
     });
-    __alloyId40.push($.__views.toolbarBtn_done);
-    $.__views.__alloyId38 = Ti.UI.iOS.createToolbar({
-        items: __alloyId40,
+    __alloyId76.push($.__views.toolbarBtn_done);
+    $.__views.__alloyId74 = Ti.UI.iOS.createToolbar({
+        items: __alloyId76,
         top: "0",
-        id: "__alloyId38"
+        id: "__alloyId74"
     });
-    $.__views.pickerview.add($.__views.__alloyId38);
+    $.__views.pickerview.add($.__views.__alloyId74);
     $.__views.picker = Ti.UI.createPicker({
         id: "picker",
         selectionIndicator: "true",

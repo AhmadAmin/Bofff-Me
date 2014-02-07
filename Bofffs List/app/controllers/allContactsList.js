@@ -93,17 +93,30 @@ function sort(a, b) {
     return 0;
 }
 
+function pixelsToDPUnits (pixels) {
+  return (pixels/(Ti.Platform.displayCaps.dpi/160));
+}
+
+var platformWidth=0;
+if(OS_IOS)
+	platformWidth=Ti.Platform.displayCaps.platformWidth;
+else
+	if(OS_ANDROID)
+		platformWidth=pixelsToDPUnits(Ti.Platform.displayCaps.platformWidth);
+
 function showPickerView()
 {
 	if (!pickerIsOpen)
 	{
-		$.search.width=Ti.Platform.displayCaps.platformWidth;
+		$.table.width=platformWidth-100;
+		$.search.width=platformWidth;
+		$.list_allContacts.width= platformWidth;
 		$.search.blur();
 		$.img_pickerShow.image="/images/left arrow.png";
 		pickerIsOpen= true;
-		$.view_contactFieldsPicker.width=Ti.Platform.displayCaps.platformWidth-50;
-		$.view_contactFieldsPicker.animate({left:"0dp", duration:500});
-		$.view_allContacts.animate({left:Ti.Platform.displayCaps.platformWidth-50, duration:500});
+		$.view_contactFieldsPicker.width=platformWidth-50;
+	    $.view_contactFieldsPicker.animate({left:"0dp", duration:500});
+		$.view_allContacts.animate({left:platformWidth-50, duration:500});
 	}
 }
 
@@ -114,7 +127,8 @@ function showPartOfPickerView()
 		$.search.focus();
 	}
 	$.txt_customField.blur();
-	$.search.width=Ti.UI.FILL;
+	$.search.width=platformWidth-50;
+	$.list_allContacts.width= platformWidth;
 	$.img_pickerShow.image="/images/right arrow.png";
 	pickerIsOpen=false;
 	$.view_contactFieldsPicker.animate({left: -$.view_contactFieldsPicker.width+50, duration:500});
@@ -125,6 +139,7 @@ function hidePickerView()
 {
 	$.txt_customField.blur();
 	$.search.width=Ti.UI.FILL;
+	$.list_allContacts.width= platformWidth;
 	pickerIsOpen= false;
 	$.view_contactFieldsPicker.animate({left:-$.view_contactFieldsPicker.width, duration:500});
 	$.view_allContacts.animate({left:'0', duration:500});
@@ -174,10 +189,26 @@ function closePicker(e)
 {
 	hidePickerView();
 }
+
+function openFieldsPicker(e)
+{
+	//$.view_picker.animate({left:'0', duration:500});
+	//$.view_picker.animate({left:0, duration:500});
+	$.view_picker.left=0;
+	$.view_picker.width=Ti.UI.SIZE;
+	$.view_picker.height=Ti.UI.SIZE;
+}
+
+function updateFieldSearch(e)
+{
+	$.lbl_findBy.text="Find By\n"+e.selectedValue[0];
+}
+
 $.search.addEventListener('cancel', function(){
     $.search.blur();
     hidePickerView();
     searchbarIsOnFocus=false;
+    $.search.showCancel="false";
  });
 // for textSearch, use the change event to update the search value
 $.search.addEventListener('change', function(e){
@@ -186,9 +217,20 @@ $.search.addEventListener('change', function(e){
 
 var searchbarIsOnFocus= false;
 $.search.addEventListener('focus', function(e){
-	showPartOfPickerView();
+	//showPartOfPickerView();
+	$.lbl_findBy.width=Ti.UI.SIZE;
+	$.lbl_findBy.height=Ti.UI.SIZE;
 	searchbarIsOnFocus=true;
+	$.search.showCancel="true";
 }); 
+
+$.search.addEventListener('blur', function(e){
+	$.lbl_findBy.width=0;
+	$.lbl_findBy.height=0;
+	$.view_picker.animate({left:'100%', duration:500}, function(){ $.view_picker.width=0;
+	$.view_picker.height=0;});
+	
+});
 
 $.list_allContacts.caseInsensitiveSearch=true;
 $.list_allContacts.keepSectionsInSearch=true;
@@ -218,8 +260,8 @@ function createListView(_data, textToSearchFor)
         	
         }
      	var number=null;
-     	try{number=_data[i].getPhone().mobile[0]; }
-     	catch(error){number='';}
+     	// try{number=_data[i].getPhone().mobile[0]; }
+     	// catch(error){number='';}
      	//Here is the trick when the list is being created we have to make sure that there is a link from every listItem to the
      	//contact that is in that list item this is done by puting a property that is unique for every contact to search
      	//with this unique property the contact that the user clicks and then get that contact from the phonebook
@@ -269,6 +311,7 @@ function createListView(_data, textToSearchFor)
 	            properties : {
 	            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
 	            searchableText: _data[i][textToSearchFor] ,
+	            backgroundColor:"#40bae9",
 	            }
 	            
 	        });
@@ -276,7 +319,9 @@ function createListView(_data, textToSearchFor)
         
        
      }
-      $.list_allContacts.sections=listSections;
+     section.setItems(items);
+     listSections.push(section);
+     $.list_allContacts.sections=listSections;
 
      
 	//TODO: Save this list to open in offline mode
@@ -291,10 +336,13 @@ function createListView(_data, textToSearchFor)
 function updateSearchableText(e)
 {
 	createListView(sortedContacts , "fullName");
-	$.lbl_searchableField.text= e.row.title;
-	if(e.row.title=="Custom")
+	var rowText=e.source.text;
+	$.lbl_searchableField.text= rowText;
+	if(rowText=="Custom")
 	{
 		$.txt_customField.visible=true;
+		$.txt_customField.focus();
+		$.txt_customField.focus();
 		$.txt_customField.addEventListener("change", function(e){
 			$.lbl_searchableField.text="Custom: "+$.txt_customField.value;
 			if ($.txt_customField.value=="")
@@ -306,6 +354,8 @@ function updateSearchableText(e)
 	else
 	{
 		$.txt_customField.visible=false;
+		$.txt_customField.blur();
+		
 	}
 }
 

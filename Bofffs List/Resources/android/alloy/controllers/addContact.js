@@ -200,6 +200,7 @@ function Controller() {
     $.img_profilePicture.addEventListener("click", function() {
         photosOption.show();
     });
+    var ImageFactory = require("ti.imagefactory");
     var photosOption = Ti.UI.createOptionDialog({
         title: "Select ?",
         options: [ "Take Photo", "Choose from Library", "Cancel" ],
@@ -232,11 +233,14 @@ function Controller() {
                 var image = event.media;
                 alert(image.width);
                 alert(image.height);
-                image.width = "50%";
-                image.height = "auto";
-                alert(image.width);
-                alert(image.height);
-                $.img_profilePicture.image = image;
+                var smallImage = ImageFactory.imageAsResized(image, {
+                    width: 500,
+                    height: 500,
+                    quality: ImageFactory.QUALITY_MEDIUM
+                });
+                alert(smallImage.width);
+                alert(smallImage.height);
+                $.img_profilePicture.image = smallImage;
             },
             cancel: function() {},
             error: function() {},

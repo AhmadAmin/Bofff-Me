@@ -1,9 +1,8 @@
 function Controller() {
     function bofffContactsFadeOut() {
-        animation.fadeOut($.view_bofffContacts, 200);
+        animation.fadeAndRemove($.view_bofffContacts, 200, $.view_bofffContacts);
     }
-    function openProfile(e) {
-        Ti.Contacts.getPeopleByID(e.itemId);
+    function openProfile() {
         var params = {
             fname: "Ahmad",
             lname: "Amin",
@@ -38,10 +37,9 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_bofffContacts = Ti.UI.createView({
-        backgroundColor: "#fff",
-        top: 0,
-        height: "100%",
-        width: "100%",
+        backgroundColor: "white",
+        height: Ti.UI.FILL,
+        width: Ti.UI.FILL,
         layout: "vertical",
         id: "view_bofffContacts"
     });
@@ -61,9 +59,9 @@ function Controller() {
     });
     $.__views.view_bofffContacts.add($.__views.lbl_bofffContacts);
     bofffContactsFadeOut ? $.__views.lbl_bofffContacts.addEventListener("click", bofffContactsFadeOut) : __defers["$.__views.lbl_bofffContacts!click!bofffContactsFadeOut"] = true;
-    var __alloyId6 = {};
-    var __alloyId8 = [];
-    var __alloyId9 = {
+    var __alloyId50 = {};
+    var __alloyId52 = [];
+    var __alloyId53 = {
         type: "Ti.UI.ImageView",
         bindId: "pic",
         properties: {
@@ -73,8 +71,8 @@ function Controller() {
             bindId: "pic"
         }
     };
-    __alloyId8.push(__alloyId9);
-    var __alloyId10 = {
+    __alloyId52.push(__alloyId53);
+    var __alloyId54 = {
         type: "Ti.UI.Label",
         bindId: "textLabel",
         properties: {
@@ -91,23 +89,23 @@ function Controller() {
             bindId: "textLabel"
         }
     };
-    __alloyId8.push(__alloyId10);
-    var __alloyId7 = {
+    __alloyId52.push(__alloyId54);
+    var __alloyId51 = {
         properties: {
             height: Ti.UI.SIZE,
             name: "template1"
         },
-        childTemplates: __alloyId8
+        childTemplates: __alloyId52
     };
-    __alloyId6["template1"] = __alloyId7;
+    __alloyId50["template1"] = __alloyId51;
     $.__views.listSection_bofffContacts = Ti.UI.createListSection({
         id: "listSection_bofffContacts"
     });
-    var __alloyId12 = [];
-    __alloyId12.push($.__views.listSection_bofffContacts);
+    var __alloyId56 = [];
+    __alloyId56.push($.__views.listSection_bofffContacts);
     $.__views.list_bofffContacts = Ti.UI.createListView({
-        sections: __alloyId12,
-        templates: __alloyId6,
+        sections: __alloyId56,
+        templates: __alloyId50,
         id: "list_bofffContacts",
         defaultItemTemplate: "template1"
     });
