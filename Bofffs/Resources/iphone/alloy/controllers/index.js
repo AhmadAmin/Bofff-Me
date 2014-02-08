@@ -6,73 +6,22 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId1 = [];
+    var __alloyId7 = [];
     $.__views.boffsList_win = Ti.UI.createWindow({
-        backgroundColor: "#fff",
+        backgroundColor: "lightgray",
         title: "Bofffs List",
-        titleImage: "/images/settings.png",
         id: "boffsList_win"
     });
-    $.__views.__alloyId2 = Ti.UI.createTab({
+    $.__views.__alloyId8 = Ti.UI.createTab({
         window: $.__views.boffsList_win,
         title: "Bofffs List",
         icon: "/images/bofffios.png",
-        id: "__alloyId2"
-    });
-    __alloyId1.push($.__views.__alloyId2);
-    $.__views.__alloyId4 = Ti.UI.createWindow({
-        backgroundColor: "#fff",
-        title: "Bofff Code",
-        id: "__alloyId4"
-    });
-    $.__views.__alloyId5 = Ti.UI.createLabel({
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
-        color: "#000",
-        font: {
-            fontSize: 20,
-            fontFamily: "Helvetica Neue"
-        },
-        textAlign: "center",
-        text: "Bofff Code",
-        id: "__alloyId5"
-    });
-    $.__views.__alloyId4.add($.__views.__alloyId5);
-    $.__views.__alloyId3 = Ti.UI.createTab({
-        window: $.__views.__alloyId4,
-        title: "Bofff Code",
-        icon: "KS_nav_views.png",
-        id: "__alloyId3"
-    });
-    __alloyId1.push($.__views.__alloyId3);
-    $.__views.__alloyId7 = Ti.UI.createWindow({
-        backgroundColor: "#fff",
-        title: "Bofffs News",
-        id: "__alloyId7"
-    });
-    $.__views.__alloyId8 = Ti.UI.createLabel({
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
-        color: "#000",
-        font: {
-            fontSize: 20,
-            fontFamily: "Helvetica Neue"
-        },
-        textAlign: "center",
-        text: "Bofffs News",
         id: "__alloyId8"
     });
-    $.__views.__alloyId7.add($.__views.__alloyId8);
-    $.__views.__alloyId6 = Ti.UI.createTab({
-        window: $.__views.__alloyId7,
-        title: "Bofffs News",
-        icon: "KS_nav_ui.png",
-        id: "__alloyId6"
-    });
-    __alloyId1.push($.__views.__alloyId6);
+    __alloyId7.push($.__views.__alloyId8);
     $.__views.__alloyId10 = Ti.UI.createWindow({
         backgroundColor: "#fff",
-        title: "Bofff Map",
+        title: "Bofff Code",
         id: "__alloyId10"
     });
     $.__views.__alloyId11 = Ti.UI.createLabel({
@@ -84,25 +33,75 @@ function Controller() {
             fontFamily: "Helvetica Neue"
         },
         textAlign: "center",
-        text: "Bofff Map",
+        text: "Bofff Code",
         id: "__alloyId11"
     });
     $.__views.__alloyId10.add($.__views.__alloyId11);
     $.__views.__alloyId9 = Ti.UI.createTab({
         window: $.__views.__alloyId10,
-        title: "Bofff Map",
+        title: "Bofff Code",
         icon: "KS_nav_views.png",
         id: "__alloyId9"
     });
-    __alloyId1.push($.__views.__alloyId9);
+    __alloyId7.push($.__views.__alloyId9);
+    $.__views.__alloyId13 = Ti.UI.createWindow({
+        backgroundColor: "#fff",
+        title: "Bofffs News",
+        id: "__alloyId13"
+    });
+    $.__views.__alloyId14 = Ti.UI.createLabel({
+        width: Ti.UI.SIZE,
+        height: Ti.UI.SIZE,
+        color: "#000",
+        font: {
+            fontSize: 20,
+            fontFamily: "Helvetica Neue"
+        },
+        textAlign: "center",
+        text: "Bofffs News",
+        id: "__alloyId14"
+    });
+    $.__views.__alloyId13.add($.__views.__alloyId14);
+    $.__views.__alloyId12 = Ti.UI.createTab({
+        window: $.__views.__alloyId13,
+        title: "Bofffs News",
+        icon: "KS_nav_ui.png",
+        id: "__alloyId12"
+    });
+    __alloyId7.push($.__views.__alloyId12);
+    $.__views.__alloyId16 = Ti.UI.createWindow({
+        backgroundColor: "#fff",
+        title: "Bofff Map",
+        id: "__alloyId16"
+    });
+    $.__views.__alloyId17 = Ti.UI.createLabel({
+        width: Ti.UI.SIZE,
+        height: Ti.UI.SIZE,
+        color: "#000",
+        font: {
+            fontSize: 20,
+            fontFamily: "Helvetica Neue"
+        },
+        textAlign: "center",
+        text: "Bofff Map",
+        id: "__alloyId17"
+    });
+    $.__views.__alloyId16.add($.__views.__alloyId17);
+    $.__views.__alloyId15 = Ti.UI.createTab({
+        window: $.__views.__alloyId16,
+        title: "Bofff Map",
+        icon: "KS_nav_views.png",
+        id: "__alloyId15"
+    });
+    __alloyId7.push($.__views.__alloyId15);
     $.__views.index = Ti.UI.createTabGroup({
-        tabs: __alloyId1,
+        tabs: __alloyId7,
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    $.boffsList_win.add(Alloy.createController("bofffsListWindow").getView());
+    $.boffsList_win.add(Alloy.createController("contacts").getView());
     $.index.open();
     _.extend($, exports);
 }

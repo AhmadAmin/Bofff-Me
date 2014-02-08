@@ -1,22 +1,26 @@
 function Controller() {
+    function goToAllContacts() {
+        mainView.scrollToView(0);
+    }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
-    this.__controllerPath = "bofffsListWindow";
+    this.__controllerPath = "bofffsContacts";
     arguments[0] ? arguments[0]["__parentSymbol"] : null;
     arguments[0] ? arguments[0]["$model"] : null;
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
+    var __defers = {};
     $.__views.view_container = Ti.UI.createView({
         backgroundColor: "lightgray",
         id: "view_container"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
-    $.__views.view_contacts = Ti.UI.createView({
+    $.__views.view_bofffsContacts = Ti.UI.createView({
         backgroundColor: "transparent",
         layout: "vertical",
-        id: "view_contacts"
+        id: "view_bofffsContacts"
     });
-    $.__views.view_container.add($.__views.view_contacts);
+    $.__views.view_container.add($.__views.view_bofffsContacts);
     $.__views.lb_contactsType = Ti.UI.createLabel({
         color: "blue",
         font: {
@@ -24,13 +28,16 @@ function Controller() {
             fontFamily: "Helvetica Neue"
         },
         left: 5,
-        text: "All Contacts",
+        text: "Bofffs Contacts",
         id: "lb_contactsType"
     });
-    $.__views.view_contacts.add($.__views.lb_contactsType);
+    $.__views.view_bofffsContacts.add($.__views.lb_contactsType);
+    goToAllContacts ? $.__views.lb_contactsType.addEventListener("click", goToAllContacts) : __defers["$.__views.lb_contactsType!click!goToAllContacts"] = true;
     exports.destroy = function() {};
     _.extend($, $.__views);
-    arguments[0] || {};
+    var args = arguments[0] || {};
+    var mainView = args.mainView;
+    __defers["$.__views.lb_contactsType!click!goToAllContacts"] && $.__views.lb_contactsType.addEventListener("click", goToAllContacts);
     _.extend($, exports);
 }
 

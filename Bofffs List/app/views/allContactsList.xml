@@ -91,7 +91,7 @@
             	<Row title="Custom"/>
         	</Picker>
 	    </View>
-			<ListView backgroundColor="#2279bc"  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1"  onItemclick="showContact" >
+			<ListView backgroundColor="transparent"  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1"  onItemclick="showContact" >
 	    		<Templates>
 	      			<ItemTemplate id="template1" name="template1"  class="template1">
 	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>

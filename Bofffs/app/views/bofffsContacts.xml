@@ -1,0 +1,7 @@
+<Alloy>
+	<View id="view_container" class="container">
+		<View id="view_bofffsContacts" class="view_bofffsContacts">
+			<Label id="lb_contactsType" onClick="goToAllContacts">Bofffs Contacts</Label>
+		</View>
+	</View>
+</Alloy>

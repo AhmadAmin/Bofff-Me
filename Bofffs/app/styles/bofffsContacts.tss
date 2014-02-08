@@ -1,0 +1,26 @@
+
+".container" : {
+  backgroundColor:"lightgray",
+}
+
+".view_bofffsContacts":{
+	backgroundColor:"transparent",
+	layout:"vertical",
+}
+
+"Label":{
+	color:"black",
+	font: {
+		fontSize: "20dp",
+		fontFamily: 'Helvetica Neue'
+	},
+	left:5,
+}
+
+"#lb_contactsType":{
+	color:"blue",
+	font: {
+		fontSize: "15dp",
+		fontFamily: 'Helvetica Neue'
+	},
+}

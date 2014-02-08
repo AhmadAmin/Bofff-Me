@@ -1,0 +1,3 @@
+<Alloy>
+	<ScrollableView showPagingControl="true" id="scrollableview_mainContactsView"/>
+</Alloy>

@@ -1,2 +1,2 @@
-$.boffsList_win.add(Alloy.createController("bofffsListWindow").getView());
+$.boffsList_win.add(Alloy.createController("contacts").getView());
 $.index.open();

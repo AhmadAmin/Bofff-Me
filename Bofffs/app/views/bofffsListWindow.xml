@@ -1,5 +1,0 @@
-<Alloy>
-	<View id="container_view" class="container">
-		<Label>Contacts View</Label>
-	</View>
-</Alloy>
