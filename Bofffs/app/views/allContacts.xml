@@ -1,10 +1,10 @@
 <Alloy>
 	<View id="view_container" class="container">
 		<View id="view_contacts" class="view_contacts">
-			<Label id="lb_contactsType" onClick="goToBoffsContacts">All Contacts</Label>
+			<Label id="lb_contactsType" onClick="goToBoffsContacts">all contacts</Label>
 			<Label id="lbl_findBy"  width="0" height="0">Find By\nName</Label>
 			<SearchBar backgroundColor="transparent" id="search" left="0" hintText="find a bofff"  height="43" width="Ti.UI.FILL"  />
-			<ListView  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1"   >
+			<ListView  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1" onItemclick="showContact"  >
 	    		<Templates>
 	      			<ItemTemplate id="template1" name="template1"  class="template1">
 	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>

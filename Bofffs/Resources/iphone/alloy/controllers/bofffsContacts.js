@@ -28,7 +28,7 @@ function Controller() {
             fontFamily: "Helvetica Neue"
         },
         left: 5,
-        text: "Bofffs Contacts",
+        text: "my bofffs",
         id: "lb_contactsType"
     });
     $.__views.view_bofffsContacts.add($.__views.lb_contactsType);

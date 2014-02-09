@@ -1,0 +1,9 @@
+<Alloy>
+	<Window id="win_contactInfo" title="Contact Info" backgroundColor="white">
+		<ScrollView class="container" id ="view_container">
+			<ImageView class="img_contactImage" id="img_contactImage" onClick="enlargeImage"/>
+			<View class="view_dynamicLabels" id="view_dynamicLabels"/>
+				<AlertDialog id="dialog" onClick="dialog_Click" title="Confirm"/>
+		</ScrollView>
+	</Window>
+</Alloy>

@@ -1,0 +1,21 @@
+
+".container" : {
+  layout:"vertical",
+}
+
+"Label":{
+	left:10,
+	width:Ti.UI.SIZE,
+	height:Ti.UI.SIZE,
+	font:{fontSize:"20dp"},
+	color:"black",
+}
+
+".img_contactImage":{
+	left:10,
+	top:'30',
+}
+
+".view_dynamicLabels":{
+	layout: "vertical",
+}

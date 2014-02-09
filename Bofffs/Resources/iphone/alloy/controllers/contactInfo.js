@@ -1,7 +1,4 @@
 function Controller() {
-    function close() {
-        close();
-    }
     function importImage() {
         $.img_contactImage.image = contact.getImage();
         if (null == $.img_contactImage.image) {
@@ -74,76 +71,36 @@ function Controller() {
         Ti.Platform.openURL("tel:" + e);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
-    this.__controllerPath = "normalContactProfile";
+    this.__controllerPath = "contactInfo";
     arguments[0] ? arguments[0]["__parentSymbol"] : null;
     arguments[0] ? arguments[0]["$model"] : null;
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
     var __defers = {};
-    $.__views.view_container = Ti.UI.createView({
-        backgroundColor: "#CEECF5",
+    $.__views.win_contactInfo = Ti.UI.createWindow({
+        id: "win_contactInfo",
+        title: "Contact Info",
+        backgroundColor: "white"
+    });
+    $.__views.win_contactInfo && $.addTopLevelView($.__views.win_contactInfo);
+    $.__views.view_container = Ti.UI.createScrollView({
         layout: "vertical",
-        borderRadius: "10",
-        borderColor: "black",
-        width: "90%",
-        height: "70%",
-        opacity: "0",
         id: "view_container"
     });
-    $.__views.view_container && $.addTopLevelView($.__views.view_container);
-    $.__views.__alloyId73 = Ti.UI.createView({
-        backgroundColor: "#2279bc",
-        top: 0,
-        width: "100%",
-        height: Ti.UI.SIZE,
-        id: "__alloyId73"
-    });
-    $.__views.view_container.add($.__views.__alloyId73);
-    $.__views.lbl_contactName = Ti.UI.createLabel({
-        color: "black",
-        left: "10",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
-        font: {
-            fontSize: "20dp"
-        },
-        id: "lbl_contactName"
-    });
-    $.__views.__alloyId73.add($.__views.lbl_contactName);
-    $.__views.__alloyId74 = Ti.UI.createImageView({
-        image: "/images/close-icon.png",
-        right: "10",
-        height: "40",
-        width: "40",
-        id: "__alloyId74"
-    });
-    $.__views.__alloyId73.add($.__views.__alloyId74);
-    close ? $.__views.__alloyId74.addEventListener("click", close) : __defers["$.__views.__alloyId74!click!close"] = true;
-    $.__views.view_contactInfo = Ti.UI.createScrollView({
-        backgroundColor: "transparent",
-        layout: "vertical",
-        showVerticalScrollIndicator: true,
-        id: "view_contactInfo"
-    });
-    $.__views.view_container.add($.__views.view_contactInfo);
+    $.__views.win_contactInfo.add($.__views.view_container);
     $.__views.img_contactImage = Ti.UI.createImageView({
         left: 10,
         top: "30",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
         id: "img_contactImage"
     });
-    $.__views.view_contactInfo.add($.__views.img_contactImage);
+    $.__views.view_container.add($.__views.img_contactImage);
     enlargeImage ? $.__views.img_contactImage.addEventListener("click", enlargeImage) : __defers["$.__views.img_contactImage!click!enlargeImage"] = true;
     $.__views.view_dynamicLabels = Ti.UI.createView({
-        backgroundColor: "transparent",
         layout: "vertical",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
         id: "view_dynamicLabels"
     });
-    $.__views.view_contactInfo.add($.__views.view_dynamicLabels);
+    $.__views.view_container.add($.__views.view_dynamicLabels);
     $.__views.dialog = Ti.UI.createAlertDialog({
         id: "dialog",
         title: "Confirm"
@@ -153,15 +110,19 @@ function Controller() {
     _.extend($, $.__views);
     var args = arguments[0] || {};
     var contact = args.contact;
-    var close = args.close;
+    var prevButton = Titanium.UI.createButton({
+        title: "Back"
+    });
+    prevButton.addEventListener("click", function() {
+        $.win_contactInfo.close();
+    });
+    $.win_contactInfo.leftNavButton = prevButton;
+    $.win_contactInfo.title = contact.getFullName();
     var inviteOrCall;
     var numberToCall;
-    $.lbl_contactName.text = contact.getFullName();
     importImage();
     importNumbers();
     var imageEnlarged = false;
-    require("bencoding.sms").createSMSDialog();
-    __defers["$.__views.__alloyId74!click!close"] && $.__views.__alloyId74.addEventListener("click", close);
     __defers["$.__views.img_contactImage!click!enlargeImage"] && $.__views.img_contactImage.addEventListener("click", enlargeImage);
     __defers["$.__views.dialog!click!dialog_Click"] && $.__views.dialog.addEventListener("click", dialog_Click);
     _.extend($, exports);

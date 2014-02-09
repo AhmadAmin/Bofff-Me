@@ -874,7 +874,7 @@ function Controller() {
     $.__views.list_allContacts = Ti.UI.createListView({
         width: "100%",
         templates: __alloyId58,
-        backgroundColor: "#2279bc",
+        backgroundColor: "transparent",
         id: "list_allContacts",
         left: "0",
         defaultItemTemplate: "template1"

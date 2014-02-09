@@ -51,13 +51,20 @@ function Controller() {
                 properties: {
                     itemId: contactId,
                     searchableText: _data[i][textToSearchFor],
-                    backgroundColor: "yellow"
+                    backgroundColor: "transparent"
                 }
             });
         }
         section.setItems(items);
         listSections.push(section);
         $.list_allContacts.sections = listSections;
+    }
+    function showContact(e) {
+        contact = Ti.Contacts.getPersonByID(e.itemId);
+        var params = {
+            contact: contact
+        };
+        Ti.App.bofffsListTab.open(Alloy.createController("contactInfo", params).getView());
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "allContacts";
@@ -88,7 +95,7 @@ function Controller() {
         width: Ti.UI.SIZE,
         height: "30dp",
         textAlign: "center",
-        text: "All Contacts",
+        text: "all contacts",
         id: "lb_contactsType"
     });
     $.__views.view_contacts.add($.__views.lb_contactsType);
@@ -170,6 +177,7 @@ function Controller() {
         defaultItemTemplate: "template1"
     });
     $.__views.view_contacts.add($.__views.list_allContacts);
+    showContact ? $.__views.list_allContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_allContacts!itemclick!showContact"] = true;
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
@@ -186,6 +194,7 @@ function Controller() {
         createListView(sortedContacts, "fullName");
     });
     __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
+    __defers["$.__views.list_allContacts!itemclick!showContact"] && $.__views.list_allContacts.addEventListener("itemclick", showContact);
     _.extend($, exports);
 }
 

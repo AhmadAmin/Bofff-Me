@@ -159,3 +159,17 @@ function createListView(_data, textToSearchFor)
 	var test =Titanium.App.Properties.getString('propertyList');
 	var your_object = JSON.parse(test);*/ 
 }
+
+function showContact(e)
+{
+	//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
+	//is saved the actual contact id of this user
+	contact =Ti.Contacts.getPersonByID(e.itemId);
+	//Here is to initialize a view that will contain the data of the user
+	//I had to initialize the controller by itself first to access the interface objects within this view
+	var params=
+	{
+		contact: contact,
+	};
+	Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
+}
