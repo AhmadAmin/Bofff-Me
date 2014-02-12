@@ -20,5 +20,6 @@
 				</Templates>
 			</ListView>
 		</View>
+		<Require id="view_customField" src="view_customField" type="view"/>
 	</View>
 </Alloy>

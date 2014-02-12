@@ -146,6 +146,27 @@ $.picker_searchBy.picker.addEventListener("change", function(e)
 	{
 		$.lbl_searchField.text= e.selectedValue[0];
 	}
+	// if the user chooses custom, a view appears to type in the custom field he wants to search with
+	if(e.selectedValue[0]=="Custom")
+	{
+		$.view_customField.view_customField.width='90%';
+		$.view_customField.view_customField.height='40%';
+		animation.popIn($.view_customField.view_customField);
+	}
+});
+
+$.view_customField.img_closeCustomView.addEventListener("click", function(e)
+{
+	animation.fadeOut($.view_customField.view_customField,200, function(){
+		$.view_customField.view_customField.width=0;
+		$.view_customField.view_customField.height=0;
+		$.lbl_searchField.text=$.view_customField.txt_customField.value;
+		if($.lbl_searchField.text=="")
+		{
+			$.lbl_searchField.text="Custom";
+		}
+		$.view_customField.txt_customField.blur();
+	});
 });
 
 //Here is to put the contacts in a list

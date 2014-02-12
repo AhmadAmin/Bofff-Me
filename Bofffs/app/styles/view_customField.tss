@@ -1,0 +1,24 @@
+".view_customField":{
+	backgroundColor: "#CEECF5",
+	layout: "vertical",
+	borderRadius :'10',
+	borderColor:"black",
+	width: '0',
+	height: '0',
+}
+".view_header":{
+	backgroundColor: "#2279bc",
+	top:0,
+	width: "100%",
+	height: Ti.UI.SIZE,	
+}
+"Label":{
+	color:"black",
+}
+
+".lbl_customField":{
+	left:10,
+	width:Ti.UI.SIZE,
+	height:Ti.UI.SIZE,
+	font:{fontSize:"20dp"},
+}

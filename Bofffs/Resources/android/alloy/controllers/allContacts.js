@@ -18,7 +18,7 @@ function Controller() {
         return 0;
     }
     function initializeSearch() {
-        if (firstFocus) {
+        if (firstFocus && true) {
             firstFocus = false;
             $.search.blur();
         } else {
@@ -49,14 +49,15 @@ function Controller() {
         $.search.show();
     }
     function openSearchPicker() {
-        if (pickerVisible) {
+        if (pickerVisible) animation.fadeOut($.picker_searchBy.view_picker, 500, function() {
             $.picker_searchBy.view_picker.width = 0;
             $.picker_searchBy.view_picker.height = 0;
             pickerVisible = false;
             $.search.focus();
-        } else {
+        }); else {
             $.picker_searchBy.view_picker.width = Ti.UI.SIZE;
-            $.picker_searchBy.view_picker.height = Ti.UI.SIZE;
+            $.picker_searchBy.view_picker.height = Ti.UI.FILL;
+            animation.popIn($.picker_searchBy.view_picker);
             pickerVisible = true;
             $.search.blur();
         }
@@ -120,7 +121,7 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_container = Ti.UI.createView({
-        backgroundColor: "lightgray",
+        backgroundColor: "white",
         id: "view_container"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
@@ -239,6 +240,11 @@ function Controller() {
     });
     $.__views.view_contacts.add($.__views.list_allContacts);
     showContact ? $.__views.list_allContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_allContacts!itemclick!showContact"] = true;
+    $.__views.view_customField = Alloy.createController("view_customField", {
+        id: "view_customField",
+        __parentSymbol: $.__views.view_container
+    });
+    $.__views.view_customField.setParent($.__views.view_container);
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
@@ -259,7 +265,23 @@ function Controller() {
     $.list_allContacts.caseInsensitiveSearch = true;
     $.list_allContacts.keepSectionsInSearch = true;
     var pickerVisible = false;
-    $.picker_searchBy.picker.addEventListener("change", function(e) {});
+    var animation = require("alloy/animation");
+    $.picker_searchBy.picker.addEventListener("change", function(e) {
+        if ("Custom" == e.selectedValue[0]) {
+            $.view_customField.view_customField.width = "90%";
+            $.view_customField.view_customField.height = "40%";
+            animation.popIn($.view_customField.view_customField);
+        }
+    });
+    $.view_customField.img_closeCustomView.addEventListener("click", function() {
+        animation.fadeOut($.view_customField.view_customField, 200, function() {
+            $.view_customField.view_customField.width = 0;
+            $.view_customField.view_customField.height = 0;
+            $.lbl_searchField.text = $.view_customField.txt_customField.value;
+            "" == $.lbl_searchField.text && ($.lbl_searchField.text = "Custom");
+            $.view_customField.txt_customField.blur();
+        });
+    });
     __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);

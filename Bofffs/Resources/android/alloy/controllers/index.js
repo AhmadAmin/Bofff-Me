@@ -8,7 +8,7 @@ function Controller() {
     var exports = {};
     var __alloyId7 = [];
     $.__views.win_boffsList = Ti.UI.createWindow({
-        backgroundColor: "lightgray",
+        backgroundColor: "white",
         title: "Bofffs List",
         id: "win_boffsList"
     });

@@ -3,17 +3,17 @@
 		<Tab title="Bofffs List" id="tab_boffsList" icon="/images/bofffios.png">
 			<Window title="Bofffs List" backgroundColor="white" id="win_boffsList"/>
 		</Tab>
-		<Tab title="Bofff Code" icon="KS_nav_views.png">
+		<Tab title="Bofff Code" icon="/images/QRscannerios.png">
 			<Window title="Bofff Code">
 				<Label>Bofff Code</Label>
 			</Window>
 		</Tab>
-		<Tab title="Bofffs News" icon="KS_nav_ui.png">
+		<Tab title="Bofffs News" icon="/images/notificationsios.png">
 			<Window title="Bofffs News">
 				<Label>Bofffs News</Label>
 			</Window>
 		</Tab>
-		<Tab title="Bofff Map" icon="KS_nav_views.png">
+		<Tab title="Bofff Map" icon="/images/mapsios.png">
 			<Window title="Bofff Map">
 				<Label>Bofff Map</Label>
 			</Window>

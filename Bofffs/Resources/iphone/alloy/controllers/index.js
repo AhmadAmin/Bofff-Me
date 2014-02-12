@@ -40,7 +40,7 @@ function Controller() {
     $.__views.__alloyId8 = Ti.UI.createTab({
         window: $.__views.__alloyId9,
         title: "Bofff Code",
-        icon: "KS_nav_views.png",
+        icon: "/images/QRscannerios.png",
         id: "__alloyId8"
     });
     __alloyId7.push($.__views.__alloyId8);
@@ -65,7 +65,7 @@ function Controller() {
     $.__views.__alloyId11 = Ti.UI.createTab({
         window: $.__views.__alloyId12,
         title: "Bofffs News",
-        icon: "KS_nav_ui.png",
+        icon: "/images/notificationsios.png",
         id: "__alloyId11"
     });
     __alloyId7.push($.__views.__alloyId11);
@@ -90,7 +90,7 @@ function Controller() {
     $.__views.__alloyId14 = Ti.UI.createTab({
         window: $.__views.__alloyId15,
         title: "Bofff Map",
-        icon: "KS_nav_views.png",
+        icon: "/images/mapsios.png",
         id: "__alloyId14"
     });
     __alloyId7.push($.__views.__alloyId14);

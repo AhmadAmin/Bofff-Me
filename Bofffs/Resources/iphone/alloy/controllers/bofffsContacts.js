@@ -24,10 +24,13 @@ function Controller() {
     $.__views.lb_contactsType = Ti.UI.createLabel({
         color: "blue",
         font: {
-            fontSize: "15dp",
+            fontSize: "20dp",
             fontFamily: "Helvetica Neue"
         },
-        left: 5,
+        left: "5dp",
+        width: Ti.UI.SIZE,
+        height: "30dp",
+        textAlign: "center",
         text: "my bofffs",
         id: "lb_contactsType"
     });

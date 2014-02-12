@@ -18,9 +18,13 @@
 }
 
 "#lb_contactsType":{
-	color:"blue",
+	width: Ti.UI.SIZE,
+	height: '30dp',
+	color: "blue",
 	font: {
-		fontSize: "15dp",
+		fontSize: "20dp",
 		fontFamily: 'Helvetica Neue'
 	},
+	textAlign: 'center',
+	left:'5dp',
 }

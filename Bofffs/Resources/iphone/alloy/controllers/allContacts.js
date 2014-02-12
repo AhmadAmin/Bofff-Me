@@ -251,6 +251,11 @@ function Controller() {
     });
     $.__views.view_contacts.add($.__views.list_allContacts);
     showContact ? $.__views.list_allContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_allContacts!itemclick!showContact"] = true;
+    $.__views.view_customField = Alloy.createController("view_customField", {
+        id: "view_customField",
+        __parentSymbol: $.__views.view_container
+    });
+    $.__views.view_customField.setParent($.__views.view_container);
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
@@ -274,6 +279,20 @@ function Controller() {
     var animation = require("alloy/animation");
     $.picker_searchBy.picker.addEventListener("change", function(e) {
         $.lbl_searchField.text = e.selectedValue[0];
+        if ("Custom" == e.selectedValue[0]) {
+            $.view_customField.view_customField.width = "90%";
+            $.view_customField.view_customField.height = "40%";
+            animation.popIn($.view_customField.view_customField);
+        }
+    });
+    $.view_customField.img_closeCustomView.addEventListener("click", function() {
+        animation.fadeOut($.view_customField.view_customField, 200, function() {
+            $.view_customField.view_customField.width = 0;
+            $.view_customField.view_customField.height = 0;
+            $.lbl_searchField.text = $.view_customField.txt_customField.value;
+            "" == $.lbl_searchField.text && ($.lbl_searchField.text = "Custom");
+            $.view_customField.txt_customField.blur();
+        });
     });
     __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);

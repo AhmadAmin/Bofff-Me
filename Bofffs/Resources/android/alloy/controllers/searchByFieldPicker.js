@@ -9,7 +9,8 @@ function Controller() {
     $.__views.view_picker = Ti.UI.createView({
         id: "view_picker",
         width: "0",
-        height: "0"
+        height: "0",
+        backgroundColor: "white"
     });
     $.__views.view_picker && $.addTopLevelView($.__views.view_picker);
     $.__views.picker = Ti.UI.createPicker({
