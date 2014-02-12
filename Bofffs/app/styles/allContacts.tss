@@ -1,8 +1,7 @@
 
-".container" : {
-  backgroundColor:"lightgray",
-  
-}
+".container": {
+ 	backgroundColor:"white",
+ }
 
 ".view_contacts":{
 	backgroundColor:"transparent",
@@ -17,6 +16,7 @@
 	},
 	left:5,
 }
+
 
 "#lb_contactsType":{
 	width: Ti.UI.SIZE,

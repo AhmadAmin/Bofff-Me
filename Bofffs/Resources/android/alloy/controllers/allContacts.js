@@ -18,7 +18,7 @@ function Controller() {
         return 0;
     }
     function initializeSearch() {
-        if (firstFocus && false) {
+        if (firstFocus) {
             firstFocus = false;
             $.search.blur();
         } else {
@@ -44,17 +44,19 @@ function Controller() {
             $.view_search.width = 0;
             $.view_search.height = 0;
         }
+        $.search.value = "";
+        $.search.hide();
+        $.search.show();
     }
     function openSearchPicker() {
-        if (pickerVisible) animation.fadeOut($.picker_searchBy.view_picker, 500, function() {
+        if (pickerVisible) {
             $.picker_searchBy.view_picker.width = 0;
             $.picker_searchBy.view_picker.height = 0;
             pickerVisible = false;
             $.search.focus();
-        }); else {
+        } else {
             $.picker_searchBy.view_picker.width = Ti.UI.SIZE;
-            $.picker_searchBy.view_picker.height = Ti.UI.FILL;
-            animation.popIn($.picker_searchBy.view_picker);
+            $.picker_searchBy.view_picker.height = Ti.UI.SIZE;
             pickerVisible = true;
             $.search.blur();
         }
@@ -78,7 +80,7 @@ function Controller() {
                 items = [];
             }
             var contactId;
-            contactId = _data[i].recordId;
+            contactId = _data[i].id;
             items.push({
                 template: "template1",
                 textLabel: {
@@ -118,7 +120,7 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_container = Ti.UI.createView({
-        backgroundColor: "white",
+        backgroundColor: "lightgray",
         id: "view_container"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
@@ -163,25 +165,11 @@ function Controller() {
         height: Ti.UI.SIZE
     });
     $.__views.view_search.add($.__views.lbl_findBy);
-    $.__views.lbl_searchField = Ti.UI.createLabel({
-        color: "black",
-        font: {
-            fontSize: "20dp",
-            fontFamily: "Helvetica Neue"
-        },
-        left: "10",
-        text: "Name",
-        id: "lbl_searchField",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE
-    });
-    $.__views.view_search.add($.__views.lbl_searchField);
-    openSearchPicker ? $.__views.lbl_searchField.addEventListener("click", openSearchPicker) : __defers["$.__views.lbl_searchField!click!openSearchPicker"] = true;
     $.__views.picker_searchBy = Alloy.createController("searchByFieldPicker", {
         id: "picker_searchBy",
-        __parentSymbol: $.__views.view_contacts
+        __parentSymbol: $.__views.view_search
     });
-    $.__views.picker_searchBy.setParent($.__views.view_contacts);
+    $.__views.picker_searchBy.setParent($.__views.view_search);
     $.__views.search = Ti.UI.createSearchBar({
         backgroundColor: "transparent",
         id: "search",
@@ -236,7 +224,7 @@ function Controller() {
     __alloyId2.push(__alloyId5);
     var __alloyId1 = {
         properties: {
-            height: "56dp",
+            height: Ti.UI.SIZE,
             name: "template1"
         },
         childTemplates: __alloyId2
@@ -271,10 +259,7 @@ function Controller() {
     $.list_allContacts.caseInsensitiveSearch = true;
     $.list_allContacts.keepSectionsInSearch = true;
     var pickerVisible = false;
-    var animation = require("alloy/animation");
-    $.picker_searchBy.picker.addEventListener("change", function(e) {
-        $.lbl_searchField.text = e.selectedValue[0];
-    });
+    $.picker_searchBy.picker.addEventListener("change", function(e) {});
     __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);

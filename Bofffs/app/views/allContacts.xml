@@ -2,17 +2,23 @@
 	<View id="view_container" class="container">
 		<View id="view_contacts" class="view_contacts">
 			<Label id="lb_contactsType" onClick="goToBoffsContacts">all contacts</Label>
-			<Label id="lbl_findBy"  width="0" height="0">Find By\nName</Label>
-			<SearchBar backgroundColor="transparent" id="search" left="0" hintText="find a bofff"  height="43" width="Ti.UI.FILL"  />
+			<View id="view_search" layout="horizontal" width="0" height="0">
+				<Label left="10" id="lbl_findBy"  width="Ti.UI.SIZE" height="Ti.UI.SIZE">Find By</Label>
+				<Label platform="ios" left="10" id="lbl_searchField" width="Ti.UI.SIZE" height="Ti.UI.SIZE" onClick="openSearchPicker">Name</Label>
+				<Require platform="android" id="picker_searchBy"  src="searchByFieldPicker" type="view"/>
+			</View>
+			<Require platform="ios"  id="picker_searchBy"  src="searchByFieldPicker" type="view" />
+			<SearchBar  backgroundColor="transparent" id="search" left="0" height="43" width="Ti.UI.FILL" hintText="find a bofff" onFocus="initializeSearch"
+			onCancel="cancelSearch" onChange="updateSearch" onBlur="stopSearch" />
 			<ListView  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1" onItemclick="showContact"  >
-	    		<Templates>
-	      			<ItemTemplate id="template1" name="template1"  class="template1">
-	            		<ImageView id="pic"  bindId="pic" class="imageThumb"/>
-	            		<ImageView id="bofff_pic"  bindId="bofff_pic" class="bofffThumb"/>
-	           		    <Label id="textLabel" bindId="textLabel" class="title"/>
-	          		</ItemTemplate>
-	    	    </Templates>
-	    	 </ListView>
+				<Templates>
+					<ItemTemplate id="template1" name="template1"  class="template1">
+						<ImageView id="pic"  bindId="pic" class="imageThumb"/>
+						<ImageView id="bofff_pic"  bindId="bofff_pic" class="bofffThumb"/>
+						<Label id="textLabel" bindId="textLabel" class="title"/>
+					</ItemTemplate>
+				</Templates>
+			</ListView>
 		</View>
 	</View>
 </Alloy>

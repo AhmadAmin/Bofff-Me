@@ -16,11 +16,11 @@ function Controller() {
                 }).show();
             }
         });
-        xhr.open("POST", url + "send_invite_msg/");
-        ({
+        xhr.open("POST", url + "insert/eslam/user_accounts");
+        var params = {
             fname: $.txt_firstName.value,
             lname: $.txt_lastName.value,
-            phone_number: $.txt_phoneNumber.value,
+            phone_numbers: $.txt_phoneNumber.value,
             mails: $.txt_mails.value,
             social_links: $.txt_socialLinks.value,
             profile_picture: $.img_profilePicture.image,
@@ -28,12 +28,12 @@ function Controller() {
             mails_privacy: $.txt_mailsPrivacy.value,
             social_links_privacy: $.txt_profilePicturePrivacy.value,
             profile_picture_privacy: $.txt_socialLinksPrivacy.value
-        });
-        var msgParams = {
+        };
+        ({
             mobile: "201151162280",
             message: $.txt_firstName.value + " " + $.txt_lastName.value + " has just joined bofff me and he can't wait untill you become a bofff too join him and download the app at: http://www.bofffme.com"
-        };
-        xhr.send(msgParams);
+        });
+        xhr.send(params);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "addContact";

@@ -1,6 +1,5 @@
 var args = arguments[0] || {};
 var mainView=args.mainView;
-
 function goToBoffsContacts(e)
 {
 	mainView.scrollToView(1);
@@ -64,6 +63,90 @@ function sort(a, b) {
     }
     return 0;
 }
+
+var searchbarIsOnFocus= false;
+var firstFocus=true;
+//on searchbar focus
+function initializeSearch(e)
+{
+	if(firstFocus && OS_ANDROID)
+	{
+		firstFocus=false;
+		$.search.blur();
+	}
+	else
+	{
+		$.view_search.width=Ti.UI.SIZE;
+		$.view_search.height=Ti.UI.SIZE;
+		searchbarIsOnFocus=true;
+		$.search.showCancel="true";
+	}
+}
+//on searchbar cancel
+function cancelSearch(e)
+{
+	$.search.blur();
+	$.search.value="";
+	$.list_allContacts.searchText="";
+    searchbarIsOnFocus=false;
+    $.search.showCancel="false";
+}
+//on searchbar change
+function updateSearch(e)
+{
+	$.list_allContacts.searchText = e.value;
+}
+//on searchbar blur
+function stopSearch(e)
+{
+	$.search.showCancel="false";
+	if(!pickerVisible)
+	{
+		$.view_search.width=0;
+		$.view_search.height=0;
+	}
+	if (OS_ANDROID)
+	{
+		$.search.value="";
+		$.search.hide();
+		$.search.show();
+	}
+}
+$.list_allContacts.caseInsensitiveSearch=true;
+$.list_allContacts.keepSectionsInSearch=true;
+
+var pickerVisible=false;
+var animation = require('alloy/animation');
+//on click on the search field label to open picker or close picker
+function openSearchPicker(e)
+{
+	if(pickerVisible)
+	{
+		animation.fadeOut($.picker_searchBy.view_picker, 500, function(){
+			$.picker_searchBy.view_picker.width=0;
+			$.picker_searchBy.view_picker.height=0;
+			pickerVisible=false;
+			$.search.focus();	
+		});
+	}
+	else
+	{
+		$.picker_searchBy.view_picker.width=Ti.UI.SIZE;
+		$.picker_searchBy.view_picker.height=Ti.UI.FILL;
+		animation.popIn($.picker_searchBy.view_picker);
+		pickerVisible=true;
+		$.search.blur();
+	}
+}
+
+//on selection of picker change update the search process
+$.picker_searchBy.picker.addEventListener("change", function(e)
+{
+	if(OS_IOS)
+	{
+		$.lbl_searchField.text= e.selectedValue[0];
+	}
+});
 
 //Here is to put the contacts in a list
 function createListView(_data, textToSearchFor)
@@ -162,6 +245,7 @@ function createListView(_data, textToSearchFor)
 
 function showContact(e)
 {
+	$.search.blur();
 	//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 	//is saved the actual contact id of this user
 	contact =Ti.Contacts.getPersonByID(e.itemId);

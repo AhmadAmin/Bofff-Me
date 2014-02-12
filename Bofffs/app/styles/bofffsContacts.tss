@@ -1,6 +1,6 @@
 
 ".container" : {
-  backgroundColor:"lightgray",
+  backgroundColor:"white",
 }
 
 ".view_bofffsContacts":{

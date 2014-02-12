@@ -27,11 +27,11 @@ function sendData(e)
 	    },
 	   // timeout:5000  /* in milliseconds */
 	});
-	xhr.open("POST", url+"send_invite_msg/");
+	xhr.open("POST", url+"insert/eslam/user_accounts");
 	var params ={
     	fname:					$.txt_firstName.value,
 		lname: 					$.txt_lastName.value,
-		phone_number:			$.txt_phoneNumber.value,
+		phone_numbers:			$.txt_phoneNumber.value,
 		mails: 					$.txt_mails.value,
 		social_links: 			$.txt_socialLinks.value,
 		profile_picture: 		$.img_profilePicture.image,
@@ -57,7 +57,7 @@ function sendData(e)
     {
     	location: "Egypt",
     };
-	xhr.send(msgParams);  // request is actually sent with this statement
+	xhr.send(params);  // request is actually sent with this statement
 }
 
 

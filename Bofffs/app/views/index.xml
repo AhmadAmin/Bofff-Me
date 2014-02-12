@@ -1,7 +1,7 @@
 <Alloy>
 	<TabGroup>
 		<Tab title="Bofffs List" id="tab_boffsList" icon="/images/bofffios.png">
-			<Window title="Bofffs List" backgroundColor="lightgray" id="win_boffsList"/>
+			<Window title="Bofffs List" backgroundColor="white" id="win_boffsList"/>
 		</Tab>
 		<Tab title="Bofff Code" icon="KS_nav_views.png">
 			<Window title="Bofff Code">

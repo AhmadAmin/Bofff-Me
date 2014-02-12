@@ -11,7 +11,7 @@ function Controller() {
     var exports = {};
     var __defers = {};
     $.__views.view_container = Ti.UI.createView({
-        backgroundColor: "white",
+        backgroundColor: "lightgray",
         id: "view_container"
     });
     $.__views.view_container && $.addTopLevelView($.__views.view_container);
