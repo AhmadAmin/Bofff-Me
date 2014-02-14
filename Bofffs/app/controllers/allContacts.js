@@ -76,8 +76,6 @@ function initializeSearch(e)
 	}
 	else
 	{
-		$.view_search.width=Ti.UI.SIZE;
-		$.view_search.height=Ti.UI.SIZE;
 		searchbarIsOnFocus=true;
 		$.search.showCancel="true";
 	}
@@ -100,11 +98,6 @@ function updateSearch(e)
 function stopSearch(e)
 {
 	$.search.showCancel="false";
-	if(!pickerVisible)
-	{
-		$.view_search.width=0;
-		$.view_search.height=0;
-	}
 	if (OS_ANDROID)
 	{
 		$.search.value="";
@@ -115,60 +108,8 @@ function stopSearch(e)
 $.list_allContacts.caseInsensitiveSearch=true;
 $.list_allContacts.keepSectionsInSearch=true;
 
-var pickerVisible=false;
-var animation = require('alloy/animation');
-//on click on the search field label to open picker or close picker
-function openSearchPicker(e)
-{
-	if(pickerVisible)
-	{
-		animation.fadeOut($.picker_searchBy.view_picker, 500, function(){
-			$.picker_searchBy.view_picker.width=0;
-			$.picker_searchBy.view_picker.height=0;
-			pickerVisible=false;
-			$.search.focus();	
-		});
-	}
-	else
-	{
-		$.picker_searchBy.view_picker.width=Ti.UI.SIZE;
-		$.picker_searchBy.view_picker.height=Ti.UI.FILL;
-		animation.popIn($.picker_searchBy.view_picker);
-		pickerVisible=true;
-		$.search.blur();
-	}
-}
-
-//on selection of picker change update the search process
-$.picker_searchBy.picker.addEventListener("change", function(e)
-{
-	if(OS_IOS)
-	{
-		$.lbl_searchField.text= e.selectedValue[0];
-	}
-	// if the user chooses custom, a view appears to type in the custom field he wants to search with
-	if(e.selectedValue[0]=="Custom")
-	{
-		$.view_customField.view_customField.width='90%';
-		$.view_customField.view_customField.height='40%';
-		animation.popIn($.view_customField.view_customField);
-	}
-});
-
-$.view_customField.img_closeCustomView.addEventListener("click", function(e)
-{
-	animation.fadeOut($.view_customField.view_customField,200, function(){
-		$.view_customField.view_customField.width=0;
-		$.view_customField.view_customField.height=0;
-		$.lbl_searchField.text=$.view_customField.txt_customField.value;
-		if($.lbl_searchField.text=="")
-		{
-			$.lbl_searchField.text="Custom";
-		}
-		$.view_customField.txt_customField.blur();
-	});
-});
-
+// var ifFavorite=true;
+// var imageFavorite;
 //Here is to put the contacts in a list
 function createListView(_data, textToSearchFor)
 {
@@ -228,6 +169,16 @@ function createListView(_data, textToSearchFor)
        // else
        // {
        		// add items to an array
+       		// if(ifFavorite)
+       		// {
+       			// imageFavorite="/images/favoritecontact.png";
+       			// ifFavorite=false;
+       		// }
+       		// else
+       		// {
+       			// imageFavorite="/images/notfavoritecontact.png";
+       			// ifFavorite=true;
+       		// }
 	        items.push({
 	            template : "template1",            // set the template
 	            textLabel : {

@@ -6,9 +6,9 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    var __alloyId6 = [];
+    var __alloyId12 = [];
     $.__views.scrollableview_mainContactsView = Ti.UI.createScrollableView({
-        views: __alloyId6,
+        views: __alloyId12,
         showPagingControl: "true",
         id: "scrollableview_mainContactsView"
     });

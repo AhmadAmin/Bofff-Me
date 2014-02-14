@@ -22,8 +22,6 @@ function Controller() {
             firstFocus = false;
             $.search.blur();
         } else {
-            $.view_search.width = Ti.UI.SIZE;
-            $.view_search.height = Ti.UI.SIZE;
             searchbarIsOnFocus = true;
             $.search.showCancel = "true";
         }
@@ -40,24 +38,6 @@ function Controller() {
     }
     function stopSearch() {
         $.search.showCancel = "false";
-        if (!pickerVisible) {
-            $.view_search.width = 0;
-            $.view_search.height = 0;
-        }
-    }
-    function openSearchPicker() {
-        if (pickerVisible) animation.fadeOut($.picker_searchBy.view_picker, 500, function() {
-            $.picker_searchBy.view_picker.width = 0;
-            $.picker_searchBy.view_picker.height = 0;
-            pickerVisible = false;
-            $.search.focus();
-        }); else {
-            $.picker_searchBy.view_picker.width = Ti.UI.SIZE;
-            $.picker_searchBy.view_picker.height = Ti.UI.FILL;
-            animation.popIn($.picker_searchBy.view_picker);
-            pickerVisible = true;
-            $.search.blur();
-        }
     }
     function createListView(_data, textToSearchFor) {
         var listSections = [];
@@ -143,45 +123,6 @@ function Controller() {
     });
     $.__views.view_contacts.add($.__views.lb_contactsType);
     goToBoffsContacts ? $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts) : __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] = true;
-    $.__views.view_search = Ti.UI.createView({
-        id: "view_search",
-        layout: "horizontal",
-        width: "0",
-        height: "0"
-    });
-    $.__views.view_contacts.add($.__views.view_search);
-    $.__views.lbl_findBy = Ti.UI.createLabel({
-        color: "black",
-        font: {
-            fontSize: "20dp",
-            fontFamily: "Helvetica Neue"
-        },
-        left: "10",
-        text: "Find By",
-        id: "lbl_findBy",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE
-    });
-    $.__views.view_search.add($.__views.lbl_findBy);
-    $.__views.lbl_searchField = Ti.UI.createLabel({
-        color: "black",
-        font: {
-            fontSize: "20dp",
-            fontFamily: "Helvetica Neue"
-        },
-        left: "10",
-        text: "Name",
-        id: "lbl_searchField",
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE
-    });
-    $.__views.view_search.add($.__views.lbl_searchField);
-    openSearchPicker ? $.__views.lbl_searchField.addEventListener("click", openSearchPicker) : __defers["$.__views.lbl_searchField!click!openSearchPicker"] = true;
-    $.__views.picker_searchBy = Alloy.createController("searchByFieldPicker", {
-        id: "picker_searchBy",
-        __parentSymbol: $.__views.view_contacts
-    });
-    $.__views.picker_searchBy.setParent($.__views.view_contacts);
     $.__views.search = Ti.UI.createSearchBar({
         backgroundColor: "transparent",
         id: "search",
@@ -251,11 +192,6 @@ function Controller() {
     });
     $.__views.view_contacts.add($.__views.list_allContacts);
     showContact ? $.__views.list_allContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_allContacts!itemclick!showContact"] = true;
-    $.__views.view_customField = Alloy.createController("view_customField", {
-        id: "view_customField",
-        __parentSymbol: $.__views.view_container
-    });
-    $.__views.view_customField.setParent($.__views.view_container);
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
@@ -275,27 +211,7 @@ function Controller() {
     var firstFocus = true;
     $.list_allContacts.caseInsensitiveSearch = true;
     $.list_allContacts.keepSectionsInSearch = true;
-    var pickerVisible = false;
-    var animation = require("alloy/animation");
-    $.picker_searchBy.picker.addEventListener("change", function(e) {
-        $.lbl_searchField.text = e.selectedValue[0];
-        if ("Custom" == e.selectedValue[0]) {
-            $.view_customField.view_customField.width = "90%";
-            $.view_customField.view_customField.height = "40%";
-            animation.popIn($.view_customField.view_customField);
-        }
-    });
-    $.view_customField.img_closeCustomView.addEventListener("click", function() {
-        animation.fadeOut($.view_customField.view_customField, 200, function() {
-            $.view_customField.view_customField.width = 0;
-            $.view_customField.view_customField.height = 0;
-            $.lbl_searchField.text = $.view_customField.txt_customField.value;
-            "" == $.lbl_searchField.text && ($.lbl_searchField.text = "Custom");
-            $.view_customField.txt_customField.blur();
-        });
-    });
     __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
-    __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
     __defers["$.__views.search!change!updateSearch"] && $.__views.search.addEventListener("change", updateSearch);

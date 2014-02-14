@@ -2,12 +2,6 @@
 	<View id="view_container" class="container">
 		<View id="view_contacts" class="view_contacts">
 			<Label id="lb_contactsType" onClick="goToBoffsContacts">all contacts</Label>
-			<View id="view_search" layout="horizontal" width="0" height="0">
-				<Label left="10" id="lbl_findBy"  width="Ti.UI.SIZE" height="Ti.UI.SIZE">Find By</Label>
-				<Label platform="ios" left="10" id="lbl_searchField" width="Ti.UI.SIZE" height="Ti.UI.SIZE" onClick="openSearchPicker">Name</Label>
-				<Require platform="android" id="picker_searchBy"  src="searchByFieldPicker" type="view"/>
-			</View>
-			<Require platform="ios"  id="picker_searchBy"  src="searchByFieldPicker" type="view" />
 			<SearchBar  backgroundColor="transparent" id="search" left="0" height="43" width="Ti.UI.FILL" hintText="find a bofff" onFocus="initializeSearch"
 			onCancel="cancelSearch" onChange="updateSearch" onBlur="stopSearch" />
 			<ListView  id="list_allContacts"  left="0" class="list_allContacts" width="100%" defaultItemTemplate="template1" onItemclick="showContact"  >
@@ -20,6 +14,5 @@
 				</Templates>
 			</ListView>
 		</View>
-		<Require id="view_customField" src="view_customField" type="view"/>
 	</View>
 </Alloy>
