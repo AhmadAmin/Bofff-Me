@@ -48,7 +48,8 @@ function Controller() {
         id: "txt_customField",
         hintText: "Type in the custom attribute",
         height: Ti.UI.SIZE,
-        width: "90%"
+        width: "90%",
+        bubbleParent: "false"
     });
     $.__views.view_customField.add($.__views.txt_customField);
     exports.destroy = function() {};

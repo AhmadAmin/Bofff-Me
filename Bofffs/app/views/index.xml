@@ -1,5 +1,5 @@
 <Alloy>
-	<TabGroup>
+	<TabGroup barColor="#ADE3F8">
 		<Tab title="Bofffs List" id="tab_boffsList" icon="/images/bofffios.png">
 			<Window title="Bofffs List" backgroundColor="white" id="win_boffsList"/>
 		</Tab>

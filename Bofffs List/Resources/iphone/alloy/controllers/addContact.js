@@ -5,7 +5,7 @@ function Controller() {
             onload: function() {
                 alert(this.responseText);
                 var response = JSON.parse(this.responseText);
-                alert(response.rows);
+                alert(response[0].cc);
             },
             onerror: function() {
                 Ti.UI.createAlertDialog({
@@ -16,8 +16,8 @@ function Controller() {
                 }).show();
             }
         });
-        xhr.open("POST", url + "insert/eslam/user_accounts");
-        var params = {
+        xhr.open("POST", url + "get_country_from_ip");
+        ({
             fname: $.txt_firstName.value,
             lname: $.txt_lastName.value,
             phone_numbers: $.txt_phoneNumber.value,
@@ -28,12 +28,12 @@ function Controller() {
             mails_privacy: $.txt_mailsPrivacy.value,
             social_links_privacy: $.txt_profilePicturePrivacy.value,
             profile_picture_privacy: $.txt_socialLinksPrivacy.value
-        };
+        });
         ({
             mobile: "201151162280",
             message: $.txt_firstName.value + " " + $.txt_lastName.value + " has just joined bofff me and he can't wait untill you become a bofff too join him and download the app at: http://www.bofffme.com"
         });
-        xhr.send(params);
+        xhr.send();
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "addContact";

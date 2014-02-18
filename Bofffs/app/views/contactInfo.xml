@@ -1,5 +1,5 @@
 <Alloy>
-	<Window id="win_contactInfo" title="Contact Info" backgroundColor="white">
+	<Window id="win_contactInfo" title="Contact Info" navTintColor="#2279bc" backgroundColor="white">
 		<ScrollView class="container" id ="view_container">
 			<ImageView class="img_contactImage" id="img_contactImage" onClick="enlargeImage"/>
 			<View class="view_dynamicLabels" id="view_dynamicLabels"/>

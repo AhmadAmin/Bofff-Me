@@ -4,6 +4,6 @@
 			<Label class="lbl_customField"left="10">Custom Field</Label>
 			<ImageView id="img_closeCustomView" image="/images/close-icon.png" right="10" height="40" width="40">
 		</View>
-		<TextField id="txt_customField" hintText="Type in the custom attribute" height="Ti.UI.SIZE" width="90%"></TextField>
+		<TextField id="txt_customField" hintText="Type in the custom attribute" height="Ti.UI.SIZE" width="90%" bubbleParent="false"></TextField>
 	</View>
 </Alloy>

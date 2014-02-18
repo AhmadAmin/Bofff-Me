@@ -81,6 +81,7 @@ function Controller() {
     $.__views.win_contactInfo = Ti.UI.createWindow({
         id: "win_contactInfo",
         title: "Contact Info",
+        navTintColor: "#2279bc",
         backgroundColor: "white"
     });
     $.__views.win_contactInfo && $.addTopLevelView($.__views.win_contactInfo);

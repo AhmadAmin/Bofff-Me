@@ -1,70 +1,9 @@
 var args = arguments[0] || {};
 var mainView=args.mainView;
+var sortedContacts=args.sortedContacts;
 
-function goToAllContacts(e)
-{
-	mainView.scrollToView(0);
-}
-
-
-//This is to check if the user allows the access to his phonebook or not
-if (Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_AUTHORIZED){
-    performAddressBookFunction();
-} else if (Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_UNKNOWN){
-    Ti.Contacts.requestAuthorization(function(e){
-        if (e.success) {
-            performAddressBookFunction();
-        } else {
-            addressBookDisallowed();
-        }
-    });
-} else {
-    addressBookDisallowed();
-}
-//This is in case the user didn't allow to access his phonebook
-function addressBookDisallowed(){alert("Failed");};
-
-var sortedContacts ;
-//This is to collect the contacts from the user's phonebook
-function performAddressBookFunction()
-{  
-	var contacts = Ti.Contacts.getAllPeople();
- 	sortedContacts = [];
-    for (var x = 0; x < contacts.length; x++)
-    {
-        sortedContacts.push(contacts[x]);
-    }
- 	sortedContacts.sort(sort);
- 	//This is to put the sorted contacts into a list
-	createListView(sortedContacts,"fullName");
-};
-
-//This listens for any change in the user's phonebook if that happens it reloads the whole contact list
-Ti.Contacts.addEventListener('reload', function(e)
-{
-    //alert('Reloading contacts. Your contacts were changed externally!');
-    var contacts = Ti.Contacts.getAllPeople();
-    sortedContacts = [];
-    for (var x = 0; x < contacts.length; x++) 
-    {
-        sortedContacts.push(contacts[x]);
-    }
- 	sortedContacts.sort(sort);
-	createListView(sortedContacts, "fullName");
-});
-
-// This is to sort the contacts alphabetically
-function sort(a, b) {
-    if (a.fullName.toUpperCase() > b.fullName.toUpperCase())
-    {
-        return 1;
-    } 
-    else if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) 
-    {
-        return -1;
-    }
-    return 0;
-}
+//This is to put the sorted contacts into a list
+createListView(sortedContacts,"fullName");
 
 var searchbarIsOnFocus= false;
 var firstFocus=true;
@@ -89,33 +28,51 @@ function cancelSearch(e)
 {
 	$.search.blur();
 	$.search.value="";
-	$.list_allContacts.searchText="";
+	$.list_bofffContacts.searchText="";
     searchbarIsOnFocus=false;
     $.search.showCancel="false";
 }
 //on searchbar change
 function updateSearch(e)
 {
-	$.list_allContacts.searchText = e.value;
+	$.list_bofffContacts.searchText = e.value;
+}
+
+
+//when search button on keyboard is pressed
+var searchButtonPressed=false;
+function searchBofff(e)
+{
+	$.list_bofffContacts.searchText = e.value;
+	searchButtonPressed=true;
+	$.search.blur();
+	
 }
 //on searchbar blur
 function stopSearch(e)
 {
-	$.search.showCancel="false";
-	if(!pickerVisible)
+	if(searchButtonPressed)
 	{
-		$.view_search.width=0;
-		$.view_search.height=0;
+		searchButtonPressed=false;
 	}
-	if (OS_ANDROID)
+	else
 	{
-		$.search.value="";
-		$.search.hide();
-		$.search.show();
+		$.search.showCancel="false";
+		if(!pickerVisible)
+		{
+			$.view_search.width=0;
+			$.view_search.height=0;
+		}
+		if (OS_ANDROID)
+		{
+			$.search.value="";
+			$.search.hide();
+			$.search.show();
+		}
 	}
 }
-$.list_allContacts.caseInsensitiveSearch=true;
-$.list_allContacts.keepSectionsInSearch=true;
+$.list_bofffContacts.caseInsensitiveSearch=true;
+$.list_bofffContacts.keepSectionsInSearch=true;
 
 var pickerVisible=false;
 var animation = require('alloy/animation');
@@ -154,6 +111,7 @@ $.picker_searchBy.picker.addEventListener("change", function(e)
 		$.view_customField.view_customField.width='90%';
 		$.view_customField.view_customField.height='40%';
 		animation.popIn($.view_customField.view_customField);
+		$.view_customField.txt_customField.focus();
 	}
 });
 
@@ -171,8 +129,8 @@ $.view_customField.img_closeCustomView.addEventListener("click", function(e)
 	});
 });
 
-// var ifFavorite=true;
-// var imageFavorite;
+var ifFavorite=true;
+var imageFavorite;
 //Here is to put the contacts in a list
 function createListView(_data, textToSearchFor)
 {
@@ -232,16 +190,16 @@ function createListView(_data, textToSearchFor)
        // else
        // {
        		// add items to an array
-       		// if(ifFavorite)
-       		// {
-       			// imageFavorite="/images/favoritecontact.png";
-       			// ifFavorite=false;
-       		// }
-       		// else
-       		// {
-       			// imageFavorite="/images/notfavoritecontact.png";
-       			// ifFavorite=true;
-       		// }
+       		if(ifFavorite)
+       		{
+       			imageFavorite="/images/favoritecontact.png";
+       			ifFavorite=false;
+       		}
+       		else
+       		{
+       			imageFavorite="/images/notfavoritecontact.png";
+       			ifFavorite=true;
+       		}
 	        items.push({
 	            template : "template1",            // set the template
 	            textLabel : {
@@ -251,7 +209,7 @@ function createListView(_data, textToSearchFor)
 	                image : _data[i].image   // assign the values from the data
 	            },
 	            bofff_pic:{
-	            	image:"/images/bofffios.png"
+	            	image:imageFavorite
 	            },
 	            properties : {
 	            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
@@ -266,7 +224,7 @@ function createListView(_data, textToSearchFor)
      }
      section.setItems(items);
      listSections.push(section);
-     $.list_allContacts.sections=listSections;
+     $.list_bofffContacts.sections=listSections;
 
      
 	//TODO: Save this list to open in offline mode
@@ -278,17 +236,56 @@ function createListView(_data, textToSearchFor)
 	var your_object = JSON.parse(test);*/ 
 }
 
+var privacyClicked=false;
+var changeToFavorite=false;
+// if a star is clicked by the user
+function changePrivacy(e)
+{
+	privacyClicked=true;
+	if(e.source.image=="/images/favoritecontact.png")
+	{
+		changeToFavorite=false;
+	}
+	else
+	{
+		changeToFavorite=true;
+	}
+}
+
+// when any click is fired from the list or within the list
 function showContact(e)
 {
-	$.search.blur();
-	//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
-	//is saved the actual contact id of this user
-	contact =Ti.Contacts.getPersonByID(e.itemId);
-	//Here is to initialize a view that will contain the data of the user
-	//I had to initialize the controller by itself first to access the interface objects within this view
-	var params=
+	// to check if the click is fired because of the list item or because of the star in the list item
+	if(privacyClicked)
 	{
-		contact: contact,
-	};
-	Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
+		privacyClicked=false;
+		// it means that the user clicked an empty star so we have to change it to a full star
+		if (changeToFavorite)
+		{
+			var item = e.section.getItemAt(e.itemIndex);
+			item.bofff_pic.image = "/images/favoritecontact.png";
+			e.section.updateItemAt(e.itemIndex, item);  
+		}
+		// it means that the user clicked a full star so we have to change it to an empty star
+		else
+		{
+			var item = e.section.getItemAt(e.itemIndex);
+			item.bofff_pic.image = "/images/notfavoritecontact.png";
+			e.section.updateItemAt(e.itemIndex, item);
+		}
+	}
+	else
+	{
+		$.search.blur();
+		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
+		//is saved the actual contact id of this user
+		contact =Ti.Contacts.getPersonByID(e.itemId);
+		//Here is to initialize a view that will contain the data of the user
+		//I had to initialize the controller by itself first to access the interface objects within this view
+		var params=
+		{
+			contact: contact,
+		};
+		Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
+	}
 }

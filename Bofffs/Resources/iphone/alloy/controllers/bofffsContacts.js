@@ -1,22 +1,4 @@
 function Controller() {
-    function goToAllContacts() {
-        mainView.scrollToView(0);
-    }
-    function addressBookDisallowed() {
-        alert("Failed");
-    }
-    function performAddressBookFunction() {
-        var contacts = Ti.Contacts.getAllPeople();
-        sortedContacts = [];
-        for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-        sortedContacts.sort(sort);
-        createListView(sortedContacts, "fullName");
-    }
-    function sort(a, b) {
-        if (a.fullName.toUpperCase() > b.fullName.toUpperCase()) return 1;
-        if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
-        return 0;
-    }
     function initializeSearch() {
         if (firstFocus && false) {
             firstFocus = false;
@@ -31,18 +13,25 @@ function Controller() {
     function cancelSearch() {
         $.search.blur();
         $.search.value = "";
-        $.list_allContacts.searchText = "";
+        $.list_bofffContacts.searchText = "";
         searchbarIsOnFocus = false;
         $.search.showCancel = "false";
     }
     function updateSearch(e) {
-        $.list_allContacts.searchText = e.value;
+        $.list_bofffContacts.searchText = e.value;
+    }
+    function searchBofff(e) {
+        $.list_bofffContacts.searchText = e.value;
+        searchButtonPressed = true;
+        $.search.blur();
     }
     function stopSearch() {
-        $.search.showCancel = "false";
-        if (!pickerVisible) {
-            $.view_search.width = 0;
-            $.view_search.height = 0;
+        if (searchButtonPressed) searchButtonPressed = false; else {
+            $.search.showCancel = "false";
+            if (!pickerVisible) {
+                $.view_search.width = 0;
+                $.view_search.height = 0;
+            }
         }
     }
     function openSearchPicker() {
@@ -79,6 +68,13 @@ function Controller() {
             }
             var contactId;
             contactId = _data[i].recordId;
+            if (ifFavorite) {
+                imageFavorite = "/images/favoritecontact.png";
+                ifFavorite = false;
+            } else {
+                imageFavorite = "/images/notfavoritecontact.png";
+                ifFavorite = true;
+            }
             items.push({
                 template: "template1",
                 textLabel: {
@@ -88,7 +84,7 @@ function Controller() {
                     image: _data[i].image
                 },
                 bofff_pic: {
-                    image: "/images/bofffios.png"
+                    image: imageFavorite
                 },
                 properties: {
                     itemId: contactId,
@@ -99,15 +95,32 @@ function Controller() {
         }
         section.setItems(items);
         listSections.push(section);
-        $.list_allContacts.sections = listSections;
+        $.list_bofffContacts.sections = listSections;
+    }
+    function changePrivacy(e) {
+        privacyClicked = true;
+        changeToFavorite = "/images/favoritecontact.png" == e.source.image ? false : true;
     }
     function showContact(e) {
-        $.search.blur();
-        contact = Ti.Contacts.getPersonByID(e.itemId);
-        var params = {
-            contact: contact
-        };
-        Ti.App.bofffsListTab.open(Alloy.createController("contactInfo", params).getView());
+        if (privacyClicked) {
+            privacyClicked = false;
+            if (changeToFavorite) {
+                var item = e.section.getItemAt(e.itemIndex);
+                item.bofff_pic.image = "/images/favoritecontact.png";
+                e.section.updateItemAt(e.itemIndex, item);
+            } else {
+                var item = e.section.getItemAt(e.itemIndex);
+                item.bofff_pic.image = "/images/notfavoritecontact.png";
+                e.section.updateItemAt(e.itemIndex, item);
+            }
+        } else {
+            $.search.blur();
+            contact = Ti.Contacts.getPersonByID(e.itemId);
+            var params = {
+                contact: contact
+            };
+            Ti.App.bofffsListTab.open(Alloy.createController("contactInfo", params).getView());
+        }
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "bofffsContacts";
@@ -128,21 +141,6 @@ function Controller() {
         id: "view_bofffsContacts"
     });
     $.__views.view_container.add($.__views.view_bofffsContacts);
-    $.__views.lb_contactsType = Ti.UI.createLabel({
-        color: "blue",
-        font: {
-            fontSize: "20dp",
-            fontFamily: "Helvetica Neue"
-        },
-        left: "5dp",
-        width: Ti.UI.SIZE,
-        height: "30dp",
-        textAlign: "center",
-        text: "my bofffs",
-        id: "lb_contactsType"
-    });
-    $.__views.view_bofffsContacts.add($.__views.lb_contactsType);
-    goToAllContacts ? $.__views.lb_contactsType.addEventListener("click", goToAllContacts) : __defers["$.__views.lb_contactsType!click!goToAllContacts"] = true;
     $.__views.view_search = Ti.UI.createView({
         id: "view_search",
         layout: "horizontal",
@@ -195,6 +193,7 @@ function Controller() {
     cancelSearch ? $.__views.search.addEventListener("cancel", cancelSearch) : __defers["$.__views.search!cancel!cancelSearch"] = true;
     updateSearch ? $.__views.search.addEventListener("change", updateSearch) : __defers["$.__views.search!change!updateSearch"] = true;
     stopSearch ? $.__views.search.addEventListener("blur", stopSearch) : __defers["$.__views.search!blur!stopSearch"] = true;
+    searchBofff ? $.__views.search.addEventListener("return", searchBofff) : __defers["$.__views.search!return!searchBofff"] = true;
     var __alloyId6 = {};
     var __alloyId8 = [];
     var __alloyId9 = {
@@ -216,6 +215,9 @@ function Controller() {
             height: "34dp",
             right: 0,
             bindId: "bofff_pic"
+        },
+        events: {
+            click: changePrivacy
         }
     };
     __alloyId8.push(__alloyId10);
@@ -242,15 +244,15 @@ function Controller() {
         childTemplates: __alloyId8
     };
     __alloyId6["template1"] = __alloyId7;
-    $.__views.list_allContacts = Ti.UI.createListView({
+    $.__views.list_bofffContacts = Ti.UI.createListView({
         width: "100%",
         templates: __alloyId6,
-        id: "list_allContacts",
+        id: "list_bofffContacts",
         left: "0",
         defaultItemTemplate: "template1"
     });
-    $.__views.view_bofffsContacts.add($.__views.list_allContacts);
-    showContact ? $.__views.list_allContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_allContacts!itemclick!showContact"] = true;
+    $.__views.view_bofffsContacts.add($.__views.list_bofffContacts);
+    showContact ? $.__views.list_bofffContacts.addEventListener("itemclick", showContact) : __defers["$.__views.list_bofffContacts!itemclick!showContact"] = true;
     $.__views.view_customField = Alloy.createController("view_customField", {
         id: "view_customField",
         __parentSymbol: $.__views.view_container
@@ -259,22 +261,14 @@ function Controller() {
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
-    var mainView = args.mainView;
-    Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_AUTHORIZED ? performAddressBookFunction() : Ti.Contacts.contactsAuthorization == Ti.Contacts.AUTHORIZATION_UNKNOWN ? Ti.Contacts.requestAuthorization(function(e) {
-        e.success ? performAddressBookFunction() : addressBookDisallowed();
-    }) : addressBookDisallowed();
-    var sortedContacts;
-    Ti.Contacts.addEventListener("reload", function() {
-        var contacts = Ti.Contacts.getAllPeople();
-        sortedContacts = [];
-        for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-        sortedContacts.sort(sort);
-        createListView(sortedContacts, "fullName");
-    });
+    args.mainView;
+    var sortedContacts = args.sortedContacts;
+    createListView(sortedContacts, "fullName");
     var searchbarIsOnFocus = false;
     var firstFocus = true;
-    $.list_allContacts.caseInsensitiveSearch = true;
-    $.list_allContacts.keepSectionsInSearch = true;
+    var searchButtonPressed = false;
+    $.list_bofffContacts.caseInsensitiveSearch = true;
+    $.list_bofffContacts.keepSectionsInSearch = true;
     var pickerVisible = false;
     var animation = require("alloy/animation");
     $.picker_searchBy.picker.addEventListener("change", function(e) {
@@ -283,6 +277,7 @@ function Controller() {
             $.view_customField.view_customField.width = "90%";
             $.view_customField.view_customField.height = "40%";
             animation.popIn($.view_customField.view_customField);
+            $.view_customField.txt_customField.focus();
         }
     });
     $.view_customField.img_closeCustomView.addEventListener("click", function() {
@@ -294,13 +289,17 @@ function Controller() {
             $.view_customField.txt_customField.blur();
         });
     });
-    __defers["$.__views.lb_contactsType!click!goToAllContacts"] && $.__views.lb_contactsType.addEventListener("click", goToAllContacts);
+    var ifFavorite = true;
+    var imageFavorite;
+    var privacyClicked = false;
+    var changeToFavorite = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
     __defers["$.__views.search!change!updateSearch"] && $.__views.search.addEventListener("change", updateSearch);
     __defers["$.__views.search!blur!stopSearch"] && $.__views.search.addEventListener("blur", stopSearch);
-    __defers["$.__views.list_allContacts!itemclick!showContact"] && $.__views.list_allContacts.addEventListener("itemclick", showContact);
+    __defers["$.__views.search!return!searchBofff"] && $.__views.search.addEventListener("return", searchBofff);
+    __defers["$.__views.list_bofffContacts!itemclick!showContact"] && $.__views.list_bofffContacts.addEventListener("itemclick", showContact);
     _.extend($, exports);
 }
 

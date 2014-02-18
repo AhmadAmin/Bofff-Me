@@ -10,11 +10,11 @@ function sendData(e)
 	    {
 			alert(this.responseText);
 	        var response = JSON.parse(this.responseText);
-	        alert(response.rows);
-	        //alert(response.rows[0].profile_picture);
+	        //alert(response.rows);
+	        // to get the country for ip use this
+	         alert(response[0].cc);
 	        //alert(Titanium.Utils.md5HexDigest(response.rows));
-	        //$.img_profilePicture.image= response.rows[0].profile_picture;
-	        	    },
+	       	    },
 	    onerror: function(e) 
 	    {
 			Ti.UI.createAlertDialog(
@@ -27,7 +27,7 @@ function sendData(e)
 	    },
 	   // timeout:5000  /* in milliseconds */
 	});
-	xhr.open("POST", url+"insert/eslam/user_accounts");
+	xhr.open("POST", url+"get_country_from_ip");
 	var params ={
     	fname:					$.txt_firstName.value,
 		lname: 					$.txt_lastName.value,
@@ -57,7 +57,7 @@ function sendData(e)
     {
     	location: "Egypt",
     };
-	xhr.send(params);  // request is actually sent with this statement
+	xhr.send();  // request is actually sent with this statement
 }
 
 
