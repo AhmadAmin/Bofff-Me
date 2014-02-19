@@ -1,3 +1,6 @@
  <Alloy>
-	<ScrollableView showPagingControl="true" id="scrollableview_mainContactsView" onScrollend="changeRightNavButton" />
+ 	<View layout="vertical">
+ 		<Label id="lbl_serverTest"></Label>
+		<ScrollableView showPagingControl="true" id="scrollableview_mainContactsView" onScrollend="changeRightNavButton" />
+	</View>
 </Alloy>

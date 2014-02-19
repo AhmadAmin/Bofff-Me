@@ -94,8 +94,121 @@ function sort(a, b) {
     }
     return 0;
 }
+var bofffContacts=[];
+var contactsNumbers=[];
+var mobileNumbers;
+var expression = /^\d+$/;
+for(var contact in sortedContacts)
+{
+	mobileNumbers= sortedContacts[contact].getPhone();
+	if (!isEmpty(mobileNumbers))
+	{
+		for (var i in mobileNumbers)
+		{
+			for (var x in mobileNumbers[i])
+			{
+				var trimmedNumber="";
+				if(!expression.test(mobileNumbers[i][x]))
+				{
+					for(var character in mobileNumbers[i][x])
+					{
+						if(expression.test(mobileNumbers[i][x][character]))
+						{
+							trimmedNumber+=mobileNumbers[i][x][character];
+						}
+					}
+				}
+				else
+				{
+					trimmedNumber=mobileNumbers[i][x];
+				}
+				contactsNumbers.push(trimmedNumber);
+			}
+		}
+	}
+}
 
+for(var number in contactsNumbers)
+{
+	findBofffs(contactsNumbers[number]);
+}
 
+function findBofffs(contactNumber)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	$.lbl_serverTest.text="on load+"+contactNumber;
+	    	var response = JSON.parse(this.responseText);
+			if(response!="not found")
+			{
+				addFriend(response.rows[0].pin);
+				//alert(response.rows[0].fname+" "+response.rows[0].pin);
+				//addFriend(response.rows[0].pin);
+			}			
+		 },
+	    onerror: function(e) 
+	    {
+	    	$.lbl_serverTest.text="ERROR+"+contactNumber;	
+	    	// Ti.UI.createAlertDialog(
+			// {
+				// title : 'Error',
+			    // message : 'Check your internet connection.',
+				// cancel : 0,
+				// buttonNames : ['Ok']
+	        // }).show();
+	    },
+	   // timeout:5000  /* in milliseconds */
+	});
+	
+	xhr.open("POST", url+"search_user_by/eslam/user_accounts/primary_mobile/"+contactNumber);
+	xhr.send();  // request is actually sent with this statement
+}
+
+function addFriend(pin)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	alert("friend added");
+	    	var response = JSON.parse(this.responseText);
+		},
+	    onerror: function(e) 
+	    {
+	    	alert("didn't add friend");
+	    	// Ti.UI.createAlertDialog(
+			// {
+				// title : 'Error',
+			    // message : 'Check your internet connection.',
+				// cancel : 0,
+				// buttonNames : ['Ok']
+	        // }).show();
+	    },
+	   // timeout:5000  /* in milliseconds */
+	});
+	
+	xhr.open("POST", url+"insert/eslam/user_friends");
+	var params =
+		{
+			friend_of_user_pin_code:	pin,
+			pin_code			   :    'a8e7fec219c1b9e33ecb340c197ad15c'
+    	};
+	xhr.send(params);  // request is actually sent with this statement
+}
+
+//This is to check if an object is empty or not
+function isEmpty(obj)
+{
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 var payload=
 {
 	mainView:$.scrollableview_mainContactsView,

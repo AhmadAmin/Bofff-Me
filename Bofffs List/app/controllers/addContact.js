@@ -10,9 +10,9 @@ function sendData(e)
 	    {
 			alert(this.responseText);
 	        var response = JSON.parse(this.responseText);
-	        //alert(response.rows);
+	        alert(response.rows);
 	        // to get the country for ip use this
-	         alert(response[0].cc);
+	         //alert(response[0].cc);
 	        //alert(Titanium.Utils.md5HexDigest(response.rows));
 	       	    },
 	    onerror: function(e) 
@@ -27,11 +27,11 @@ function sendData(e)
 	    },
 	   // timeout:5000  /* in milliseconds */
 	});
-	xhr.open("POST", url+"get_country_from_ip");
+	xhr.open("POST", url+"insert/eslam/user_accounts");
 	var params ={
     	fname:					$.txt_firstName.value,
 		lname: 					$.txt_lastName.value,
-		phone_numbers:			$.txt_phoneNumber.value,
+		primary_mobile:			$.txt_phoneNumber.value,
 		mails: 					$.txt_mails.value,
 		social_links: 			$.txt_socialLinks.value,
 		profile_picture: 		$.img_profilePicture.image,
@@ -57,7 +57,7 @@ function sendData(e)
     {
     	location: "Egypt",
     };
-	xhr.send();  // request is actually sent with this statement
+	xhr.send(params);  // request is actually sent with this statement
 }
 
 
@@ -134,16 +134,12 @@ photosOption.addEventListener('click', function(e) {
             success : function(event) {
                 var cropRect = event.cropRect;
                 var image = event.media;
-                alert(image.width);
-                alert(image.height);
-                // set image view
+                 // set image view
                 var smallImage = ImageFactory.imageAsResized(image, {
             		width: 500,
             		height: 500,
             		quality: ImageFactory.QUALITY_MEDIUM
     			});
-                alert(smallImage.width);
-                alert(smallImage.height);
                 $.img_profilePicture.image = smallImage;
                	
             },
