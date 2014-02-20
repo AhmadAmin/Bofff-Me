@@ -13,7 +13,7 @@
 				<Templates>
 					<ItemTemplate id="template1" name="template1"  class="template1">
 						<ImageView id="pic"  bindId="pic" class="bofffThumb"/>
-						<ImageView id="bofff_pic"  bindId="bofff_pic" class="favoriteThumb" onClick="changePrivacy"/>
+						<ImageView id="bofff_pic"  bindId="bofff_pic" class="favoriteThumb" onClick="starClicked"/>
 						<Label id="textLabel" bindId="textLabel" class="title"/>
 					</ItemTemplate>
 				</Templates>

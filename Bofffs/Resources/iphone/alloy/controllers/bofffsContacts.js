@@ -48,22 +48,26 @@ function Controller() {
             $.search.blur();
         }
     }
-    function getFriends(bofffFriends) {
-        for (var friend in bofffFriends) {
-            var url = "http://www.bofffme.com/api/index.php/home/";
-            var xhr = Ti.Network.createHTTPClient({
-                onload: function() {
-                    var response = JSON.parse(this.responseText);
-                    alert(response.rows[0].status);
-                    "favorite" == response.rows[0].status ? ifFavoriteBofff.push("true") : ifFavoriteBofff.push("false");
-                },
-                onerror: function() {}
-            });
-            xhr.open("POST", url + "search_user_by/bofff/user_friends/pin_code/" + "fbea0803a7d79e402d0557dcb7063a03");
-            xhr.send();
-        }
+    function sort(a, b) {
+        if (a.fullName.toUpperCase() > b.fullName.toUpperCase()) return 1;
+        if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
+        return 0;
     }
-    function createNormalListView(_data) {
+    function getFriends() {
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                var response = JSON.parse(this.responseText);
+                bofffsList = response.rows;
+                bofffsList.sort(sort);
+                createBofffListView(bofffsList, "fullName");
+            },
+            onerror: function() {}
+        });
+        xhr.open("POST", url + "search_user_by/bofff/user_friends/user_pin_code/" + "fbea0803a7d79e402d0557dcb7063a03");
+        xhr.send();
+    }
+    function createBofffListView(_data, textToSearchFor) {
         var listSections = [];
         var lastCharacter = _data[0].fullName.substring(0, 1).toUpperCase();
         var section = Ti.UI.createListSection({
@@ -81,20 +85,21 @@ function Controller() {
                 });
                 items = [];
             }
+            imageFavorite = "favorite" == _data[i].status ? "/images/favoritecontact.png" : "/images/notfavoritecontact.png";
             items.push({
                 template: "template1",
                 textLabel: {
                     text: _data[i].fullName
                 },
                 pic: {
-                    image: _data[i].image
+                    image: _data[i].icon_image
                 },
                 bofff_pic: {
-                    image: "/images/bofffcontact.png"
+                    image: imageFavorite
                 },
                 properties: {
                     itemId: i,
-                    searchableText: _data[i].fullName,
+                    searchableText: _data[i][textToSearchFor],
                     backgroundColor: "transparent"
                 }
             });
@@ -103,29 +108,48 @@ function Controller() {
         listSections.push(section);
         $.list_bofffContacts.sections = listSections;
     }
-    function changePrivacy(e) {
+    function starClicked(e) {
         privacyClicked = true;
         changeToFavorite = "/images/favoritecontact.png" == e.source.image ? false : true;
     }
-    function showContact(e) {
-        if (privacyClicked) {
-            privacyClicked = false;
-            if (changeToFavorite) {
-                var item = e.section.getItemAt(e.itemIndex);
-                item.bofff_pic.image = "/images/favoritecontact.png";
-                e.section.updateItemAt(e.itemIndex, item);
-            } else {
-                var item = e.section.getItemAt(e.itemIndex);
-                item.bofff_pic.image = "/images/notfavoritecontact.png";
-                e.section.updateItemAt(e.itemIndex, item);
-            }
+    function changeStar(e) {
+        privacyClicked = false;
+        if (changeToFavorite) {
+            var item = e.section.getItemAt(e.itemIndex);
+            item.bofff_pic.image = "/images/favoritecontact.png";
+            e.section.updateItemAt(e.itemIndex, item);
         } else {
+            var item = e.section.getItemAt(e.itemIndex);
+            item.bofff_pic.image = "/images/notfavoritecontact.png";
+            e.section.updateItemAt(e.itemIndex, item);
+        }
+    }
+    function updatePrivacy(changeToFavorite, listIndex) {
+        var status = "not favorite";
+        changeToFavorite && (status = "favorite");
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                JSON.parse(this.responseText);
+                changeStar(listIndex);
+            },
+            onerror: function() {}
+        });
+        xhr.open("POST", url + "update/bofff/user_friends/" + bofffsList[listIndex.itemId].id);
+        var params = {
+            status: status
+        };
+        xhr.send(params);
+    }
+    function showContact(e) {
+        if (privacyClicked) updatePrivacy(changeToFavorite, e); else {
             $.search.blur();
-            contact = sortedContacts[e.itemId];
-            var params = {
-                contact: contact
-            };
-            Ti.App.bofffsListTab.open(Alloy.createController("contactInfo", params).getView());
+            var bofff;
+            for (var record in bofffs) if (bofffs[record].pin == bofffsList[e.itemId].friend_pin_code) {
+                bofff = bofffs[record];
+                break;
+            }
+            alert(bofff.fullName);
         }
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
@@ -223,7 +247,7 @@ function Controller() {
             bindId: "bofff_pic"
         },
         events: {
-            click: changePrivacy
+            click: starClicked
         }
     };
     __alloyId8.push(__alloyId10);
@@ -269,13 +293,10 @@ function Controller() {
     var args = arguments[0] || {};
     args.mainView;
     try {
-        var bofffFriends = args.bofffFriends;
-        bofffFriends[0];
-        getFriends(bofffFriends);
-    } catch (error) {
-        var sortedContacts = args.sortedContacts;
-        createNormalListView(sortedContacts);
-    }
+        var bofffs = args.bofffFriends;
+        bofffs[0];
+        getFriends();
+    } catch (error) {}
     var searchbarIsOnFocus = false;
     var firstFocus = true;
     var searchButtonPressed = false;
@@ -301,7 +322,8 @@ function Controller() {
             $.view_customField.txt_customField.blur();
         });
     });
-    var ifFavoriteBofff = [];
+    var bofffsList = [];
+    var imageFavorite;
     var privacyClicked = false;
     var changeToFavorite = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);

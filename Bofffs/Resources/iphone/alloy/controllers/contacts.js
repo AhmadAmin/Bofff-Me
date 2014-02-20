@@ -17,35 +17,25 @@ function Controller() {
         if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
         return 0;
     }
-    function mapBofffsToContacts(bofffFriendPrimaryNumber, contactNumbersAndIds) {
-        for (var record in contactNumbersAndIds) contactNumbersAndIds[record].number == bofffFriendPrimaryNumber && bofffContactIds.push(contactNumbersAndIds[record].id);
-    }
-    function findBofffs(contactNumber) {
+    function findBofffs(contactNumbersAndIds) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
-                $.lbl_serverTest.text = "on load+" + contactNumber;
                 var response = JSON.parse(this.responseText);
-                if ("not found" != response) {
-                    addFriend(response.rows[0].pin);
-                    mapBofffsToContacts(response.rows[0].primary_mobile, contactNumbersAndIds);
-                    bofffFriends.push(response.rows[0]);
+                for (var contact in contactNumbersAndIds) for (var record in response.rows) if (contactNumbersAndIds[contact].number == response.rows[record].primary_mobile) {
+                    bofffFriends.push(response.rows[record]);
+                    addFriend(response.rows[record].fullName, response.rows[record].profile_picture, response.rows[record].pin);
+                    bofffContactIds.push(contactNumbersAndIds[contact].id);
                 }
-                numberOfContactsNumbersRecords--;
-                if (0 == numberOfContactsNumbersRecords) {
-                    bofffFriends.sort(sort);
-                    initializeBofffsList(bofffFriends);
-                }
+                bofffFriends.sort(sort);
+                initializeBofffsList(bofffFriends);
             },
-            onerror: function() {
-                numberOfContactsNumbersRecords--;
-                $.lbl_serverTest.text = "ERROR+" + contactNumber;
-            }
+            onerror: function() {}
         });
-        xhr.open("POST", url + "search_user_by/bofff/user_accounts/primary_mobile/" + contactNumber);
+        xhr.open("POST", url + "get_all/bofff/user_accounts");
         xhr.send();
     }
-    function addFriend(pin) {
+    function addFriend(fullName, iconImage, pin) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
@@ -55,8 +45,10 @@ function Controller() {
         });
         xhr.open("POST", url + "insert/bofff/user_friends");
         var params = {
-            friend_of_user_pin_code: pin,
-            pin_code: "fbea0803a7d79e402d0557dcb7063a03"
+            fullName: fullName,
+            icon_image: iconImage,
+            friend_pin_code: pin,
+            user_pin_code: "fbea0803a7d79e402d0557dcb7063a03"
         };
         xhr.send(params);
     }
@@ -86,10 +78,6 @@ function Controller() {
         id: "contacts"
     });
     $.__views.contacts && $.addTopLevelView($.__views.contacts);
-    $.__views.lbl_serverTest = Ti.UI.createLabel({
-        id: "lbl_serverTest"
-    });
-    $.__views.contacts.add($.__views.lbl_serverTest);
     var __alloyId12 = [];
     $.__views.scrollableview_mainContactsView = Ti.UI.createScrollableView({
         views: __alloyId12,
@@ -124,7 +112,6 @@ function Controller() {
         for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
         sortedContacts.sort(sort);
     });
-    var contactsNumbers = [];
     var contactNumbersAndIds = [];
     var mobileNumbers;
     var expression = /^\d+$/;
@@ -139,13 +126,11 @@ function Controller() {
                 id: sortedContacts[contact].recordId
             };
             contactNumbersAndIds.push(numberAndId);
-            contactsNumbers.push(trimmedNumber);
         }
     }
+    findBofffs(contactNumbersAndIds);
     var bofffContactIds = [];
-    for (var number in contactsNumbers) findBofffs(contactsNumbers[number]);
     var bofffFriends = [];
-    var numberOfContactsNumbersRecords = contactsNumbers.length;
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts

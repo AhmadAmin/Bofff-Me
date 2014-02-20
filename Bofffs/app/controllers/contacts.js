@@ -96,7 +96,6 @@ function sort(a, b) {
 }
 
 //gather contacts' numbers and change them to readable number string without special characters
-var contactsNumbers=[];
 var contactNumbersAndIds=[];
 var mobileNumbers;
 var expression = /^\d+$/;
@@ -135,70 +134,56 @@ for(var contact in sortedContacts)
 					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
 					contactNumbersAndIds.push(numberAndId);
 				}
-				contactsNumbers.push(trimmedNumber);
 			}
 		}
 	}
 }
 
+
+//then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
+findBofffs(contactNumbersAndIds);
+
 //This is to map the bofffs of the user to his contact list, by comparing their bofff primary numbers
 //with the ones in the contact list and then get their id in the contact list
 var bofffContactIds=[];
-function mapBofffsToContacts(bofffFriendPrimaryNumber,contactNumbersAndIds)
-{
-	for(var record in contactNumbersAndIds)
-	{
-		if(contactNumbersAndIds[record].number==bofffFriendPrimaryNumber)
-			{
-				bofffContactIds.push(contactNumbersAndIds[record].id);
-			}
-	}
-}
 
-//then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
-for(var number in contactsNumbers)
-{
-	findBofffs(contactsNumbers[number]);
-}
 //this is to check whether or not these numbers are in our DB if yes
 //then this user is added as a friend and mapped to the contacts of the user
 //after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
 var bofffFriends=[];
-var numberOfContactsNumbersRecords=contactsNumbers.length;
-function findBofffs(contactNumber)
+function findBofffs(contactNumbersAndIds)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
 	    onload: function(e) 
 	    {
-	    	$.lbl_serverTest.text="on load+"+contactNumber;
 	    	var response = JSON.parse(this.responseText);
-			if(response!="not found")
-			{
-				addFriend(response.rows[0].pin);
-				mapBofffsToContacts(response.rows[0].primary_mobile,contactNumbersAndIds);
-				bofffFriends.push(response.rows[0]);
-			}
-			numberOfContactsNumbersRecords--;
-	    	if(numberOfContactsNumbersRecords==0)
+	    	for(var contact in contactNumbersAndIds)
 	    	{
-	    		bofffFriends.sort(sort);
-	    		initializeBofffsList(bofffFriends);
-	    	}			
-		 },
+	    		for( var record in response.rows)
+	    		{
+	    			if(contactNumbersAndIds[contact].number==response.rows[record].primary_mobile)
+	    			{
+	    				bofffFriends.push(response.rows[record]);
+	    				addFriend(response.rows[record].fullName,response.rows[record].profile_picture,response.rows[record].pin);
+	    				bofffContactIds.push(contactNumbersAndIds[contact].id);
+	    			}
+	    		}
+	    	}
+			bofffFriends.sort(sort);
+	    	initializeBofffsList(bofffFriends);
+	    },
 	    onerror: function(e) 
 	    {
-	    	numberOfContactsNumbersRecords--;
-	    	$.lbl_serverTest.text="ERROR+"+contactNumber;	
 	    },
 	});
 	
-	xhr.open("POST", url+"search_user_by/bofff/user_accounts/primary_mobile/"+contactNumber);
+	xhr.open("POST", url+"get_all/bofff/user_accounts");
 	xhr.send();  // request is actually sent with this statement
 }
 //when the pin is sent back it saves it as a friend to this user
-function addFriend(pin,contactPrimaryNumber)
+function addFriend(fullName,iconImage,pin)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
@@ -215,8 +200,10 @@ function addFriend(pin,contactPrimaryNumber)
 	xhr.open("POST", url+"insert/bofff/user_friends");
 	var params =
 		{
-			friend_of_user_pin_code		 : pin,
-			pin_code			   		 : 'fbea0803a7d79e402d0557dcb7063a03',
+			fullName		 : fullName,
+			icon_image		 : iconImage,
+			friend_pin_code	 : pin,
+			user_pin_code	 : 'fbea0803a7d79e402d0557dcb7063a03',
     	};
 	xhr.send(params);  // request is actually sent with this statement
 }

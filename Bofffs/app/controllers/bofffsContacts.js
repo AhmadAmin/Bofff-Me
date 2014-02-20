@@ -2,12 +2,12 @@ var args = arguments[0] || {};
 var mainView=args.mainView;
 try
 {
-	var bofffFriends= args.bofffFriends;
-	var  test =bofffFriends[0];
-	getFriends(bofffFriends);
+	var bofffs= args.bofffFriends;
+	var  test =bofffs[0];
+	getFriends();
 }catch(error){
-	var sortedContacts=args.sortedContacts;
-	createNormalListView(sortedContacts);
+	// var sortedContacts=args.sortedContacts;
+	// createNormalListView(sortedContacts);
 }
 
 //This is to put the sorted contacts into a list
@@ -136,40 +136,40 @@ $.view_customField.img_closeCustomView.addEventListener("click", function(e)
 		$.view_customField.txt_customField.blur();
 	});
 });
-var ifFavoriteBofff=[];
-function getFriends(bofffFriends)
+
+// This is to sort the contacts alphabetically
+function sort(a, b) {
+    if (a.fullName.toUpperCase() > b.fullName.toUpperCase())
+    {
+        return 1;
+    } 
+    else if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) 
+    {
+        return -1;
+    }
+    return 0;
+}
+
+var bofffsList=[];
+function getFriends()
 {
-	for(var friend in bofffFriends)
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
 	{
-		var url =  'http://www.bofffme.com/api/index.php/home/';
-		var xhr = Ti.Network.createHTTPClient(
-		{
-		    onload: function(e) 
-		    {
-		    	var response = JSON.parse(this.responseText);
-		    	alert(response.rows[0].status);
-		    	if(response.rows[0].status=="favorite")
-		    	{
-		    		ifFavoriteBofff.push("true");
-		    	}
-		    	else
-		    	{
-		    		ifFavoriteBofff.push("false");
-		    	}
-		    	// if(friend==(bofffFriends.length-1))
-		    	// {
-		    		// alert("bofff list");
-		    		// createBofffListView(bofffFriends,"fullName");
-		    	// }
-			},
-		    onerror: function(e) 
-		    {
-		    },
-		});
+	    onload: function(e) 
+	    {
+	    	var response = JSON.parse(this.responseText);
+	    	bofffsList=response.rows;
+	    	bofffsList.sort(sort);
+	    	createBofffListView(bofffsList,"fullName");
+	    },
+	    onerror: function(e) 
+	    {
+	    },
+	});
 		
-		xhr.open("POST", url+"search_user_by/bofff/user_friends/pin_code/"+'fbea0803a7d79e402d0557dcb7063a03');
-		xhr.send();  // request is actually sent with this statement
-	}
+	xhr.open("POST", url+"search_user_by/bofff/user_friends/user_pin_code/"+'fbea0803a7d79e402d0557dcb7063a03');
+	xhr.send();  // request is actually sent with this statement
 }
 
 var imageFavorite;
@@ -193,8 +193,8 @@ function createBofffListView(_data, textToSearchFor)
         	section = Ti.UI.createListSection({ headerTitle: lastCharacter});
         	items=[];
         }
-   		// add items to an array
-   		if(ifFavoriteBofff[i])
+   		//add items to an array
+   		if(_data[i].status=="favorite")
    		{
    			imageFavorite="/images/favoritecontact.png";
    		}
@@ -208,12 +208,11 @@ function createBofffListView(_data, textToSearchFor)
                 text : _data[i].fullName           // assign the values from the data
             },
             pic : {
-                image : _data[i].profile_picture   // assign the values from the data
+                image : _data[i].icon_image   // assign the values from the data
             },
             bofff_pic:{
             	image:imageFavorite
             },
-            favorite: ifFavorite,
             properties : {
             itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
             searchableText: _data[i][textToSearchFor] ,
@@ -236,65 +235,10 @@ function createBofffListView(_data, textToSearchFor)
 	var your_object = JSON.parse(test);*/ 
 }
 
-//Here is to put the contacts in a list
-function createNormalListView(_data)
-{
-	var listSections=[];
-	
-	var lastCharacter=_data[0].fullName.substring(0,1).toUpperCase();
-	var newCharacter;
-	var section=Ti.UI.createListSection({ headerTitle: lastCharacter});
- 	var items = [];
-    for (var i in _data)
-     {
-   		nextCharacter= _data[i].fullName.substring(0,1).toUpperCase();
-        if(lastCharacter != nextCharacter)
-        {
-        	section.setItems(items);
-        	listSections.push(section);
-        	lastCharacter= nextCharacter;
-        	section = Ti.UI.createListSection({ headerTitle: lastCharacter});
-        	items=[];
-        	
-        }
-     	// add items to an array
-        items.push({
-            template : "template1",            // set the template
-            textLabel : {
-                text : _data[i].fullName           // assign the values from the data
-            },
-            pic : {
-                image : _data[i].image   // assign the values from the data
-            },
-            bofff_pic:{
-            	image:"/images/bofffcontact.png"
-            },
-            properties : {
-            itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
-            searchableText: _data[i].fullName,
-            backgroundColor:"transparent",
-            }
-            
-    	});
-     }
-     section.setItems(items);
-     listSections.push(section);
-     $.list_bofffContacts.sections=listSections;
-
-     
-	//TODO: Save this list to open in offline mode
-	// This is to save the list to be views offline when needed
-	/*var json_text = JSON.stringify(items,null,2);
-	Titanium.App.Properties.setString('propertyList', json_text);
-
-	var test =Titanium.App.Properties.getString('propertyList');
-	var your_object = JSON.parse(test);*/ 
-}
-
 var privacyClicked=false;
 var changeToFavorite=false;
 // if a star is clicked by the user
-function changePrivacy(e)
+function starClicked(e)
 {
 	privacyClicked=true;
 	if(e.source.image=="/images/favoritecontact.png")
@@ -307,40 +251,83 @@ function changePrivacy(e)
 	}
 }
 
+function changeStar(e)
+{
+	privacyClicked=false;
+	// it means that the user clicked an empty star so we have to change it to a full star
+	if (changeToFavorite)
+	{
+		var item = e.section.getItemAt(e.itemIndex);
+		item.bofff_pic.image = "/images/favoritecontact.png";
+		e.section.updateItemAt(e.itemIndex, item);  
+	}
+	// it means that the user clicked a full star so we have to change it to an empty star
+	else
+	{
+		var item = e.section.getItemAt(e.itemIndex);
+		item.bofff_pic.image = "/images/notfavoritecontact.png";
+		e.section.updateItemAt(e.itemIndex, item);
+	}
+}
+
+function updatePrivacy(changeToFavorite, listIndex)
+{
+	var status="not favorite";
+	if(changeToFavorite)
+	{
+		status="favorite";
+	}
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	var response = JSON.parse(this.responseText);
+	    	changeStar(listIndex);
+	    },
+	    onerror: function(e) 
+	    {
+	    },
+	});
+		
+	xhr.open("POST", url+"update/bofff/user_friends/"+bofffsList[listIndex.itemId].id);
+	var params=
+	{
+		status: status,
+	};
+	xhr.send(params);  // request is actually sent with this statement
+}
+
 // when any click is fired from the list or within the list
 function showContact(e)
 {
 	// to check if the click is fired because of the list item or because of the star in the list item
 	if(privacyClicked)
 	{
-		privacyClicked=false;
-		// it means that the user clicked an empty star so we have to change it to a full star
-		if (changeToFavorite)
-		{
-			var item = e.section.getItemAt(e.itemIndex);
-			item.bofff_pic.image = "/images/favoritecontact.png";
-			e.section.updateItemAt(e.itemIndex, item);  
-		}
-		// it means that the user clicked a full star so we have to change it to an empty star
-		else
-		{
-			var item = e.section.getItemAt(e.itemIndex);
-			item.bofff_pic.image = "/images/notfavoritecontact.png";
-			e.section.updateItemAt(e.itemIndex, item);
-		}
+		updatePrivacy(changeToFavorite,e);
 	}
 	else
 	{
 		$.search.blur();
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
-		contact =sortedContacts[e.itemId];
+		var bofff;
+		for(var record in bofffs)
+		{
+			if (bofffs[record].pin==bofffsList[e.itemId].friend_pin_code)
+			{
+				bofff=bofffs[record];
+				break;
+				alert("fuck you");
+			}
+		}
+	    alert(bofff.fullName);
 		//Here is to initialize a view that will contain the data of the user
 		//I had to initialize the controller by itself first to access the interface objects within this view
-		var params=
-		{
-			contact: contact,
-		};
-		Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
+		// var params=
+		// {
+			// contact: contact,
+		// };
+		// Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
 	}
 }
