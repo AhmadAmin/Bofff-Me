@@ -1,9 +1,17 @@
 var args = arguments[0] || {};
 var mainView=args.mainView;
-var sortedContacts=args.sortedContacts;
+try
+{
+	var bofffFriends= args.bofffFriends;
+	var  test =bofffFriends[0];
+	getFriends(bofffFriends);
+}catch(error){
+	var sortedContacts=args.sortedContacts;
+	createNormalListView(sortedContacts);
+}
 
 //This is to put the sorted contacts into a list
-createListView(sortedContacts,"fullName");
+
 
 var searchbarIsOnFocus= false;
 var firstFocus=true;
@@ -128,11 +136,108 @@ $.view_customField.img_closeCustomView.addEventListener("click", function(e)
 		$.view_customField.txt_customField.blur();
 	});
 });
+var ifFavoriteBofff=[];
+function getFriends(bofffFriends)
+{
+	for(var friend in bofffFriends)
+	{
+		var url =  'http://www.bofffme.com/api/index.php/home/';
+		var xhr = Ti.Network.createHTTPClient(
+		{
+		    onload: function(e) 
+		    {
+		    	var response = JSON.parse(this.responseText);
+		    	alert(response.rows[0].status);
+		    	if(response.rows[0].status=="favorite")
+		    	{
+		    		ifFavoriteBofff.push("true");
+		    	}
+		    	else
+		    	{
+		    		ifFavoriteBofff.push("false");
+		    	}
+		    	// if(friend==(bofffFriends.length-1))
+		    	// {
+		    		// alert("bofff list");
+		    		// createBofffListView(bofffFriends,"fullName");
+		    	// }
+			},
+		    onerror: function(e) 
+		    {
+		    },
+		});
+		
+		xhr.open("POST", url+"search_user_by/bofff/user_friends/pin_code/"+'fbea0803a7d79e402d0557dcb7063a03');
+		xhr.send();  // request is actually sent with this statement
+	}
+}
 
-var ifFavorite=true;
 var imageFavorite;
 //Here is to put the contacts in a list
-function createListView(_data, textToSearchFor)
+function createBofffListView(_data, textToSearchFor)
+{
+	var listSections=[];
+	
+	var lastCharacter=_data[0].fullName.substring(0,1).toUpperCase();
+	var newCharacter;
+	var section=Ti.UI.createListSection({ headerTitle: lastCharacter});
+ 	var items = [];
+    for (var i in _data)
+     {
+   		nextCharacter= _data[i].fullName.substring(0,1).toUpperCase();
+        if(lastCharacter != nextCharacter)
+        {
+        	section.setItems(items);
+        	listSections.push(section);
+        	lastCharacter= nextCharacter;
+        	section = Ti.UI.createListSection({ headerTitle: lastCharacter});
+        	items=[];
+        }
+   		// add items to an array
+   		if(ifFavoriteBofff[i])
+   		{
+   			imageFavorite="/images/favoritecontact.png";
+   		}
+   		else
+   		{
+   			imageFavorite="/images/notfavoritecontact.png";
+   		}
+        items.push({
+            template : "template1",            // set the template
+            textLabel : {
+                text : _data[i].fullName           // assign the values from the data
+            },
+            pic : {
+                image : _data[i].profile_picture   // assign the values from the data
+            },
+            bofff_pic:{
+            	image:imageFavorite
+            },
+            favorite: ifFavorite,
+            properties : {
+            itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
+            searchableText: _data[i][textToSearchFor] ,
+            backgroundColor:"transparent",
+            }
+	            
+        });
+     }
+     section.setItems(items);
+     listSections.push(section);
+     $.list_bofffContacts.sections=listSections;
+
+     
+	//TODO: Save this list to open in offline mode
+	// This is to save the list to be views offline when needed
+	/*var json_text = JSON.stringify(items,null,2);
+	Titanium.App.Properties.setString('propertyList', json_text);
+
+	var test =Titanium.App.Properties.getString('propertyList');
+	var your_object = JSON.parse(test);*/ 
+}
+
+//Here is to put the contacts in a list
+function createNormalListView(_data)
 {
 	var listSections=[];
 	
@@ -152,75 +257,25 @@ function createListView(_data, textToSearchFor)
         	items=[];
         	
         }
-     	var number=null;
-     	// try{number=_data[i].getPhone().mobile[0]; }
-     	// catch(error){number='';}
-     	//Here is the trick when the list is being created we have to make sure that there is a link from every listItem to the
-     	//contact that is in that list item this is done by puting a property that is unique for every contact to search
-     	//with this unique property the contact that the user clicks and then get that contact from the phonebook
-     	//The unique property for the contact is its id in iOS it is called recordId and in ANDROID it is called id
-     	var contactId;
-     	if (OS_IOS)
-     	{
-     		contactId= _data[i].recordId;
-     	}
-     	else
-     	if(OS_ANDROID)
-     	{
-     		contactId= _data[i].id;
-      	}
-      	// if (textToSearchFor==1)
-      	// {
-	    	// // add items to an array
-	        // items.push({
-	            // template : "template1",            // set the template
-	            // textLabel : {
-	                // text : _data[i].fullName           // assign the values from the data
-	            // },
-	            // pic : {
-	                // image : _data[i].image   // assign the values from the data
-	            // },
-	            // properties : {
-	            // itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
-	            // searchableText: number ,
-	            // }
-// 	            
-	        // });
-       // }
-       // else
-       // {
-       		// add items to an array
-       		if(ifFavorite)
-       		{
-       			imageFavorite="/images/favoritecontact.png";
-       			ifFavorite=false;
-       		}
-       		else
-       		{
-       			imageFavorite="/images/notfavoritecontact.png";
-       			ifFavorite=true;
-       		}
-	        items.push({
-	            template : "template1",            // set the template
-	            textLabel : {
-	                text : _data[i].fullName           // assign the values from the data
-	            },
-	            pic : {
-	                image : _data[i].image   // assign the values from the data
-	            },
-	            bofff_pic:{
-	            	image:imageFavorite
-	            },
-	            properties : {
-	            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
-	            searchableText: _data[i][textToSearchFor] ,
-	            backgroundColor:"transparent",
-	            }
-	            
-	        });
-      // }
-        
-       
+     	// add items to an array
+        items.push({
+            template : "template1",            // set the template
+            textLabel : {
+                text : _data[i].fullName           // assign the values from the data
+            },
+            pic : {
+                image : _data[i].image   // assign the values from the data
+            },
+            bofff_pic:{
+            	image:"/images/bofffcontact.png"
+            },
+            properties : {
+            itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
+            searchableText: _data[i].fullName,
+            backgroundColor:"transparent",
+            }
+            
+    	});
      }
      section.setItems(items);
      listSections.push(section);
@@ -279,7 +334,7 @@ function showContact(e)
 		$.search.blur();
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
-		contact =Ti.Contacts.getPersonByID(e.itemId);
+		contact =sortedContacts[e.itemId];
 		//Here is to initialize a view that will contain the data of the user
 		//I had to initialize the controller by itself first to access the interface objects within this view
 		var params=

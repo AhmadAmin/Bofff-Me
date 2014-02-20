@@ -88,20 +88,6 @@ function createListView(_data, textToSearchFor)
         	items=[];
         	
         }
-     	//Here is the trick when the list is being created we have to make sure that there is a link from every listItem to the
-     	//contact that is in that list item this is done by puting a property that is unique for every contact to search
-     	//with this unique property the contact that the user clicks and then get that contact from the phonebook
-     	//The unique property for the contact is its id in iOS it is called recordId and in ANDROID it is called id
-     	var contactId;
-     	if (OS_IOS)
-     	{
-     		contactId= _data[i].recordId;
-     	}
-     	else
-     	if(OS_ANDROID)
-     	{
-     		contactId= _data[i].id;
-      	}
         items.push({
             template : "template1",            // set the template
             textLabel : {
@@ -114,7 +100,7 @@ function createListView(_data, textToSearchFor)
             	image:"/images/bofffcontact.png"
             },
             properties : {
-            itemId:contactId ,			//assign the unique contact id to the listItem's itemId for retrieving
+            itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
             searchableText: _data[i][textToSearchFor] ,
             backgroundColor:"transparent",
             }
@@ -131,7 +117,7 @@ function showContact(e)
 	$.search.blur();
 	//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 	//is saved the actual contact id of this user
-	contact =Ti.Contacts.getPersonByID(e.itemId);
+	contact =sortedContacts[e.itemId];
 	//Here is to initialize a view that will contain the data of the user
 	//I had to initialize the controller by itself first to access the interface objects within this view
 	var params=

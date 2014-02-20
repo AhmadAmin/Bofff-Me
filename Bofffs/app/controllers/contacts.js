@@ -94,8 +94,10 @@ function sort(a, b) {
     }
     return 0;
 }
-var bofffContacts=[];
+
+//gather contacts' numbers and change them to readable number string without special characters
 var contactsNumbers=[];
+var contactNumbersAndIds=[];
 var mobileNumbers;
 var expression = /^\d+$/;
 for(var contact in sortedContacts)
@@ -122,17 +124,47 @@ for(var contact in sortedContacts)
 				{
 					trimmedNumber=mobileNumbers[i][x];
 				}
+				if(OS_IOS)
+				{
+					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].recordId };
+					contactNumbersAndIds.push(numberAndId);
+				}
+				else
+				if(OS_ANDROID)
+				{
+					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
+					contactNumbersAndIds.push(numberAndId);
+				}
 				contactsNumbers.push(trimmedNumber);
 			}
 		}
 	}
 }
 
+//This is to map the bofffs of the user to his contact list, by comparing their bofff primary numbers
+//with the ones in the contact list and then get their id in the contact list
+var bofffContactIds=[];
+function mapBofffsToContacts(bofffFriendPrimaryNumber,contactNumbersAndIds)
+{
+	for(var record in contactNumbersAndIds)
+	{
+		if(contactNumbersAndIds[record].number==bofffFriendPrimaryNumber)
+			{
+				bofffContactIds.push(contactNumbersAndIds[record].id);
+			}
+	}
+}
+
+//then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
 for(var number in contactsNumbers)
 {
 	findBofffs(contactsNumbers[number]);
 }
-
+//this is to check whether or not these numbers are in our DB if yes
+//then this user is added as a friend and mapped to the contacts of the user
+//after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
+var bofffFriends=[];
+var numberOfContactsNumbersRecords=contactsNumbers.length;
 function findBofffs(contactNumber)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
@@ -145,57 +177,46 @@ function findBofffs(contactNumber)
 			if(response!="not found")
 			{
 				addFriend(response.rows[0].pin);
-				//alert(response.rows[0].fname+" "+response.rows[0].pin);
-				//addFriend(response.rows[0].pin);
-			}			
+				mapBofffsToContacts(response.rows[0].primary_mobile,contactNumbersAndIds);
+				bofffFriends.push(response.rows[0]);
+			}
+			numberOfContactsNumbersRecords--;
+	    	if(numberOfContactsNumbersRecords==0)
+	    	{
+	    		bofffFriends.sort(sort);
+	    		initializeBofffsList(bofffFriends);
+	    	}			
 		 },
 	    onerror: function(e) 
 	    {
+	    	numberOfContactsNumbersRecords--;
 	    	$.lbl_serverTest.text="ERROR+"+contactNumber;	
-	    	// Ti.UI.createAlertDialog(
-			// {
-				// title : 'Error',
-			    // message : 'Check your internet connection.',
-				// cancel : 0,
-				// buttonNames : ['Ok']
-	        // }).show();
 	    },
-	   // timeout:5000  /* in milliseconds */
 	});
 	
-	xhr.open("POST", url+"search_user_by/eslam/user_accounts/primary_mobile/"+contactNumber);
+	xhr.open("POST", url+"search_user_by/bofff/user_accounts/primary_mobile/"+contactNumber);
 	xhr.send();  // request is actually sent with this statement
 }
-
-function addFriend(pin)
+//when the pin is sent back it saves it as a friend to this user
+function addFriend(pin,contactPrimaryNumber)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
 	    onload: function(e) 
 	    {
-	    	alert("friend added");
 	    	var response = JSON.parse(this.responseText);
 		},
 	    onerror: function(e) 
 	    {
-	    	alert("didn't add friend");
-	    	// Ti.UI.createAlertDialog(
-			// {
-				// title : 'Error',
-			    // message : 'Check your internet connection.',
-				// cancel : 0,
-				// buttonNames : ['Ok']
-	        // }).show();
 	    },
-	   // timeout:5000  /* in milliseconds */
 	});
 	
-	xhr.open("POST", url+"insert/eslam/user_friends");
+	xhr.open("POST", url+"insert/bofff/user_friends");
 	var params =
 		{
-			friend_of_user_pin_code:	pin,
-			pin_code			   :    'a8e7fec219c1b9e33ecb340c197ad15c'
+			friend_of_user_pin_code		 : pin,
+			pin_code			   		 : 'fbea0803a7d79e402d0557dcb7063a03',
     	};
 	xhr.send(params);  // request is actually sent with this statement
 }
@@ -209,14 +230,35 @@ function isEmpty(obj)
     }
     return true;
 }
-var payload=
+
+//Send the pins of the bofffs friend to create a list with it
+function initializeBofffsList(bofffFriends)
+{
+	
+	var bofffContactsPayload=
+		{
+			mainView:$.scrollableview_mainContactsView,
+			bofffFriends:bofffFriends,
+		};
+	bofffsContacts=Alloy.createController("bofffsContacts",bofffContactsPayload);
+	var views=[bofffsContacts.getView(),allContacts.getView()];
+	$.scrollableview_mainContactsView.setViews(views);
+}
+
+var allContactsPayload=
 {
 	mainView:$.scrollableview_mainContactsView,
 	sortedContacts:sortedContacts,
 };
-var allContacts=Alloy.createController("allContacts",payload);
-var bofffsContacts=Alloy.createController("bofffsContacts",payload);
+var bofffContactsPayload=
+{
+	mainView:$.scrollableview_mainContactsView,
+	sortedContacts:sortedContacts,
+};
+var bofffsContacts=Alloy.createController("bofffsContacts",bofffContactsPayload);
 $.scrollableview_mainContactsView.addView(bofffsContacts.getView());
+
+var allContacts=Alloy.createController("allContacts",allContactsPayload);
 $.scrollableview_mainContactsView.addView(allContacts.getView());
 
 

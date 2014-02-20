@@ -44,8 +44,6 @@ function Controller() {
                 });
                 items = [];
             }
-            var contactId;
-            contactId = _data[i].recordId;
             items.push({
                 template: "template1",
                 textLabel: {
@@ -58,7 +56,7 @@ function Controller() {
                     image: "/images/bofffcontact.png"
                 },
                 properties: {
-                    itemId: contactId,
+                    itemId: i,
                     searchableText: _data[i][textToSearchFor],
                     backgroundColor: "transparent"
                 }
@@ -70,7 +68,7 @@ function Controller() {
     }
     function showContact(e) {
         $.search.blur();
-        contact = Ti.Contacts.getPersonByID(e.itemId);
+        contact = sortedContacts[e.itemId];
         var params = {
             contact: contact
         };

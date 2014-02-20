@@ -17,42 +17,61 @@ function Controller() {
         if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
         return 0;
     }
+    function mapBofffsToContacts(bofffFriendPrimaryNumber, contactNumbersAndIds) {
+        for (var record in contactNumbersAndIds) contactNumbersAndIds[record].number == bofffFriendPrimaryNumber && bofffContactIds.push(contactNumbersAndIds[record].id);
+    }
     function findBofffs(contactNumber) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
                 $.lbl_serverTest.text = "on load+" + contactNumber;
                 var response = JSON.parse(this.responseText);
-                "not found" != response && addFriend(response.rows[0].pin);
+                if ("not found" != response) {
+                    addFriend(response.rows[0].pin);
+                    mapBofffsToContacts(response.rows[0].primary_mobile, contactNumbersAndIds);
+                    bofffFriends.push(response.rows[0]);
+                }
+                numberOfContactsNumbersRecords--;
+                if (0 == numberOfContactsNumbersRecords) {
+                    bofffFriends.sort(sort);
+                    initializeBofffsList(bofffFriends);
+                }
             },
             onerror: function() {
+                numberOfContactsNumbersRecords--;
                 $.lbl_serverTest.text = "ERROR+" + contactNumber;
             }
         });
-        xhr.open("POST", url + "search_user_by/eslam/user_accounts/primary_mobile/" + contactNumber);
+        xhr.open("POST", url + "search_user_by/bofff/user_accounts/primary_mobile/" + contactNumber);
         xhr.send();
     }
     function addFriend(pin) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
-                alert("friend added");
                 JSON.parse(this.responseText);
             },
-            onerror: function() {
-                alert("didn't add friend");
-            }
+            onerror: function() {}
         });
-        xhr.open("POST", url + "insert/eslam/user_friends");
+        xhr.open("POST", url + "insert/bofff/user_friends");
         var params = {
             friend_of_user_pin_code: pin,
-            pin_code: "a8e7fec219c1b9e33ecb340c197ad15c"
+            pin_code: "fbea0803a7d79e402d0557dcb7063a03"
         };
         xhr.send(params);
     }
     function isEmpty(obj) {
         for (var key in obj) if (obj.hasOwnProperty(key)) return false;
         return true;
+    }
+    function initializeBofffsList(bofffFriends) {
+        var bofffContactsPayload = {
+            mainView: $.scrollableview_mainContactsView,
+            bofffFriends: bofffFriends
+        };
+        bofffsContacts = Alloy.createController("bofffsContacts", bofffContactsPayload);
+        var views = [ bofffsContacts.getView(), allContacts.getView() ];
+        $.scrollableview_mainContactsView.setViews(views);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "contacts";
@@ -106,6 +125,7 @@ function Controller() {
         sortedContacts.sort(sort);
     });
     var contactsNumbers = [];
+    var contactNumbersAndIds = [];
     var mobileNumbers;
     var expression = /^\d+$/;
     for (var contact in sortedContacts) {
@@ -113,17 +133,30 @@ function Controller() {
         if (!isEmpty(mobileNumbers)) for (var i in mobileNumbers) for (var x in mobileNumbers[i]) {
             var trimmedNumber = "";
             if (expression.test(mobileNumbers[i][x])) trimmedNumber = mobileNumbers[i][x]; else for (var character in mobileNumbers[i][x]) expression.test(mobileNumbers[i][x][character]) && (trimmedNumber += mobileNumbers[i][x][character]);
+            var numberAndId;
+            var numberAndId = {
+                number: trimmedNumber,
+                id: sortedContacts[contact].recordId
+            };
+            contactNumbersAndIds.push(numberAndId);
             contactsNumbers.push(trimmedNumber);
         }
     }
+    var bofffContactIds = [];
     for (var number in contactsNumbers) findBofffs(contactsNumbers[number]);
-    var payload = {
+    var bofffFriends = [];
+    var numberOfContactsNumbersRecords = contactsNumbers.length;
+    var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts
     };
-    var allContacts = Alloy.createController("allContacts", payload);
-    var bofffsContacts = Alloy.createController("bofffsContacts", payload);
+    var bofffContactsPayload = {
+        mainView: $.scrollableview_mainContactsView,
+        sortedContacts: sortedContacts
+    };
+    var bofffsContacts = Alloy.createController("bofffsContacts", bofffContactsPayload);
     $.scrollableview_mainContactsView.addView(bofffsContacts.getView());
+    var allContacts = Alloy.createController("allContacts", allContactsPayload);
     $.scrollableview_mainContactsView.addView(allContacts.getView());
     __defers["$.__views.scrollableview_mainContactsView!scrollend!changeRightNavButton"] && $.__views.scrollableview_mainContactsView.addEventListener("scrollend", changeRightNavButton);
     _.extend($, exports);

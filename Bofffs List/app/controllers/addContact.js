@@ -8,12 +8,11 @@ function sendData(e)
 	{
 	    onload: function(e) 
 	    {
-			alert(this.responseText);
-	        var response = JSON.parse(this.responseText);
+			var response = JSON.parse(this.responseText);
+			//this returns the pin of the user you should convert it to md5
 	        alert(response.rows);
-	        // to get the country for ip use this
-	         //alert(response[0].cc);
-	        //alert(Titanium.Utils.md5HexDigest(response.rows));
+	        //this is to convert the pin to md5 to be able to search with it in the DB you should save it alloy.globals
+	        //var pinInMd5=Titanium.Utils.md5HexDigest(response.rows);
 	       	    },
 	    onerror: function(e) 
 	    {
@@ -27,16 +26,14 @@ function sendData(e)
 	    },
 	   // timeout:5000  /* in milliseconds */
 	});
-	xhr.open("POST", url+"insert/eslam/user_accounts");
+	xhr.open("POST", url+"insert/bofff/user_accounts");
 	var params ={
-    	fname:					$.txt_firstName.value,
-		lname: 					$.txt_lastName.value,
+    	fullName:				$.txt_firstName.value+$.txt_lastName.value,
+		gender:					"male",
 		primary_mobile:			$.txt_phoneNumber.value,
 		mails: 					$.txt_mails.value,
-		social_links: 			$.txt_socialLinks.value,
 		profile_picture: 		$.img_profilePicture.image,
-		password:				"01024255",
-        mails_privacy:			$.txt_mailsPrivacy.value,
+		mails_privacy:			$.txt_mailsPrivacy.value,
 		social_links_privacy:	$.txt_profilePicturePrivacy.value,
 		profile_picture_privacy:$.txt_socialLinksPrivacy.value,
     };
@@ -77,6 +74,7 @@ $.img_profilePicture.addEventListener('click', function() {
 
 
 var ImageFactory= require("ti.imagefactory");
+var iconImage;
 
 
 var photosOption = Ti.UI.createOptionDialog({
@@ -99,7 +97,21 @@ photosOption.addEventListener('click', function(e) {
 
                 Ti.API.debug('Our type was: ' + event.mediaType);
                 if (event.mediaType == Ti.Media.MEDIA_TYPE_PHOTO) {
-                    $.img_profilePicture.image = event.media;
+                	 var smallImage = ImageFactory.imageAsResized(event.media,
+                	 	{
+		            		width: 500,
+		            		height: 500,
+		            		quality: ImageFactory.QUALITY_MEDIUM
+		    			});
+		    			
+		    		 var smallerImage= ImageFactory.imageAsResized(event.media,
+                	 	{
+		            		width: 50,
+		            		height: 50,
+		            		quality: ImageFactory.QUALITY_MEDIUM
+		    			});
+    				iconImage= 	smallerImage;
+                    $.img_profilePicture.image = smallImage;
                 } else {
                     alert("got the wrong type back =" + event.mediaType);
                 }
@@ -140,6 +152,13 @@ photosOption.addEventListener('click', function(e) {
             		height: 500,
             		quality: ImageFactory.QUALITY_MEDIUM
     			});
+    			var smallerImage= ImageFactory.imageAsResized(image,
+                	 	{
+		            		width: 50,
+		            		height: 50,
+		            		quality: ImageFactory.QUALITY_MEDIUM
+		    			});
+    			iconImage= 	smallerImage;
                 $.img_profilePicture.image = smallImage;
                	
             },

@@ -48,7 +48,22 @@ function Controller() {
             $.search.blur();
         }
     }
-    function createListView(_data, textToSearchFor) {
+    function getFriends(bofffFriends) {
+        for (var friend in bofffFriends) {
+            var url = "http://www.bofffme.com/api/index.php/home/";
+            var xhr = Ti.Network.createHTTPClient({
+                onload: function() {
+                    var response = JSON.parse(this.responseText);
+                    alert(response.rows[0].status);
+                    "favorite" == response.rows[0].status ? ifFavoriteBofff.push("true") : ifFavoriteBofff.push("false");
+                },
+                onerror: function() {}
+            });
+            xhr.open("POST", url + "search_user_by/bofff/user_friends/pin_code/" + "fbea0803a7d79e402d0557dcb7063a03");
+            xhr.send();
+        }
+    }
+    function createNormalListView(_data) {
         var listSections = [];
         var lastCharacter = _data[0].fullName.substring(0, 1).toUpperCase();
         var section = Ti.UI.createListSection({
@@ -66,15 +81,6 @@ function Controller() {
                 });
                 items = [];
             }
-            var contactId;
-            contactId = _data[i].recordId;
-            if (ifFavorite) {
-                imageFavorite = "/images/favoritecontact.png";
-                ifFavorite = false;
-            } else {
-                imageFavorite = "/images/notfavoritecontact.png";
-                ifFavorite = true;
-            }
             items.push({
                 template: "template1",
                 textLabel: {
@@ -84,11 +90,11 @@ function Controller() {
                     image: _data[i].image
                 },
                 bofff_pic: {
-                    image: imageFavorite
+                    image: "/images/bofffcontact.png"
                 },
                 properties: {
-                    itemId: contactId,
-                    searchableText: _data[i][textToSearchFor],
+                    itemId: i,
+                    searchableText: _data[i].fullName,
                     backgroundColor: "transparent"
                 }
             });
@@ -115,7 +121,7 @@ function Controller() {
             }
         } else {
             $.search.blur();
-            contact = Ti.Contacts.getPersonByID(e.itemId);
+            contact = sortedContacts[e.itemId];
             var params = {
                 contact: contact
             };
@@ -262,8 +268,14 @@ function Controller() {
     _.extend($, $.__views);
     var args = arguments[0] || {};
     args.mainView;
-    var sortedContacts = args.sortedContacts;
-    createListView(sortedContacts, "fullName");
+    try {
+        var bofffFriends = args.bofffFriends;
+        bofffFriends[0];
+        getFriends(bofffFriends);
+    } catch (error) {
+        var sortedContacts = args.sortedContacts;
+        createNormalListView(sortedContacts);
+    }
     var searchbarIsOnFocus = false;
     var firstFocus = true;
     var searchButtonPressed = false;
@@ -289,8 +301,7 @@ function Controller() {
             $.view_customField.txt_customField.blur();
         });
     });
-    var ifFavorite = true;
-    var imageFavorite;
+    var ifFavoriteBofff = [];
     var privacyClicked = false;
     var changeToFavorite = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);

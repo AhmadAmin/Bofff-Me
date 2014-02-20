@@ -3,7 +3,6 @@ function Controller() {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
-                alert(this.responseText);
                 var response = JSON.parse(this.responseText);
                 alert(response.rows);
             },
@@ -16,15 +15,13 @@ function Controller() {
                 }).show();
             }
         });
-        xhr.open("POST", url + "insert/eslam/user_accounts");
+        xhr.open("POST", url + "insert/bofff/user_accounts");
         var params = {
-            fname: $.txt_firstName.value,
-            lname: $.txt_lastName.value,
-            phone_numbers: $.txt_phoneNumber.value,
+            fullName: $.txt_firstName.value + $.txt_lastName.value,
+            gender: "male",
+            primary_mobile: $.txt_phoneNumber.value,
             mails: $.txt_mails.value,
-            social_links: $.txt_socialLinks.value,
             profile_picture: $.img_profilePicture.image,
-            password: "01024255",
             mails_privacy: $.txt_mailsPrivacy.value,
             social_links_privacy: $.txt_profilePicturePrivacy.value,
             profile_picture_privacy: $.txt_socialLinksPrivacy.value
@@ -201,6 +198,7 @@ function Controller() {
         photosOption.show();
     });
     var ImageFactory = require("ti.imagefactory");
+    var iconImage;
     var photosOption = Ti.UI.createOptionDialog({
         title: "Select ?",
         options: [ "Take Photo", "Choose from Library", "Cancel" ],
@@ -213,7 +211,20 @@ function Controller() {
                 event.cropRect;
                 event.media;
                 Ti.API.debug("Our type was: " + event.mediaType);
-                event.mediaType == Ti.Media.MEDIA_TYPE_PHOTO ? $.img_profilePicture.image = event.media : alert("got the wrong type back =" + event.mediaType);
+                if (event.mediaType == Ti.Media.MEDIA_TYPE_PHOTO) {
+                    var smallImage = ImageFactory.imageAsResized(event.media, {
+                        width: 500,
+                        height: 500,
+                        quality: ImageFactory.QUALITY_MEDIUM
+                    });
+                    var smallerImage = ImageFactory.imageAsResized(event.media, {
+                        width: 50,
+                        height: 50,
+                        quality: ImageFactory.QUALITY_MEDIUM
+                    });
+                    iconImage = smallerImage;
+                    $.img_profilePicture.image = smallImage;
+                } else alert("got the wrong type back =" + event.mediaType);
             },
             cancel: function() {},
             error: function(error) {
@@ -236,6 +247,12 @@ function Controller() {
                     height: 500,
                     quality: ImageFactory.QUALITY_MEDIUM
                 });
+                var smallerImage = ImageFactory.imageAsResized(image, {
+                    width: 50,
+                    height: 50,
+                    quality: ImageFactory.QUALITY_MEDIUM
+                });
+                iconImage = smallerImage;
                 $.img_profilePicture.image = smallImage;
             },
             cancel: function() {},
