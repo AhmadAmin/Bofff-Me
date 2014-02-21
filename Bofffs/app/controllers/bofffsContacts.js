@@ -5,13 +5,7 @@ try
 	var bofffs= args.bofffFriends;
 	var  test =bofffs[0];
 	getFriends();
-}catch(error){
-	// var sortedContacts=args.sortedContacts;
-	// createNormalListView(sortedContacts);
-}
-
-//This is to put the sorted contacts into a list
-
+}catch(error){}
 
 var searchbarIsOnFocus= false;
 var firstFocus=true;
@@ -160,6 +154,7 @@ function getFriends()
 	    {
 	    	var response = JSON.parse(this.responseText);
 	    	bofffsList=response.rows;
+	    	//This is to sort the bofffs alphabetically
 	    	bofffsList.sort(sort);
 	    	createBofffListView(bofffsList,"fullName");
 	    },
@@ -211,8 +206,9 @@ function createBofffListView(_data, textToSearchFor)
                 image : _data[i].icon_image   // assign the values from the data
             },
             bofff_pic:{
-            	image:imageFavorite
-            },
+            	image:imageFavorite,
+            	},
+            status:_data[i].status,
             properties : {
             itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
             searchableText: _data[i][textToSearchFor] ,
@@ -236,46 +232,39 @@ function createBofffListView(_data, textToSearchFor)
 }
 
 var privacyClicked=false;
-var changeToFavorite=false;
 // if a star is clicked by the user
 function starClicked(e)
 {
 	privacyClicked=true;
-	if(e.source.image=="/images/favoritecontact.png")
-	{
-		changeToFavorite=false;
-	}
-	else
-	{
-		changeToFavorite=true;
-	}
 }
 
-function changeStar(e)
+function changeStar(listItem)
 {
 	privacyClicked=false;
+	var item = listItem.section.getItemAt(listItem.itemIndex);
 	// it means that the user clicked an empty star so we have to change it to a full star
-	if (changeToFavorite)
+	if (item.status=="not favorite")
 	{
-		var item = e.section.getItemAt(e.itemIndex);
+		item.status="favorite";
 		item.bofff_pic.image = "/images/favoritecontact.png";
-		e.section.updateItemAt(e.itemIndex, item);  
+		listItem.section.updateItemAt(listItem.itemIndex, item);  
 	}
 	// it means that the user clicked a full star so we have to change it to an empty star
 	else
 	{
-		var item = e.section.getItemAt(e.itemIndex);
+		item.status="not favorite";
 		item.bofff_pic.image = "/images/notfavoritecontact.png";
-		e.section.updateItemAt(e.itemIndex, item);
+		listItem.section.updateItemAt(listItem.itemIndex, item);
 	}
 }
 
-function updatePrivacy(changeToFavorite, listIndex)
+function updatePrivacy(listItem)
 {
-	var status="not favorite";
-	if(changeToFavorite)
+	var item = listItem.section.getItemAt(listItem.itemIndex);
+	var newStatus="not favorite";
+	if(item.status=="not favorite")
 	{
-		status="favorite";
+		newStatus="favorite";
 	}
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
@@ -283,17 +272,18 @@ function updatePrivacy(changeToFavorite, listIndex)
 	    onload: function(e) 
 	    {
 	    	var response = JSON.parse(this.responseText);
-	    	changeStar(listIndex);
+	    	changeStar(listItem);
 	    },
 	    onerror: function(e) 
 	    {
+	    	alert("error");
 	    },
 	});
 		
-	xhr.open("POST", url+"update/bofff/user_friends/"+bofffsList[listIndex.itemId].id);
+	xhr.open("POST", url+"update/bofff/user_friends/"+bofffsList[listItem.itemId].id);
 	var params=
 	{
-		status: status,
+		status: newStatus,
 	};
 	xhr.send(params);  // request is actually sent with this statement
 }
@@ -304,7 +294,7 @@ function showContact(e)
 	// to check if the click is fired because of the list item or because of the star in the list item
 	if(privacyClicked)
 	{
-		updatePrivacy(changeToFavorite,e);
+		updatePrivacy(e);
 	}
 	else
 	{
@@ -318,16 +308,15 @@ function showContact(e)
 			{
 				bofff=bofffs[record];
 				break;
-				alert("fuck you");
 			}
 		}
-	    alert(bofff.fullName);
+	    var image = e.section.getItemAt(e.itemIndex).pic.image;
 		//Here is to initialize a view that will contain the data of the user
-		//I had to initialize the controller by itself first to access the interface objects within this view
-		// var params=
-		// {
-			// contact: contact,
-		// };
-		// Ti.App.bofffsListTab.open(Alloy.createController('contactInfo', params).getView());
+		var params=
+		{
+			bofff: bofff,
+			image: image,
+		};
+		Ti.App.bofffsListTab.open(Alloy.createController('bofffInfo', params).getView());
 	}
 }

@@ -1,0 +1,10 @@
+<Alloy>
+	<Window id="win_bofffInfo" title="Bofff Info" navTintColor="#2279bc" backgroundColor="white" layout="vertical">
+		<ImageView class="img_bofffImage" id="img_bofffImage" onClick="enlargeImage"/>
+		<ScrollView class="container" id ="view_container">
+			
+			<!-- <View class="view_dynamicLabels" id="view_dynamicLabels"/>
+				<AlertDialog id="dialog" onClick="dialog_Click" title="Confirm"/> -->
+		</ScrollView>
+	</Window>
+</Alloy>

@@ -97,6 +97,7 @@ function Controller() {
                 bofff_pic: {
                     image: imageFavorite
                 },
+                status: _data[i].status,
                 properties: {
                     itemId: i,
                     searchableText: _data[i][textToSearchFor],
@@ -108,48 +109,56 @@ function Controller() {
         listSections.push(section);
         $.list_bofffContacts.sections = listSections;
     }
-    function starClicked(e) {
+    function starClicked() {
         privacyClicked = true;
-        changeToFavorite = "/images/favoritecontact.png" == e.source.image ? false : true;
     }
-    function changeStar(e) {
+    function changeStar(listItem) {
         privacyClicked = false;
-        if (changeToFavorite) {
-            var item = e.section.getItemAt(e.itemIndex);
+        var item = listItem.section.getItemAt(listItem.itemIndex);
+        if ("not favorite" == item.status) {
+            item.status = "favorite";
             item.bofff_pic.image = "/images/favoritecontact.png";
-            e.section.updateItemAt(e.itemIndex, item);
+            listItem.section.updateItemAt(listItem.itemIndex, item);
         } else {
-            var item = e.section.getItemAt(e.itemIndex);
+            item.status = "not favorite";
             item.bofff_pic.image = "/images/notfavoritecontact.png";
-            e.section.updateItemAt(e.itemIndex, item);
+            listItem.section.updateItemAt(listItem.itemIndex, item);
         }
     }
-    function updatePrivacy(changeToFavorite, listIndex) {
-        var status = "not favorite";
-        changeToFavorite && (status = "favorite");
+    function updatePrivacy(listItem) {
+        var item = listItem.section.getItemAt(listItem.itemIndex);
+        var newStatus = "not favorite";
+        "not favorite" == item.status && (newStatus = "favorite");
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
                 JSON.parse(this.responseText);
-                changeStar(listIndex);
+                changeStar(listItem);
             },
-            onerror: function() {}
+            onerror: function() {
+                alert("error");
+            }
         });
-        xhr.open("POST", url + "update/bofff/user_friends/" + bofffsList[listIndex.itemId].id);
+        xhr.open("POST", url + "update/bofff/user_friends/" + bofffsList[listItem.itemId].id);
         var params = {
-            status: status
+            status: newStatus
         };
         xhr.send(params);
     }
     function showContact(e) {
-        if (privacyClicked) updatePrivacy(changeToFavorite, e); else {
+        if (privacyClicked) updatePrivacy(e); else {
             $.search.blur();
             var bofff;
             for (var record in bofffs) if (bofffs[record].pin == bofffsList[e.itemId].friend_pin_code) {
                 bofff = bofffs[record];
                 break;
             }
-            alert(bofff.fullName);
+            var image = e.section.getItemAt(e.itemIndex).pic.image;
+            var params = {
+                bofff: bofff,
+                image: image
+            };
+            Ti.App.bofffsListTab.open(Alloy.createController("bofffInfo", params).getView());
         }
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
@@ -325,7 +334,6 @@ function Controller() {
     var bofffsList = [];
     var imageFavorite;
     var privacyClicked = false;
-    var changeToFavorite = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);

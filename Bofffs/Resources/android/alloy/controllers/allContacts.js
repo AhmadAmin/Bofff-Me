@@ -1,7 +1,4 @@
 function Controller() {
-    function goToBoffsContacts() {
-        mainView.scrollToView(0);
-    }
     function initializeSearch() {
         if (firstFocus && true) {
             firstFocus = false;
@@ -52,8 +49,6 @@ function Controller() {
                 });
                 items = [];
             }
-            var contactId;
-            contactId = _data[i].id;
             items.push({
                 template: "template1",
                 textLabel: {
@@ -66,7 +61,7 @@ function Controller() {
                     image: "/images/bofffcontact.png"
                 },
                 properties: {
-                    itemId: contactId,
+                    itemId: i,
                     searchableText: _data[i][textToSearchFor],
                     backgroundColor: "transparent"
                 }
@@ -78,7 +73,7 @@ function Controller() {
     }
     function showContact(e) {
         $.search.blur();
-        contact = Ti.Contacts.getPersonByID(e.itemId);
+        contact = sortedContacts[e.itemId];
         var params = {
             contact: contact
         };
@@ -103,21 +98,6 @@ function Controller() {
         id: "view_contacts"
     });
     $.__views.view_container.add($.__views.view_contacts);
-    $.__views.lb_contactsType = Ti.UI.createLabel({
-        color: "blue",
-        font: {
-            fontSize: "20dp",
-            fontFamily: "Helvetica Neue"
-        },
-        left: "5dp",
-        width: Ti.UI.SIZE,
-        height: "30dp",
-        textAlign: "center",
-        text: "all contacts",
-        id: "lb_contactsType"
-    });
-    $.__views.view_contacts.add($.__views.lb_contactsType);
-    goToBoffsContacts ? $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts) : __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] = true;
     $.__views.search = Ti.UI.createSearchBar({
         backgroundColor: "transparent",
         id: "search",
@@ -191,7 +171,7 @@ function Controller() {
     exports.destroy = function() {};
     _.extend($, $.__views);
     var args = arguments[0] || {};
-    var mainView = args.mainView;
+    args.mainView;
     var sortedContacts = args.sortedContacts;
     createListView(sortedContacts, "fullName");
     var searchbarIsOnFocus = false;
@@ -199,7 +179,6 @@ function Controller() {
     var searchButtonPressed = false;
     $.list_allContacts.caseInsensitiveSearch = true;
     $.list_allContacts.keepSectionsInSearch = true;
-    __defers["$.__views.lb_contactsType!click!goToBoffsContacts"] && $.__views.lb_contactsType.addEventListener("click", goToBoffsContacts);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
     __defers["$.__views.search!change!updateSearch"] && $.__views.search.addEventListener("change", updateSearch);

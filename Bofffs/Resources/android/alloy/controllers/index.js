@@ -96,13 +96,18 @@ function Controller() {
     __alloyId13.push($.__views.__alloyId20);
     $.__views.index = Ti.UI.createTabGroup({
         tabs: __alloyId13,
+        barColor: "#ADE3F8",
         id: "index"
     });
     $.__views.index && $.addTopLevelView($.__views.index);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    $.win_boffsList.add(Alloy.createController("contacts").getView());
+    var params = {
+        win_boffsList: $.win_boffsList
+    };
+    $.win_boffsList.add(Alloy.createController("contacts", params).getView());
     Ti.App.bofffsListTab = $.tab_boffsList;
+    Ti.App.index = $.win_boffsList;
     $.index.open();
     _.extend($, exports);
 }

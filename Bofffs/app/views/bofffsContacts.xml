@@ -9,7 +9,7 @@
 			<Require platform="ios"  id="picker_searchBy"  src="searchByFieldPicker" type="view" />
 			<SearchBar  backgroundColor="transparent" id="search" left="0" height="43" width="Ti.UI.FILL" hintText="find a bofff" onFocus="initializeSearch"
 			onCancel="cancelSearch" onChange="updateSearch" onBlur="stopSearch" onReturn="searchBofff" />
-			<ListView  id="list_bofffContacts"  left="0" class="list_bofffContacts" width="100%" defaultItemTemplate="template1" onItemclick="showContact"  >
+			<ListView  id="list_bofffContacts"  left="0" class="list_bofffContacts" width="100%" defaultItemTemplate="template1" onItemclick="showContact" >
 				<Templates>
 					<ItemTemplate id="template1" name="template1"  class="template1">
 						<ImageView id="pic"  bindId="pic" class="bofffThumb"/>

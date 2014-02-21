@@ -1,0 +1,5 @@
+<Alloy>
+	<Window id="win_bofffImage" title="Bofff Info" navTintColor="#2279bc" backgroundColor="white">
+		<ImageView class="img_bofffImage" id="img_bofffImage" width="500" height="Ti.UI.SIZE"/>
+	</Window>
+</Alloy>
