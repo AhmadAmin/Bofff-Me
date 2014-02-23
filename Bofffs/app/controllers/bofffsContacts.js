@@ -154,9 +154,12 @@ function getFriends()
 	    {
 	    	var response = JSON.parse(this.responseText);
 	    	bofffsList=response.rows;
-	    	//This is to sort the bofffs alphabetically
-	    	bofffsList.sort(sort);
-	    	createBofffListView(bofffsList,"fullName");
+	    	if(bofffsList.length>0)
+	    	{
+		    	//This is to sort the bofffs alphabetically
+		    	bofffsList.sort(sort);
+		    	createBofffListView(bofffsList,"fullName");
+	    	}
 	    },
 	    onerror: function(e) 
 	    {
@@ -302,14 +305,15 @@ function showContact(e)
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
 		var bofff;
-		for(var record in bofffs)
-		{
-			if (bofffs[record].pin==bofffsList[e.itemId].friend_pin_code)
-			{
-				bofff=bofffs[record];
-				break;
-			}
-		}
+		// for(var record in bofffs)
+		// {
+			// if (bofffs[record].pin==bofffsList[e.itemId].friend_pin_code)
+			// {
+				// bofff=bofffs[record];
+				// break;
+			// }
+		// }
+		bofff=bofffs[e.itemId]['bofff'];
 	    var image = e.section.getItemAt(e.itemIndex).pic.image;
 		//Here is to initialize a view that will contain the data of the user
 		var params=

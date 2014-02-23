@@ -59,8 +59,10 @@ function Controller() {
             onload: function() {
                 var response = JSON.parse(this.responseText);
                 bofffsList = response.rows;
-                bofffsList.sort(sort);
-                createBofffListView(bofffsList, "fullName");
+                if (bofffsList.length > 0) {
+                    bofffsList.sort(sort);
+                    createBofffListView(bofffsList, "fullName");
+                }
             },
             onerror: function() {}
         });
@@ -149,10 +151,7 @@ function Controller() {
         if (privacyClicked) updatePrivacy(e); else {
             $.search.blur();
             var bofff;
-            for (var record in bofffs) if (bofffs[record].pin == bofffsList[e.itemId].friend_pin_code) {
-                bofff = bofffs[record];
-                break;
-            }
+            bofff = bofffs[e.itemId]["bofff"];
             var image = e.section.getItemAt(e.itemIndex).pic.image;
             var params = {
                 bofff: bofff,

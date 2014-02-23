@@ -65,7 +65,7 @@ function performAddressBookFunction()
     {
         sortedContacts.push(contacts[x]);
     }
- 	sortedContacts.sort(sort);
+ 	sortedContacts.sort(sortContacts);
  	
 };
 
@@ -79,11 +79,11 @@ Ti.Contacts.addEventListener('reload', function(e)
     {
         sortedContacts.push(contacts[x]);
     }
- 	sortedContacts.sort(sort);
+ 	sortedContacts.sort(sortContacts);
 });
 
 // This is to sort the contacts alphabetically
-function sort(a, b) {
+function sortContacts(a, b) {
     if (a.fullName.toUpperCase() > b.fullName.toUpperCase())
     {
         return 1;
@@ -95,8 +95,22 @@ function sort(a, b) {
     return 0;
 }
 
+// This is to sort the bofffs alphabetically
+function sortBofffs(a, b) {
+    if (a['bofff'].fullName.toUpperCase() > b['bofff'].fullName.toUpperCase())
+    {
+        return 1;
+    } 
+    else if (a['bofff'].fullName.toUpperCase() < b['bofff'].fullName.toUpperCase()) 
+    {
+        return -1;
+    }
+    return 0;
+}
+
 //gather contacts' numbers and change them to readable number string without special characters
 var contactNumbersAndIds=[];
+var contactNumbers=[];
 var mobileNumbers;
 var expression = /^\d+$/;
 for(var contact in sortedContacts)
@@ -134,6 +148,10 @@ for(var contact in sortedContacts)
 					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
 					contactNumbersAndIds.push(numberAndId);
 				}
+				var number = new Object();
+			    number.number = trimmedNumber;
+			    
+				contactNumbers.push(number);
 			}
 		}
 	}
@@ -141,16 +159,49 @@ for(var contact in sortedContacts)
 
 
 //then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
-findBofffs(contactNumbersAndIds);
+findBofffsTwo(contactNumbersAndIds);
 
 //This is to map the bofffs of the user to his contact list, by comparing their bofff primary numbers
 //with the ones in the contact list and then get their id in the contact list
 var bofffContactIds=[];
-
 //this is to check whether or not these numbers are in our DB if yes
 //then this user is added as a friend and mapped to the contacts of the user
 //after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
 var bofffFriends=[];
+function findBofffsTwo(contactNumbers)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	bofffFriends = JSON.parse(this.responseText);
+	    	bofffFriends.sort(sortBofffs);
+	    	for(var record in bofffFriends )
+	    	{
+	    		var fullName=bofffFriends[record]['bofff'].fullName;
+	    		var icon_image=bofffFriends[record]['bofff'].profile_picture;
+	    		var pin=bofffFriends[record]['bofff'].pin;
+	    		addFriend(fullName,icon_image,pin);
+	    	}
+	    	initializeBofffsList(bofffFriends);
+	    		
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	var params=
+	{
+		numbers:JSON.stringify(contactNumbers)
+	};
+	
+	xhr.open("POST", url+"all_data_by_mobile/bofff");
+	xhr.send(params);  // request is actually sent with this statement
+}
+
+
 function findBofffs(contactNumbersAndIds)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
@@ -185,27 +236,31 @@ function findBofffs(contactNumbersAndIds)
 //when the pin is sent back it saves it as a friend to this user
 function addFriend(fullName,iconImage,pin)
 {
-	var url =  'http://www.bofffme.com/api/index.php/home/';
-	var xhr = Ti.Network.createHTTPClient(
+	if(pin!='fbea0803a7d79e402d0557dcb7063a03')
 	{
-	    onload: function(e) 
-	    {
-	    	var response = JSON.parse(this.responseText);
-		},
-	    onerror: function(e) 
-	    {
-	    },
-	});
-	
-	xhr.open("POST", url+"insert/bofff/user_friends");
-	var params =
+		var url =  'http://www.bofffme.com/api/index.php/home/';
+		var xhr = Ti.Network.createHTTPClient(
 		{
-			fullName		 : fullName,
-			icon_image		 : iconImage,
-			friend_pin_code	 : pin,
-			user_pin_code	 : 'fbea0803a7d79e402d0557dcb7063a03',
-    	};
-	xhr.send(params);  // request is actually sent with this statement
+		    onload: function(e) 
+		    {
+		    	var response = JSON.parse(this.responseText);
+			},
+		    onerror: function(e) 
+		    {
+		    	alert(this.responseText);
+		    },
+		});
+		
+		xhr.open("POST", url+"insert_friend/bofff/user_friends");
+		var params =
+			{
+				fullName		 : fullName,
+				icon_image		 : iconImage,
+				friend_pin_code	 : pin,
+				user_pin_code	 : 'fbea0803a7d79e402d0557dcb7063a03',
+	    	};
+		xhr.send(params);  // request is actually sent with this statement
+	}
 }
 
 //This is to check if an object is empty or not
