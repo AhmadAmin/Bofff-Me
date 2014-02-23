@@ -48,27 +48,6 @@ function Controller() {
             $.search.blur();
         }
     }
-    function sort(a, b) {
-        if (a.fullName.toUpperCase() > b.fullName.toUpperCase()) return 1;
-        if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
-        return 0;
-    }
-    function getFriends() {
-        var url = "http://www.bofffme.com/api/index.php/home/";
-        var xhr = Ti.Network.createHTTPClient({
-            onload: function() {
-                var response = JSON.parse(this.responseText);
-                bofffsList = response.rows;
-                if (bofffsList.length > 0) {
-                    bofffsList.sort(sort);
-                    createBofffListView(bofffsList, "fullName");
-                }
-            },
-            onerror: function() {}
-        });
-        xhr.open("POST", url + "search_user_by/bofff/user_friends/user_pin_code/" + "fbea0803a7d79e402d0557dcb7063a03");
-        xhr.send();
-    }
     function createBofffListView(_data, textToSearchFor) {
         var listSections = [];
         var lastCharacter = _data[0].fullName.substring(0, 1).toUpperCase();
@@ -88,10 +67,11 @@ function Controller() {
                 items = [];
             }
             imageFavorite = "favorite" == _data[i].status ? "/images/favoritecontact.png" : "/images/notfavoritecontact.png";
+            var fullName = Titanium.Contacts.getPersonByID(bofffs[i].contact_id).fullName;
             items.push({
                 template: "template1",
                 textLabel: {
-                    text: _data[i].fullName
+                    text: fullName
                 },
                 pic: {
                     image: _data[i].icon_image
@@ -302,8 +282,8 @@ function Controller() {
     args.mainView;
     try {
         var bofffs = args.bofffFriends;
-        bofffs[0];
-        getFriends();
+        var bofffsList = args.bofffsList;
+        createBofffListView(bofffsList, "fullName");
     } catch (error) {}
     var searchbarIsOnFocus = false;
     var firstFocus = true;
@@ -330,7 +310,6 @@ function Controller() {
             $.view_customField.txt_customField.blur();
         });
     });
-    var bofffsList = [];
     var imageFavorite;
     var privacyClicked = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);

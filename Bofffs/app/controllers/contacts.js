@@ -159,32 +159,35 @@ for(var contact in sortedContacts)
 
 
 //then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
-findBofffsTwo(contactNumbersAndIds);
-
-//This is to map the bofffs of the user to his contact list, by comparing their bofff primary numbers
-//with the ones in the contact list and then get their id in the contact list
-var bofffContactIds=[];
+findBofffs(contactNumbersAndIds);
 //this is to check whether or not these numbers are in our DB if yes
 //then this user is added as a friend and mapped to the contacts of the user
 //after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
 var bofffFriends=[];
-function findBofffsTwo(contactNumbers)
+function findBofffs(contactNumbers)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
 	    onload: function(e) 
 	    {
+	    	var bofffsData=[];
+	    	alert(this.responseText);
 	    	bofffFriends = JSON.parse(this.responseText);
 	    	bofffFriends.sort(sortBofffs);
 	    	for(var record in bofffFriends )
 	    	{
-	    		var fullName=bofffFriends[record]['bofff'].fullName;
-	    		var icon_image=bofffFriends[record]['bofff'].profile_picture;
-	    		var pin=bofffFriends[record]['bofff'].pin;
-	    		addFriend(fullName,icon_image,pin);
+	    		var data=
+	    		{
+	    			fullName:bofffFriends[record]['bofff'].fullName,
+	    			icon_image:bofffFriends[record]['bofff'].profile_picture,
+	    			friend_pin_code:bofffFriends[record]['bofff'].pin,	
+	    			user_pin_code:'fbea0803a7d79e402d0557dcb7063a03',
+	    		};
+	    		bofffsData.push(data);
 	    	}
-	    	initializeBofffsList(bofffFriends);
+	    	addFriend(bofffsData);
+	    	
 	    		
 	    },
 	    onerror: function(e) 
@@ -194,7 +197,8 @@ function findBofffsTwo(contactNumbers)
 	});
 	var params=
 	{
-		numbers:JSON.stringify(contactNumbers)
+		numbers:JSON.stringify(contactNumbers),
+		pin:'fbea0803a7d79e402d0557dcb7063a03',
 	};
 	
 	xhr.open("POST", url+"all_data_by_mobile/bofff");
@@ -202,7 +206,9 @@ function findBofffsTwo(contactNumbers)
 }
 
 
-function findBofffs(contactNumbersAndIds)
+var bofffsList=[];
+//when the pin is sent back it saves it as a friend to this user
+function addFriend(data)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
@@ -210,57 +216,28 @@ function findBofffs(contactNumbersAndIds)
 	    onload: function(e) 
 	    {
 	    	var response = JSON.parse(this.responseText);
-	    	for(var contact in contactNumbersAndIds)
+	    	bofffsList=response.rows;
+	    	if(bofffsList.length>0)
 	    	{
-	    		for( var record in response.rows)
-	    		{
-	    			if(contactNumbersAndIds[contact].number==response.rows[record].primary_mobile)
-	    			{
-	    				bofffFriends.push(response.rows[record]);
-	    				addFriend(response.rows[record].fullName,response.rows[record].profile_picture,response.rows[record].pin);
-	    				bofffContactIds.push(contactNumbersAndIds[contact].id);
-	    			}
-	    		}
+		    	//This is to sort the bofffs alphabetically
+		    	bofffsList.sort(sortContacts);
+		    	initializeBofffsList(bofffFriends,bofffsList);
 	    	}
-			bofffFriends.sort(sort);
-	    	initializeBofffsList(bofffFriends);
-	    },
+	    	
+		},
 	    onerror: function(e) 
 	    {
+	    	alert(this.responseText);
 	    },
 	});
 	
-	xhr.open("POST", url+"get_all/bofff/user_accounts");
-	xhr.send();  // request is actually sent with this statement
-}
-//when the pin is sent back it saves it as a friend to this user
-function addFriend(fullName,iconImage,pin)
-{
-	if(pin!='fbea0803a7d79e402d0557dcb7063a03')
-	{
-		var url =  'http://www.bofffme.com/api/index.php/home/';
-		var xhr = Ti.Network.createHTTPClient(
+	xhr.open("POST", url+"insert_friend/bofff/user_friends");
+	var params =
 		{
-		    onload: function(e) 
-		    {
-		    	var response = JSON.parse(this.responseText);
-			},
-		    onerror: function(e) 
-		    {
-		    	alert(this.responseText);
-		    },
-		});
-		
-		xhr.open("POST", url+"insert_friend/bofff/user_friends");
-		var params =
-			{
-				fullName		 : fullName,
-				icon_image		 : iconImage,
-				friend_pin_code	 : pin,
-				user_pin_code	 : 'fbea0803a7d79e402d0557dcb7063a03',
-	    	};
-		xhr.send(params);  // request is actually sent with this statement
-	}
+			friends: JSON.stringify(data),
+    	};
+	xhr.send(params);  // request is actually sent with this statement
+
 }
 
 //This is to check if an object is empty or not
@@ -274,13 +251,14 @@ function isEmpty(obj)
 }
 
 //Send the pins of the bofffs friend to create a list with it
-function initializeBofffsList(bofffFriends)
+function initializeBofffsList(bofffFriends,bofffsList)
 {
 	
 	var bofffContactsPayload=
 		{
 			mainView:$.scrollableview_mainContactsView,
 			bofffFriends:bofffFriends,
+			bofffsList:bofffsList,
 		};
 	bofffsContacts=Alloy.createController("bofffsContacts",bofffContactsPayload);
 	var views=[bofffsContacts.getView(),allContacts.getView()];

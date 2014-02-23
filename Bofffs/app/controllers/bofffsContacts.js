@@ -3,8 +3,8 @@ var mainView=args.mainView;
 try
 {
 	var bofffs= args.bofffFriends;
-	var  test =bofffs[0];
-	getFriends();
+	var bofffsList=args.bofffsList;
+	createBofffListView(bofffsList,"fullName");
 }catch(error){}
 
 var searchbarIsOnFocus= false;
@@ -131,45 +131,6 @@ $.view_customField.img_closeCustomView.addEventListener("click", function(e)
 	});
 });
 
-// This is to sort the contacts alphabetically
-function sort(a, b) {
-    if (a.fullName.toUpperCase() > b.fullName.toUpperCase())
-    {
-        return 1;
-    } 
-    else if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) 
-    {
-        return -1;
-    }
-    return 0;
-}
-
-var bofffsList=[];
-function getFriends()
-{
-	var url =  'http://www.bofffme.com/api/index.php/home/';
-	var xhr = Ti.Network.createHTTPClient(
-	{
-	    onload: function(e) 
-	    {
-	    	var response = JSON.parse(this.responseText);
-	    	bofffsList=response.rows;
-	    	if(bofffsList.length>0)
-	    	{
-		    	//This is to sort the bofffs alphabetically
-		    	bofffsList.sort(sort);
-		    	createBofffListView(bofffsList,"fullName");
-	    	}
-	    },
-	    onerror: function(e) 
-	    {
-	    },
-	});
-		
-	xhr.open("POST", url+"search_user_by/bofff/user_friends/user_pin_code/"+'fbea0803a7d79e402d0557dcb7063a03');
-	xhr.send();  // request is actually sent with this statement
-}
-
 var imageFavorite;
 //Here is to put the contacts in a list
 function createBofffListView(_data, textToSearchFor)
@@ -200,10 +161,11 @@ function createBofffListView(_data, textToSearchFor)
    		{
    			imageFavorite="/images/notfavoritecontact.png";
    		}
+   		var fullName=Titanium.Contacts.getPersonByID(bofffs[i].contact_id).fullName;
         items.push({
             template : "template1",            // set the template
             textLabel : {
-                text : _data[i].fullName           // assign the values from the data
+                text : fullName           // assign the values from the data
             },
             pic : {
                 image : _data[i].icon_image   // assign the values from the data
@@ -282,7 +244,6 @@ function updatePrivacy(listItem)
 	    	alert("error");
 	    },
 	});
-		
 	xhr.open("POST", url+"update/bofff/user_friends/"+bofffsList[listItem.itemId].id);
 	var params=
 	{
@@ -305,14 +266,6 @@ function showContact(e)
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
 		//is saved the actual contact id of this user
 		var bofff;
-		// for(var record in bofffs)
-		// {
-			// if (bofffs[record].pin==bofffsList[e.itemId].friend_pin_code)
-			// {
-				// bofff=bofffs[record];
-				// break;
-			// }
-		// }
 		bofff=bofffs[e.itemId]['bofff'];
 	    var image = e.section.getItemAt(e.itemIndex).pic.image;
 		//Here is to initialize a view that will contain the data of the user

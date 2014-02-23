@@ -22,59 +22,66 @@ function Controller() {
         if (a["bofff"].fullName.toUpperCase() < b["bofff"].fullName.toUpperCase()) return -1;
         return 0;
     }
-    function findBofffsTwo(contactNumbers) {
+    function findBofffs(contactNumbers) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
+                var bofffsData = [];
+                alert(this.responseText);
                 bofffFriends = JSON.parse(this.responseText);
                 bofffFriends.sort(sortBofffs);
                 for (var record in bofffFriends) {
-                    var fullName = bofffFriends[record]["bofff"].fullName;
-                    var icon_image = bofffFriends[record]["bofff"].profile_picture;
-                    var pin = bofffFriends[record]["bofff"].pin;
-                    addFriend(fullName, icon_image, pin);
+                    var data = {
+                        fullName: bofffFriends[record]["bofff"].fullName,
+                        icon_image: bofffFriends[record]["bofff"].profile_picture,
+                        friend_pin_code: bofffFriends[record]["bofff"].pin,
+                        user_pin_code: "fbea0803a7d79e402d0557dcb7063a03"
+                    };
+                    bofffsData.push(data);
                 }
-                initializeBofffsList(bofffFriends);
+                addFriend(bofffsData);
             },
             onerror: function() {
                 alert(this.responseText);
             }
         });
         var params = {
-            numbers: JSON.stringify(contactNumbers)
+            numbers: JSON.stringify(contactNumbers),
+            pin: "fbea0803a7d79e402d0557dcb7063a03"
         };
         xhr.open("POST", url + "all_data_by_mobile/bofff");
         xhr.send(params);
     }
-    function addFriend(fullName, iconImage, pin) {
-        if ("fbea0803a7d79e402d0557dcb7063a03" != pin) {
-            var url = "http://www.bofffme.com/api/index.php/home/";
-            var xhr = Ti.Network.createHTTPClient({
-                onload: function() {
-                    JSON.parse(this.responseText);
-                },
-                onerror: function() {
-                    alert(this.responseText);
+    function addFriend(data) {
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                var response = JSON.parse(this.responseText);
+                bofffsList = response.rows;
+                if (bofffsList.length > 0) {
+                    bofffsList.sort(sortContacts);
+                    initializeBofffsList(bofffFriends, bofffsList);
                 }
-            });
-            xhr.open("POST", url + "insert_friend/bofff/user_friends");
-            var params = {
-                fullName: fullName,
-                icon_image: iconImage,
-                friend_pin_code: pin,
-                user_pin_code: "fbea0803a7d79e402d0557dcb7063a03"
-            };
-            xhr.send(params);
-        }
+            },
+            onerror: function() {
+                alert(this.responseText);
+            }
+        });
+        xhr.open("POST", url + "insert_friend/bofff/user_friends");
+        var params = {
+            friends: JSON.stringify(data)
+        };
+        xhr.send(params);
     }
     function isEmpty(obj) {
         for (var key in obj) if (obj.hasOwnProperty(key)) return false;
         return true;
     }
-    function initializeBofffsList(bofffFriends) {
+    function initializeBofffsList(bofffFriends, bofffsList) {
         var bofffContactsPayload = {
             mainView: $.scrollableview_mainContactsView,
-            bofffFriends: bofffFriends
+            bofffFriends: bofffFriends,
+            bofffsList: bofffsList
         };
         bofffsContacts = Alloy.createController("bofffsContacts", bofffContactsPayload);
         var views = [ bofffsContacts.getView(), allContacts.getView() ];
@@ -147,8 +154,9 @@ function Controller() {
             contactNumbers.push(number);
         }
     }
-    findBofffsTwo(contactNumbersAndIds);
+    findBofffs(contactNumbersAndIds);
     var bofffFriends = [];
+    var bofffsList = [];
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts
