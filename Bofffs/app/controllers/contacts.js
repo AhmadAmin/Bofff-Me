@@ -110,7 +110,6 @@ function sortBofffs(a, b) {
 
 //gather contacts' numbers and change them to readable number string without special characters
 var contactNumbersAndIds=[];
-var contactNumbers=[];
 var mobileNumbers;
 var expression = /^\d+$/;
 for(var contact in sortedContacts)
@@ -148,10 +147,6 @@ for(var contact in sortedContacts)
 					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
 					contactNumbersAndIds.push(numberAndId);
 				}
-				var number = new Object();
-			    number.number = trimmedNumber;
-			    
-				contactNumbers.push(number);
 			}
 		}
 	}
@@ -172,7 +167,6 @@ function findBofffs(contactNumbers)
 	    onload: function(e) 
 	    {
 	    	var bofffsData=[];
-	    	alert(this.responseText);
 	    	bofffFriends = JSON.parse(this.responseText);
 	    	bofffFriends.sort(sortBofffs);
 	    	for(var record in bofffFriends )
@@ -182,7 +176,7 @@ function findBofffs(contactNumbers)
 	    			fullName:bofffFriends[record]['bofff'].fullName,
 	    			icon_image:bofffFriends[record]['bofff'].profile_picture,
 	    			friend_pin_code:bofffFriends[record]['bofff'].pin,	
-	    			user_pin_code:'fbea0803a7d79e402d0557dcb7063a03',
+	    			user_pin_code:'6f683f806ed1e612900d28de916eae2f',
 	    		};
 	    		bofffsData.push(data);
 	    	}
@@ -198,7 +192,7 @@ function findBofffs(contactNumbers)
 	var params=
 	{
 		numbers:JSON.stringify(contactNumbers),
-		pin:'fbea0803a7d79e402d0557dcb7063a03',
+		pin:'6f683f806ed1e612900d28de916eae2f',
 	};
 	
 	xhr.open("POST", url+"all_data_by_mobile/bofff");

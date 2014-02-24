@@ -27,7 +27,6 @@ function Controller() {
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
                 var bofffsData = [];
-                alert(this.responseText);
                 bofffFriends = JSON.parse(this.responseText);
                 bofffFriends.sort(sortBofffs);
                 for (var record in bofffFriends) {
@@ -35,7 +34,7 @@ function Controller() {
                         fullName: bofffFriends[record]["bofff"].fullName,
                         icon_image: bofffFriends[record]["bofff"].profile_picture,
                         friend_pin_code: bofffFriends[record]["bofff"].pin,
-                        user_pin_code: "fbea0803a7d79e402d0557dcb7063a03"
+                        user_pin_code: "6f683f806ed1e612900d28de916eae2f"
                     };
                     bofffsData.push(data);
                 }
@@ -47,7 +46,7 @@ function Controller() {
         });
         var params = {
             numbers: JSON.stringify(contactNumbers),
-            pin: "fbea0803a7d79e402d0557dcb7063a03"
+            pin: "6f683f806ed1e612900d28de916eae2f"
         };
         xhr.open("POST", url + "all_data_by_mobile/bofff");
         xhr.send(params);
@@ -135,7 +134,6 @@ function Controller() {
         sortedContacts.sort(sortContacts);
     });
     var contactNumbersAndIds = [];
-    var contactNumbers = [];
     var mobileNumbers;
     var expression = /^\d+$/;
     for (var contact in sortedContacts) {
@@ -149,9 +147,6 @@ function Controller() {
                 id: sortedContacts[contact].recordId
             };
             contactNumbersAndIds.push(numberAndId);
-            var number = new Object();
-            number.number = trimmedNumber;
-            contactNumbers.push(number);
         }
     }
     findBofffs(contactNumbersAndIds);

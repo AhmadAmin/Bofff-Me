@@ -1,34 +1,34 @@
 <Alloy>
 	<View id="view_picker" width="0" height="0" backgroundColor="white">
 		<Picker  width="Ti.UI.SIZE" height="Ti.UI.SIZE" id="picker" selectionIndicator="true" >
-			<Row title="Name"/>
-			<Row title="Phone Number"/>
-			<Row title="E-mail"/>
-			<Row title="Social Network"/>
-			<Row title="Job Title"/>
-			<Row title="Company"/>
-			<Row title="Interests"/>
-			<Row title="Education"/>
-			<Row title="Favorite Places"/>
-			<Row title="Marital Status"/>
-			<Row title="Residence"/>
-			<Row title="Gender"/>
-			<Row title="Custom"/>
+			<Row dbName="fullName" dbPrivacy="" title="Name" />
+			<Row dbName="phone_numbers" dbPrivacy="primary_numbers_privacy" title="Phone Number"/>
+			<Row dbName="mails" dbPrivacy="mails_privacy" title="E-mail"/>
+			<Row dbName="social_links" dbPrivacy="social_links_privacy" title="Social Network"/>
+			<Row dbName="job_title" dbPrivacy="job_title_privacy" title="Job Title"/>
+			<Row dbName="company" dbPrivacy="company_privacy" title="Company"/>
+			<Row dbName="interests" dbPrivacy="interests_privacy" title="Interests"/>
+			<Row dbName="education" dbPrivacy="education_privacy" title="Education"/>
+			<Row dbName="favorite_places" dbPrivacy="favorite_places_privacy" title="Favorite Places"/>
+			<Row dbName="marital_status" dbPrivacy="marital_status_privacy" title="Marital Status"/>
+			<Row dbName="residence" dbPrivacy="residence_privacy" title="Residence"/>
+			<Row dbName="gender" dbPrivacy="gender_privacy" title="Gender"/>
+			<Row dbName="fullName" dbPrivacy="" title="Custom"/>
 		</Picker>
 	</View>
 	<Picker platform="android" width="Ti.UI.SIZE" height="Ti.UI.SIZE" id="picker" selectionIndicator="true" >
-		<Row title="Name"/>
-		<Row title="Phone Number"/>
-		<Row title="E-mail"/>
-		<Row title="Social Network"/>
-		<Row title="Job Title"/>
-		<Row title="Company"/>
-		<Row title="Interests"/>
-		<Row title="Education"/>
-		<Row title="Favorite Places"/>
-		<Row title="Marital Status"/>
-		<Row title="Residence"/>
-		<Row title="Gender"/>
-		<Row title="Custom"/>
+		<Row dbName="fullName" dbPrivacy="" title="Name" />
+		<Row dbName="phone_numbers" dbPrivacy="primary_numbers_privacy" title="Phone Number"/>
+		<Row dbName="mails" dbPrivacy="mails_privacy" title="E-mail"/>
+		<Row dbName="social_links" dbPrivacy="social_links_privacy" title="Social Network"/>
+		<Row dbName="job_title" dbPrivacy="job_title_privacy" title="Job Title"/>
+		<Row dbName="company" dbPrivacy="company_privacy" title="Company"/>
+		<Row dbName="interests" dbPrivacy="interests_privacy" title="Interests"/>
+		<Row dbName="education" dbPrivacy="education_privacy" title="Education"/>
+		<Row dbName="favorite_places" dbPrivacy="favorite_places_privacy" title="Favorite Places"/>
+		<Row dbName="marital_status" dbPrivacy="marital_status_privacy" title="Marital Status"/>
+		<Row dbName="residence" dbPrivacy="residence_privacy" title="Residence"/>
+		<Row dbName="gender" dbPrivacy="gender_privacy" title="Gender"/>
+		<Row dbName="fullName" dbPrivacy="" title="Custom"/>
 	</Picker>
 </Alloy>

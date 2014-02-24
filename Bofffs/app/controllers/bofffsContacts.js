@@ -78,6 +78,7 @@ $.list_bofffContacts.keepSectionsInSearch=true;
 
 var pickerVisible=false;
 var animation = require('alloy/animation');
+//OS_IOS ONLY function
 //on click on the search field label to open picker or close picker
 function openSearchPicker(e)
 {
@@ -89,6 +90,7 @@ function openSearchPicker(e)
 			pickerVisible=false;
 			$.search.focus();	
 		});
+		changeSearchableText(searchableText,searchableTextPrivacy);
 	}
 	else
 	{
@@ -99,13 +101,20 @@ function openSearchPicker(e)
 		$.search.blur();
 	}
 }
-
+var searchableText;
+var searchableTextPrivacy;
 //on selection of picker change update the search process
 $.picker_searchBy.picker.addEventListener("change", function(e)
 {
+	searchableText=e.row.dbName;
+	searchableTextPrivacy=e.row.dbPrivacy;
 	if(OS_IOS)
 	{
 		$.lbl_searchField.text= e.selectedValue[0];
+	}
+	else
+	{
+		changeSearchableText(searchableText,searchableTextPrivacy);
 	}
 	// if the user chooses custom, a view appears to type in the custom field he wants to search with
 	if(e.selectedValue[0]=="Custom")
@@ -116,6 +125,35 @@ $.picker_searchBy.picker.addEventListener("change", function(e)
 		$.view_customField.txt_customField.focus();
 	}
 });
+var privacyNumber={public:0,"not favorite":1,friends:1,favorite:2, favorites:2,onlyMe:3};
+
+function changeSearchableText(searchableText,searchableTextPrivacy)
+{
+	for(var sectionCounter in $.list_bofffContacts.sections)
+	{
+		var section =$.list_bofffContacts.sections[sectionCounter];
+		var items=[];
+		for(var itemCounter in section.items )
+		{
+			var item= section.items[itemCounter];
+			var itemId=item.properties.itemId;
+			var privacyOfBofff=bofffsList[itemId].privacy_of_friend;
+			var privacyOfField=bofffs[itemId].bofff[searchableTextPrivacy];
+			if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+			{
+				item.properties.searchableText=bofffs[itemId].bofff[searchableText];
+			}
+			else
+			{
+				item.properties.searchableText="";
+			}
+			
+			items.push(item);
+		}
+		$.list_bofffContacts.sections[sectionCounter].replaceItemsAt(0,section.items.length,items);
+	}
+}
+
 
 $.view_customField.img_closeCustomView.addEventListener("click", function(e)
 {
@@ -176,7 +214,7 @@ function createBofffListView(_data, textToSearchFor)
             status:_data[i].status,
             properties : {
             itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
-            searchableText: _data[i][textToSearchFor] ,
+            searchableText: fullName ,
             backgroundColor:"transparent",
             }
 	            
@@ -244,13 +282,14 @@ function updatePrivacy(listItem)
 	    	alert("error");
 	    },
 	});
-	xhr.open("POST", url+"update/bofff/user_friends/"+bofffsList[listItem.itemId].id);
+	xhr.open("POST", url+"update_friend/bofff/user_friends/"+bofffsList[listItem.itemId].id);
 	var params=
 	{
 		status: newStatus,
 	};
 	xhr.send(params);  // request is actually sent with this statement
 }
+
 
 // when any click is fired from the list or within the list
 function showContact(e)
@@ -277,3 +316,14 @@ function showContact(e)
 		Ti.App.bofffsListTab.open(Alloy.createController('bofffInfo', params).getView());
 	}
 }
+
+   var control = Ti.UI.createRefreshControl({
+    tintColor:'#ADE3F8',
+    title:"refreshing"
+});
+control.addEventListener('refreshstart',function(e){
+	control.title="refreshing";
+	createBofffListView(bofffsList,"fullName");
+    control.endRefreshing();
+});
+    $.list_bofffContacts.refreshControl=control;

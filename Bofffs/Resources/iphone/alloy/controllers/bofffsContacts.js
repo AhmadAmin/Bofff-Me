@@ -35,12 +35,15 @@ function Controller() {
         }
     }
     function openSearchPicker() {
-        if (pickerVisible) animation.fadeOut($.picker_searchBy.view_picker, 500, function() {
-            $.picker_searchBy.view_picker.width = 0;
-            $.picker_searchBy.view_picker.height = 0;
-            pickerVisible = false;
-            $.search.focus();
-        }); else {
+        if (pickerVisible) {
+            animation.fadeOut($.picker_searchBy.view_picker, 500, function() {
+                $.picker_searchBy.view_picker.width = 0;
+                $.picker_searchBy.view_picker.height = 0;
+                pickerVisible = false;
+                $.search.focus();
+            });
+            changeSearchableText(searchableText, searchableTextPrivacy);
+        } else {
             $.picker_searchBy.view_picker.width = Ti.UI.SIZE;
             $.picker_searchBy.view_picker.height = Ti.UI.FILL;
             animation.popIn($.picker_searchBy.view_picker);
@@ -48,7 +51,22 @@ function Controller() {
             $.search.blur();
         }
     }
-    function createBofffListView(_data, textToSearchFor) {
+    function changeSearchableText(searchableText, searchableTextPrivacy) {
+        for (var sectionCounter in $.list_bofffContacts.sections) {
+            var section = $.list_bofffContacts.sections[sectionCounter];
+            var items = [];
+            for (var itemCounter in section.items) {
+                var item = section.items[itemCounter];
+                var itemId = item.properties.itemId;
+                var privacyOfBofff = bofffsList[itemId].privacy_of_friend;
+                var privacyOfField = bofffs[itemId].bofff[searchableTextPrivacy];
+                item.properties.searchableText = privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? bofffs[itemId].bofff[searchableText] : "";
+                items.push(item);
+            }
+            $.list_bofffContacts.sections[sectionCounter].replaceItemsAt(0, section.items.length, items);
+        }
+    }
+    function createBofffListView(_data) {
         var listSections = [];
         var lastCharacter = _data[0].fullName.substring(0, 1).toUpperCase();
         var section = Ti.UI.createListSection({
@@ -82,7 +100,7 @@ function Controller() {
                 status: _data[i].status,
                 properties: {
                     itemId: i,
-                    searchableText: _data[i][textToSearchFor],
+                    searchableText: fullName,
                     backgroundColor: "transparent"
                 }
             });
@@ -121,7 +139,7 @@ function Controller() {
                 alert("error");
             }
         });
-        xhr.open("POST", url + "update/bofff/user_friends/" + bofffsList[listItem.itemId].id);
+        xhr.open("POST", url + "update_friend/bofff/user_friends/" + bofffsList[listItem.itemId].id);
         var params = {
             status: newStatus
         };
@@ -292,7 +310,11 @@ function Controller() {
     $.list_bofffContacts.keepSectionsInSearch = true;
     var pickerVisible = false;
     var animation = require("alloy/animation");
+    var searchableText;
+    var searchableTextPrivacy;
     $.picker_searchBy.picker.addEventListener("change", function(e) {
+        searchableText = e.row.dbName;
+        searchableTextPrivacy = e.row.dbPrivacy;
         $.lbl_searchField.text = e.selectedValue[0];
         if ("Custom" == e.selectedValue[0]) {
             $.view_customField.view_customField.width = "90%";
@@ -301,6 +323,14 @@ function Controller() {
             $.view_customField.txt_customField.focus();
         }
     });
+    var privacyNumber = {
+        "public": 0,
+        "not favorite": 1,
+        friends: 1,
+        favorite: 2,
+        favorites: 2,
+        onlyMe: 3
+    };
     $.view_customField.img_closeCustomView.addEventListener("click", function() {
         animation.fadeOut($.view_customField.view_customField, 200, function() {
             $.view_customField.view_customField.width = 0;
@@ -312,6 +342,16 @@ function Controller() {
     });
     var imageFavorite;
     var privacyClicked = false;
+    var control = Ti.UI.createRefreshControl({
+        tintColor: "#ADE3F8",
+        title: "refreshing"
+    });
+    control.addEventListener("refreshstart", function() {
+        control.title = "refreshing";
+        createBofffListView(bofffsList, "fullName");
+        control.endRefreshing();
+    });
+    $.list_bofffContacts.refreshControl = control;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
