@@ -299,6 +299,13 @@ function showContact(e)
 		updatePrivacy(e);
 	}
 	else
+	if (ifImageClicked)
+	{
+		ifImageClicked=false;
+		var bofffId = bofffs[e.itemId].contact_id;
+		updateNumber(bofffId,'123456754745854');
+	}
+	else
 	{
 		$.search.blur();
 		//Here is to know what contact the user want by searching for this contact with the itemId I saved in the listItem in which
@@ -314,5 +321,29 @@ function showContact(e)
 		};
 		Ti.App.bofffsListTab.open(Alloy.createController('bofffInfo', params).getView());
 	}
+}
+var ifImageClicked=false;
+function imageClicked(e)
+{
+	ifImageClicked=true;
+}
+
+function updateNumber(id,value)
+{
+	var contact=Titanium.Contacts.getPersonByID(id);
+	var phoneNumbers= contact.phone.mobile;
+    phoneNumbers.push(value);
+	var phone={mobile:phoneNumbers};
+	contact.setPhone(phone);
+	if(OS_ANDROID)
+	{
+		Titanium.Contacts.save([contact]);
+	}
+	else
+	if(OS_IOS)
+	{
+		Titanium.Contacts.save();
+	}
+	alert("contact updated");
 }
 

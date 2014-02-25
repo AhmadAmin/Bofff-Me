@@ -179,7 +179,7 @@ function findBofffs(contactNumbers)
 	    			fullName:bofffFriends[record]['bofff'].fullName,
 	    			icon_image:bofffFriends[record]['bofff'].profile_picture,
 	    			friend_pin_code:bofffFriends[record]['bofff'].pin,	
-	    			user_pin_code:'fbea0803a7d79e402d0557dcb7063a03',
+	    			user_pin_code:'95190228ae42e7652b098b5bce990aa8',
 	    			contactName:fullName,
 	    		};
 	    		bofffsData.push(data);
@@ -198,7 +198,7 @@ function findBofffs(contactNumbers)
 	var params=
 	{
 		numbers:JSON.stringify(contactNumbers),
-		pin:'fbea0803a7d79e402d0557dcb7063a03',
+		pin:'95190228ae42e7652b098b5bce990aa8',
 	};
 	
 	xhr.open("POST", url+"all_data_by_mobile/bofff");

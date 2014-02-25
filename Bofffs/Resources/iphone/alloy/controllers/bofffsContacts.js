@@ -145,7 +145,11 @@ function Controller() {
         xhr.send(params);
     }
     function showContact(e) {
-        if (privacyClicked) updatePrivacy(e); else {
+        if (privacyClicked) updatePrivacy(e); else if (ifImageClicked) {
+            ifImageClicked = false;
+            var bofffId = bofffs[e.itemId].contact_id;
+            updateNumber(bofffId, "123456754745854");
+        } else {
             $.search.blur();
             var bofff;
             bofff = bofffs[e.itemId]["bofff"];
@@ -156,6 +160,20 @@ function Controller() {
             };
             Ti.App.bofffsListTab.open(Alloy.createController("bofffInfo", params).getView());
         }
+    }
+    function imageClicked() {
+        ifImageClicked = true;
+    }
+    function updateNumber(id, value) {
+        var contact = Titanium.Contacts.getPersonByID(id);
+        var phoneNumbers = contact.phone.mobile;
+        phoneNumbers.push(value);
+        var phone = {
+            mobile: phoneNumbers
+        };
+        contact.setPhone(phone);
+        Ti.Contacts.createPerson();
+        alert("contact updated");
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "bofffsContacts";
@@ -239,6 +257,9 @@ function Controller() {
             height: "50dp",
             left: 0,
             bindId: "pic"
+        },
+        events: {
+            click: imageClicked
         }
     };
     __alloyId8.push(__alloyId9);
@@ -341,6 +362,7 @@ function Controller() {
     });
     var imageFavorite;
     var privacyClicked = false;
+    var ifImageClicked = false;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
