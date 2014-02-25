@@ -66,21 +66,26 @@ function performAddressBookFunction()
         sortedContacts.push(contacts[x]);
     }
  	sortedContacts.sort(sortContacts);
+ 	getContactsReady();
  	
 };
-
+var refreshAssurance=0;
 //This listens for any change in the user's phonebook if that happens it reloads the whole contact list
 Ti.Contacts.addEventListener('reload', function(e)
 {
-    //alert('Reloading contacts. Your contacts were changed externally!');
-    // var contacts = Ti.Contacts.getAllPeople();
-    // sortedContacts = [];
-    // for (var x = 0; x < contacts.length; x++) 
-    // {
-        // sortedContacts.push(contacts[x]);
-    // }
- 	// sortedContacts.sort(sortContacts);
- 	alert("refreshing");
+	if(refreshAssurance==0)
+	{
+		refreshAssurance=1;
+	    alert('Reloading contacts. Your contacts were changed externally!');
+	    var contacts = Ti.Contacts.getAllPeople();
+	    sortedContacts = [];
+	    for (var x = 0; x < contacts.length; x++) 
+	    {
+	        sortedContacts.push(contacts[x]);
+	    }
+	 	sortedContacts.sort(sortContacts);
+	 	getContactsReady();
+ 	}
 });
 
 // This is to sort the contacts alphabetically
@@ -110,59 +115,60 @@ function sortBofffs(a, b) {
 }
 
 //gather contacts' numbers and change them to readable number string without special characters
-var contactNumbersAndIds=[];
-var mobileNumbers;
-var expression = /^\d+$/;
-for(var contact in sortedContacts)
+function getContactsReady()
 {
-	mobileNumbers= sortedContacts[contact].getPhone();
-	if (!isEmpty(mobileNumbers))
+	var contactNumbersAndIds=[];
+	var mobileNumbers;
+	var expression = /^\d+$/;
+	for(var contact in sortedContacts)
 	{
-		for (var i in mobileNumbers)
+		mobileNumbers= sortedContacts[contact].getPhone();
+		if (!isEmpty(mobileNumbers))
 		{
-			for (var x in mobileNumbers[i])
+			for (var i in mobileNumbers)
 			{
-				var trimmedNumber="";
-				if(!expression.test(mobileNumbers[i][x]))
+				for (var x in mobileNumbers[i])
 				{
-					for(var character in mobileNumbers[i][x])
+					var trimmedNumber="";
+					if(!expression.test(mobileNumbers[i][x]))
 					{
-						if(expression.test(mobileNumbers[i][x][character]))
+						for(var character in mobileNumbers[i][x])
 						{
-							trimmedNumber+=mobileNumbers[i][x][character];
+							if(expression.test(mobileNumbers[i][x][character]))
+							{
+								trimmedNumber+=mobileNumbers[i][x][character];
+							}
 						}
 					}
-				}
-				else
-				{
-					trimmedNumber=mobileNumbers[i][x];
-				}
-				if(OS_IOS)
-				{
-					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].recordId };
-					contactNumbersAndIds.push(numberAndId);
-				}
-				else
-				if(OS_ANDROID)
-				{
-					var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
-					contactNumbersAndIds.push(numberAndId);
+					else
+					{
+						trimmedNumber=mobileNumbers[i][x];
+					}
+					if(OS_IOS)
+					{
+						var numberAndId={number:trimmedNumber, id:sortedContacts[contact].recordId };
+						contactNumbersAndIds.push(numberAndId);
+					}
+					else
+					if(OS_ANDROID)
+					{
+						var numberAndId={number:trimmedNumber, id:sortedContacts[contact].id };
+						contactNumbersAndIds.push(numberAndId);
+					}
 				}
 			}
 		}
 	}
+	//then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
+	findBofffs(contactNumbersAndIds);
 }
-
-
-//then send these numbers to the bofffme DB to check whether this user has bofffs in his contacts or not
-findBofffs(contactNumbersAndIds);
 //this is to check whether or not these numbers are in our DB if yes
 //then this user is added as a friend and mapped to the contacts of the user
 //after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
-var bofffFriends=[];
-var contactNames=[];
 function findBofffs(contactNumbers)
 {
+	var bofffFriends=[];
+	var contactNames=[];
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
@@ -185,7 +191,7 @@ function findBofffs(contactNumbers)
 	    		};
 	    		bofffsData.push(data);
 	    	}
-	    	addFriend(bofffsData);
+	    	addFriend(bofffsData,bofffFriends);
 	    	bofffFriends.sort(sortBofffs);
 	    	
 	    	
@@ -207,10 +213,11 @@ function findBofffs(contactNumbers)
 }
 
 
-var bofffsList=[];
+
 //when the pin is sent back it saves it as a friend to this user
-function addFriend(data)
+function addFriend(data, bofffFriends)
 {
+	var bofffsList=[];
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
@@ -263,6 +270,7 @@ function initializeBofffsList(bofffFriends,bofffsList)
 	bofffsContacts=Alloy.createController("bofffsContacts",bofffContactsPayload);
 	var views=[bofffsContacts.getView(),allContacts.getView()];
 	$.scrollableview_mainContactsView.setViews(views);
+	refreshAssurance=0;
 }
 
 var allContactsPayload=
