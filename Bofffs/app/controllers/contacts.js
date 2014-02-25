@@ -73,13 +73,14 @@ function performAddressBookFunction()
 Ti.Contacts.addEventListener('reload', function(e)
 {
     //alert('Reloading contacts. Your contacts were changed externally!');
-    var contacts = Ti.Contacts.getAllPeople();
-    sortedContacts = [];
-    for (var x = 0; x < contacts.length; x++) 
-    {
-        sortedContacts.push(contacts[x]);
-    }
- 	sortedContacts.sort(sortContacts);
+    // var contacts = Ti.Contacts.getAllPeople();
+    // sortedContacts = [];
+    // for (var x = 0; x < contacts.length; x++) 
+    // {
+        // sortedContacts.push(contacts[x]);
+    // }
+ 	// sortedContacts.sort(sortContacts);
+ 	alert("refreshing");
 });
 
 // This is to sort the contacts alphabetically

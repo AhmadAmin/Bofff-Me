@@ -172,7 +172,7 @@ function Controller() {
             mobile: phoneNumbers
         };
         contact.setPhone(phone);
-        Ti.Contacts.createPerson();
+        Titanium.Contacts.save();
         alert("contact updated");
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
