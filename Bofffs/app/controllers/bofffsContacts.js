@@ -174,14 +174,13 @@ var imageFavorite;
 function createBofffListView(_data, textToSearchFor)
 {
 	var listSections=[];
-	
-	var lastCharacter=_data[0].fullName.substring(0,1).toUpperCase();
+	var lastCharacter=_data[0].contactName.substring(0,1).toUpperCase();
 	var newCharacter;
 	var section=Ti.UI.createListSection({ headerTitle: lastCharacter});
  	var items = [];
     for (var i in _data)
      {
-   		nextCharacter= _data[i].fullName.substring(0,1).toUpperCase();
+     	nextCharacter= _data[i].contactName.substring(0,1).toUpperCase();
         if(lastCharacter != nextCharacter)
         {
         	section.setItems(items);
@@ -199,11 +198,11 @@ function createBofffListView(_data, textToSearchFor)
    		{
    			imageFavorite="/images/notfavoritecontact.png";
    		}
-   		var fullName=Titanium.Contacts.getPersonByID(bofffs[i].contact_id).fullName;
-        items.push({
+   		//var fullName=Titanium.Contacts.getPersonByID(bofffs[i].contact_id).fullName;
+   		items.push({
             template : "template1",            // set the template
             textLabel : {
-                text : fullName           // assign the values from the data
+                text : _data[i].contactName           // assign the values from the data
             },
             pic : {
                 image : _data[i].icon_image   // assign the values from the data
@@ -214,7 +213,7 @@ function createBofffListView(_data, textToSearchFor)
             status:_data[i].status,
             properties : {
             itemId:i ,			//assign the unique contact id to the listItem's itemId for retrieving
-            searchableText: fullName ,
+            searchableText: _data[i].contactName ,
             backgroundColor:"transparent",
             }
 	            
@@ -317,13 +316,3 @@ function showContact(e)
 	}
 }
 
-   var control = Ti.UI.createRefreshControl({
-    tintColor:'#ADE3F8',
-    title:"refreshing"
-});
-control.addEventListener('refreshstart',function(e){
-	control.title="refreshing";
-	createBofffListView(bofffsList,"fullName");
-    control.endRefreshing();
-});
-    $.list_bofffContacts.refreshControl=control;

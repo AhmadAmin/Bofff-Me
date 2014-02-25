@@ -97,11 +97,11 @@ function sortContacts(a, b) {
 
 // This is to sort the bofffs alphabetically
 function sortBofffs(a, b) {
-    if (a['bofff'].fullName.toUpperCase() > b['bofff'].fullName.toUpperCase())
+    if (a.contactName.toUpperCase() > b.contactName.toUpperCase())
     {
         return 1;
     } 
-    else if (a['bofff'].fullName.toUpperCase() < b['bofff'].fullName.toUpperCase()) 
+    else if (a.contactName.toUpperCase() < b.contactName.toUpperCase()) 
     {
         return -1;
     }
@@ -159,6 +159,7 @@ findBofffs(contactNumbersAndIds);
 //then this user is added as a friend and mapped to the contacts of the user
 //after all friends are found a list of friends are sent to initialize bofffs list to create the bofffs list
 var bofffFriends=[];
+var contactNames=[];
 function findBofffs(contactNumbers)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
@@ -168,19 +169,24 @@ function findBofffs(contactNumbers)
 	    {
 	    	var bofffsData=[];
 	    	bofffFriends = JSON.parse(this.responseText);
-	    	bofffFriends.sort(sortBofffs);
 	    	for(var record in bofffFriends )
 	    	{
+	    		var fullName=Titanium.Contacts.getPersonByID(bofffFriends[record].contact_id).fullName;
+	    		bofffFriends[record].contactName=fullName;
+	    		contactNames.push(fullName);
 	    		var data=
 	    		{
 	    			fullName:bofffFriends[record]['bofff'].fullName,
 	    			icon_image:bofffFriends[record]['bofff'].profile_picture,
 	    			friend_pin_code:bofffFriends[record]['bofff'].pin,	
-	    			user_pin_code:'6f683f806ed1e612900d28de916eae2f',
+	    			user_pin_code:'fbea0803a7d79e402d0557dcb7063a03',
+	    			contactName:fullName,
 	    		};
 	    		bofffsData.push(data);
 	    	}
 	    	addFriend(bofffsData);
+	    	bofffFriends.sort(sortBofffs);
+	    	
 	    	
 	    		
 	    },
@@ -192,7 +198,7 @@ function findBofffs(contactNumbers)
 	var params=
 	{
 		numbers:JSON.stringify(contactNumbers),
-		pin:'6f683f806ed1e612900d28de916eae2f',
+		pin:'fbea0803a7d79e402d0557dcb7063a03',
 	};
 	
 	xhr.open("POST", url+"all_data_by_mobile/bofff");
@@ -214,7 +220,7 @@ function addFriend(data)
 	    	if(bofffsList.length>0)
 	    	{
 		    	//This is to sort the bofffs alphabetically
-		    	bofffsList.sort(sortContacts);
+		    	bofffsList.sort(sortBofffs);
 		    	initializeBofffsList(bofffFriends,bofffsList);
 	    	}
 	    	
@@ -247,7 +253,6 @@ function isEmpty(obj)
 //Send the pins of the bofffs friend to create a list with it
 function initializeBofffsList(bofffFriends,bofffsList)
 {
-	
 	var bofffContactsPayload=
 		{
 			mainView:$.scrollableview_mainContactsView,

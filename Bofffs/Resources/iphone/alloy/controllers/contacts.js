@@ -18,8 +18,8 @@ function Controller() {
         return 0;
     }
     function sortBofffs(a, b) {
-        if (a["bofff"].fullName.toUpperCase() > b["bofff"].fullName.toUpperCase()) return 1;
-        if (a["bofff"].fullName.toUpperCase() < b["bofff"].fullName.toUpperCase()) return -1;
+        if (a.contactName.toUpperCase() > b.contactName.toUpperCase()) return 1;
+        if (a.contactName.toUpperCase() < b.contactName.toUpperCase()) return -1;
         return 0;
     }
     function findBofffs(contactNumbers) {
@@ -28,17 +28,21 @@ function Controller() {
             onload: function() {
                 var bofffsData = [];
                 bofffFriends = JSON.parse(this.responseText);
-                bofffFriends.sort(sortBofffs);
                 for (var record in bofffFriends) {
+                    var fullName = Titanium.Contacts.getPersonByID(bofffFriends[record].contact_id).fullName;
+                    bofffFriends[record].contactName = fullName;
+                    contactNames.push(fullName);
                     var data = {
                         fullName: bofffFriends[record]["bofff"].fullName,
                         icon_image: bofffFriends[record]["bofff"].profile_picture,
                         friend_pin_code: bofffFriends[record]["bofff"].pin,
-                        user_pin_code: "6f683f806ed1e612900d28de916eae2f"
+                        user_pin_code: "fbea0803a7d79e402d0557dcb7063a03",
+                        contactName: fullName
                     };
                     bofffsData.push(data);
                 }
                 addFriend(bofffsData);
+                bofffFriends.sort(sortBofffs);
             },
             onerror: function() {
                 alert(this.responseText);
@@ -46,7 +50,7 @@ function Controller() {
         });
         var params = {
             numbers: JSON.stringify(contactNumbers),
-            pin: "6f683f806ed1e612900d28de916eae2f"
+            pin: "fbea0803a7d79e402d0557dcb7063a03"
         };
         xhr.open("POST", url + "all_data_by_mobile/bofff");
         xhr.send(params);
@@ -58,7 +62,7 @@ function Controller() {
                 var response = JSON.parse(this.responseText);
                 bofffsList = response.rows;
                 if (bofffsList.length > 0) {
-                    bofffsList.sort(sortContacts);
+                    bofffsList.sort(sortBofffs);
                     initializeBofffsList(bofffFriends, bofffsList);
                 }
             },
@@ -151,6 +155,7 @@ function Controller() {
     }
     findBofffs(contactNumbersAndIds);
     var bofffFriends = [];
+    var contactNames = [];
     var bofffsList = [];
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,

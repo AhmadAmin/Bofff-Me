@@ -10,45 +10,69 @@ function Controller() {
         var contacts = Ti.Contacts.getAllPeople();
         sortedContacts = [];
         for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-        sortedContacts.sort(sort);
+        sortedContacts.sort(sortContacts);
     }
-    function sort(a, b) {
+    function sortContacts(a, b) {
         if (a.fullName.toUpperCase() > b.fullName.toUpperCase()) return 1;
         if (a.fullName.toUpperCase() < b.fullName.toUpperCase()) return -1;
         return 0;
     }
-    function findBofffs(contactNumbersAndIds) {
+    function sortBofffs(a, b) {
+        if (a.contactName.toUpperCase() > b.contactName.toUpperCase()) return 1;
+        if (a.contactName.toUpperCase() < b.contactName.toUpperCase()) return -1;
+        return 0;
+    }
+    function findBofffs(contactNumbers) {
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                var bofffsData = [];
+                bofffFriends = JSON.parse(this.responseText);
+                for (var record in bofffFriends) {
+                    var fullName = Titanium.Contacts.getPersonByID(bofffFriends[record].contact_id).fullName;
+                    bofffFriends[record].contactName = fullName;
+                    contactNames.push(fullName);
+                    var data = {
+                        fullName: bofffFriends[record]["bofff"].fullName,
+                        icon_image: bofffFriends[record]["bofff"].profile_picture,
+                        friend_pin_code: bofffFriends[record]["bofff"].pin,
+                        user_pin_code: "95190228ae42e7652b098b5bce990aa8",
+                        contactName: fullName
+                    };
+                    bofffsData.push(data);
+                }
+                addFriend(bofffsData);
+                bofffFriends.sort(sortBofffs);
+            },
+            onerror: function() {
+                alert(this.responseText);
+            }
+        });
+        var params = {
+            numbers: JSON.stringify(contactNumbers),
+            pin: "95190228ae42e7652b098b5bce990aa8"
+        };
+        xhr.open("POST", url + "all_data_by_mobile/bofff");
+        xhr.send(params);
+    }
+    function addFriend(data) {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
                 var response = JSON.parse(this.responseText);
-                for (var contact in contactNumbersAndIds) for (var record in response.rows) if (contactNumbersAndIds[contact].number == response.rows[record].primary_mobile) {
-                    bofffFriends.push(response.rows[record]);
-                    addFriend(response.rows[record].fullName, response.rows[record].profile_picture, response.rows[record].pin);
-                    bofffContactIds.push(contactNumbersAndIds[contact].id);
+                bofffsList = response.rows;
+                if (bofffsList.length > 0) {
+                    bofffsList.sort(sortBofffs);
+                    initializeBofffsList(bofffFriends, bofffsList);
                 }
-                bofffFriends.sort(sort);
-                initializeBofffsList(bofffFriends);
             },
-            onerror: function() {}
+            onerror: function() {
+                alert(this.responseText);
+            }
         });
-        xhr.open("POST", url + "get_all/bofff/user_accounts");
-        xhr.send();
-    }
-    function addFriend(fullName, iconImage, pin) {
-        var url = "http://www.bofffme.com/api/index.php/home/";
-        var xhr = Ti.Network.createHTTPClient({
-            onload: function() {
-                JSON.parse(this.responseText);
-            },
-            onerror: function() {}
-        });
-        xhr.open("POST", url + "insert/bofff/user_friends");
+        xhr.open("POST", url + "insert_friend/bofff/user_friends");
         var params = {
-            fullName: fullName,
-            icon_image: iconImage,
-            friend_pin_code: pin,
-            user_pin_code: "fbea0803a7d79e402d0557dcb7063a03"
+            friends: JSON.stringify(data)
         };
         xhr.send(params);
     }
@@ -56,10 +80,11 @@ function Controller() {
         for (var key in obj) if (obj.hasOwnProperty(key)) return false;
         return true;
     }
-    function initializeBofffsList(bofffFriends) {
+    function initializeBofffsList(bofffFriends, bofffsList) {
         var bofffContactsPayload = {
             mainView: $.scrollableview_mainContactsView,
-            bofffFriends: bofffFriends
+            bofffFriends: bofffFriends,
+            bofffsList: bofffsList
         };
         bofffsContacts = Alloy.createController("bofffsContacts", bofffContactsPayload);
         var views = [ bofffsContacts.getView(), allContacts.getView() ];
@@ -110,7 +135,7 @@ function Controller() {
         var contacts = Ti.Contacts.getAllPeople();
         sortedContacts = [];
         for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-        sortedContacts.sort(sort);
+        sortedContacts.sort(sortContacts);
     });
     var contactNumbersAndIds = [];
     var mobileNumbers;
@@ -129,8 +154,9 @@ function Controller() {
         }
     }
     findBofffs(contactNumbersAndIds);
-    var bofffContactIds = [];
     var bofffFriends = [];
+    var contactNames = [];
+    var bofffsList = [];
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts

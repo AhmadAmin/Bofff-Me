@@ -68,13 +68,13 @@ function Controller() {
     }
     function createBofffListView(_data) {
         var listSections = [];
-        var lastCharacter = _data[0].fullName.substring(0, 1).toUpperCase();
+        var lastCharacter = _data[0].contactName.substring(0, 1).toUpperCase();
         var section = Ti.UI.createListSection({
             headerTitle: lastCharacter
         });
         var items = [];
         for (var i in _data) {
-            nextCharacter = _data[i].fullName.substring(0, 1).toUpperCase();
+            nextCharacter = _data[i].contactName.substring(0, 1).toUpperCase();
             if (lastCharacter != nextCharacter) {
                 section.setItems(items);
                 listSections.push(section);
@@ -85,11 +85,10 @@ function Controller() {
                 items = [];
             }
             imageFavorite = "favorite" == _data[i].status ? "/images/favoritecontact.png" : "/images/notfavoritecontact.png";
-            var fullName = Titanium.Contacts.getPersonByID(bofffs[i].contact_id).fullName;
             items.push({
                 template: "template1",
                 textLabel: {
-                    text: fullName
+                    text: _data[i].contactName
                 },
                 pic: {
                     image: _data[i].icon_image
@@ -100,7 +99,7 @@ function Controller() {
                 status: _data[i].status,
                 properties: {
                     itemId: i,
-                    searchableText: fullName,
+                    searchableText: _data[i].contactName,
                     backgroundColor: "transparent"
                 }
             });
@@ -342,16 +341,6 @@ function Controller() {
     });
     var imageFavorite;
     var privacyClicked = false;
-    var control = Ti.UI.createRefreshControl({
-        tintColor: "#ADE3F8",
-        title: "refreshing"
-    });
-    control.addEventListener("refreshstart", function() {
-        control.title = "refreshing";
-        createBofffListView(bofffsList, "fullName");
-        control.endRefreshing();
-    });
-    $.list_bofffContacts.refreshControl = control;
     __defers["$.__views.lbl_searchField!click!openSearchPicker"] && $.__views.lbl_searchField.addEventListener("click", openSearchPicker);
     __defers["$.__views.search!focus!initializeSearch"] && $.__views.search.addEventListener("focus", initializeSearch);
     __defers["$.__views.search!cancel!cancelSearch"] && $.__views.search.addEventListener("cancel", cancelSearch);
