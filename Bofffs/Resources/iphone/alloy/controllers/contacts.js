@@ -58,7 +58,7 @@ function Controller() {
                         fullName: bofffFriends[record]["bofff"].fullName,
                         icon_image: bofffFriends[record]["bofff"].profile_picture,
                         friend_pin_code: bofffFriends[record]["bofff"].pin,
-                        user_pin_code: "95190228ae42e7652b098b5bce990aa8",
+                        user_pin_code: "fbea0803a7d79e402d0557dcb7063a03",
                         contactName: fullName
                     };
                     bofffsData.push(data);
@@ -72,7 +72,7 @@ function Controller() {
         });
         var params = {
             numbers: JSON.stringify(contactNumbers),
-            pin: "95190228ae42e7652b098b5bce990aa8"
+            pin: "fbea0803a7d79e402d0557dcb7063a03"
         };
         xhr.open("POST", url + "all_data_by_mobile/bofff");
         xhr.send(params);
@@ -156,17 +156,7 @@ function Controller() {
     }) : addressBookDisallowed();
     var sortedContacts;
     var refreshAssurance = 0;
-    Ti.Contacts.addEventListener("reload", function() {
-        if (0 == refreshAssurance) {
-            refreshAssurance = 1;
-            alert("Reloading contacts. Your contacts were changed externally!");
-            var contacts = Ti.Contacts.getAllPeople();
-            sortedContacts = [];
-            for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-            sortedContacts.sort(sortContacts);
-            getContactsReady();
-        }
-    });
+    Ti.Contacts.addEventListener("reload", function() {});
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts

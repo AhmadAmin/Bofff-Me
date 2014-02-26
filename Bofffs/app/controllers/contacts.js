@@ -73,19 +73,19 @@ var refreshAssurance=0;
 //This listens for any change in the user's phonebook if that happens it reloads the whole contact list
 Ti.Contacts.addEventListener('reload', function(e)
 {
-	if(refreshAssurance==0)
-	{
-		refreshAssurance=1;
-	    alert('Reloading contacts. Your contacts were changed externally!');
-	    var contacts = Ti.Contacts.getAllPeople();
-	    sortedContacts = [];
-	    for (var x = 0; x < contacts.length; x++) 
-	    {
-	        sortedContacts.push(contacts[x]);
-	    }
-	 	sortedContacts.sort(sortContacts);
-	 	getContactsReady();
- 	}
+	// if(refreshAssurance==0)
+	// {
+		// refreshAssurance=1;
+	    // alert('Reloading contacts. Your contacts were changed externally!');
+	    // var contacts = Ti.Contacts.getAllPeople();
+	    // sortedContacts = [];
+	    // for (var x = 0; x < contacts.length; x++) 
+	    // {
+	        // sortedContacts.push(contacts[x]);
+	    // }
+	 	// sortedContacts.sort(sortContacts);
+	 	// getContactsReady();
+ 	// }
 });
 
 // This is to sort the contacts alphabetically
@@ -186,7 +186,7 @@ function findBofffs(contactNumbers)
 	    			fullName:bofffFriends[record]['bofff'].fullName,
 	    			icon_image:bofffFriends[record]['bofff'].profile_picture,
 	    			friend_pin_code:bofffFriends[record]['bofff'].pin,	
-	    			user_pin_code:'95190228ae42e7652b098b5bce990aa8',
+	    			user_pin_code:'fbea0803a7d79e402d0557dcb7063a03',
 	    			contactName:fullName,
 	    		};
 	    		bofffsData.push(data);
@@ -205,7 +205,7 @@ function findBofffs(contactNumbers)
 	var params=
 	{
 		numbers:JSON.stringify(contactNumbers),
-		pin:'95190228ae42e7652b098b5bce990aa8',
+		pin:'fbea0803a7d79e402d0557dcb7063a03',
 	};
 	
 	xhr.open("POST", url+"all_data_by_mobile/bofff");

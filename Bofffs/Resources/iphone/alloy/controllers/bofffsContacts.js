@@ -148,7 +148,7 @@ function Controller() {
         if (privacyClicked) updatePrivacy(e); else if (ifImageClicked) {
             ifImageClicked = false;
             var bofffId = bofffs[e.itemId].contact_id;
-            updateNumber(bofffId, "123456754745854");
+            updateNote(bofffId, "hi mother fuckeeeers !!!");
         } else {
             $.search.blur();
             var bofff;
@@ -163,17 +163,6 @@ function Controller() {
     }
     function imageClicked() {
         ifImageClicked = true;
-    }
-    function updateNumber(id, value) {
-        var contact = Titanium.Contacts.getPersonByID(id);
-        var phoneNumbers = contact.phone.mobile;
-        phoneNumbers.push(value);
-        var phone = {
-            mobile: phoneNumbers
-        };
-        contact.setPhone(phone);
-        Titanium.Contacts.save();
-        alert("contact updated");
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "bofffsContacts";
@@ -318,6 +307,7 @@ function Controller() {
     _.extend($, $.__views);
     var args = arguments[0] || {};
     args.mainView;
+    Ti.include("contactsUpdate.js");
     try {
         var bofffs = args.bofffFriends;
         var bofffsList = args.bofffsList;

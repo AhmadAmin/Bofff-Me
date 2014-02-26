@@ -1,5 +1,7 @@
 var args = arguments[0] || {};
 var mainView=args.mainView;
+// contains functions to update friends data on user contacts
+Ti.include("contactsUpdate.js");
 try
 {
 	var bofffs= args.bofffFriends;
@@ -303,7 +305,6 @@ function showContact(e)
 	{
 		ifImageClicked=false;
 		var bofffId = bofffs[e.itemId].contact_id;
-		updateNumber(bofffId,'123456754745854');
 	}
 	else
 	{
@@ -328,22 +329,5 @@ function imageClicked(e)
 	ifImageClicked=true;
 }
 
-function updateNumber(id,value)
-{
-	var contact=Titanium.Contacts.getPersonByID(id);
-	var phoneNumbers= contact.phone.mobile;
-    phoneNumbers.push(value);
-	var phone={mobile:phoneNumbers};
-	contact.setPhone(phone);
-	if(OS_ANDROID)
-	{
-		Titanium.Contacts.save([contact]);
-	}
-	else
-	if(OS_IOS)
-	{
-		Titanium.Contacts.save();
-	}
-	alert("contact updated");
-}
+
 
