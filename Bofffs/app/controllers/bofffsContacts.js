@@ -1,7 +1,7 @@
 var args = arguments[0] || {};
 var mainView=args.mainView;
 // contains functions to update friends data on user contacts
-Ti.include("contactsUpdate.js");
+Ti.include("/contactsUpdate.js");
 try
 {
 	var bofffs= args.bofffFriends;
@@ -305,6 +305,9 @@ function showContact(e)
 	{
 		ifImageClicked=false;
 		var bofffId = bofffs[e.itemId].contact_id;
+		bofffId=parseInt(bofffId)+'';
+		updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
+		//updateAddress(bofffId,'home',"Farid Semika","Cairo","Egypt");
 	}
 	else
 	{

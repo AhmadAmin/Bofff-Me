@@ -112,7 +112,6 @@ function Controller() {
         bofffsContacts = Alloy.createController("bofffsContacts", bofffContactsPayload);
         var views = [ bofffsContacts.getView(), allContacts.getView() ];
         $.scrollableview_mainContactsView.setViews(views);
-        refreshAssurance = 0;
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "contacts";
@@ -155,7 +154,6 @@ function Controller() {
         e.success ? performAddressBookFunction() : addressBookDisallowed();
     }) : addressBookDisallowed();
     var sortedContacts;
-    var refreshAssurance = 0;
     Ti.Contacts.addEventListener("reload", function() {});
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,

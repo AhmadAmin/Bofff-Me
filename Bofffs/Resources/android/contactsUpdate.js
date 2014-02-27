@@ -1,5 +1,5 @@
 function saveUpdate(contact) {
-    Titanium.Contacts.save();
+    Titanium.Contacts.save([ contact ]);
     alert("contact updated");
 }
 

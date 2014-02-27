@@ -9,6 +9,7 @@
  - updateCompany(id,company)
  - updateBirthday(id,birthday) Date format is "yyyy-MM-ddTHH:mm:ss.SSS+0000"
  - updateNote(id,note)
+ - updateAddress(id,key,street,city,country)
  */
 function saveUpdate(contact)
 {
@@ -31,19 +32,13 @@ function updateNumber(id,key,value)
 	try
 	{
 	    phone[key].push(value);
-		contact.phone=phone;
-		saveUpdate(contact);
 	}
 	catch(error)
 	{
-		for(var record in phone)
-		{
-			phone[record].push(value);
-			break;
-		}
-		contact.phone=phone;
-	    saveUpdate(contact);
+		phone[key]=[value];
 	}
+	contact.phone=phone;
+	saveUpdate(contact);
 }
 
 function updateNickname(id,bofffFullName)
@@ -70,21 +65,15 @@ function updateEmail(id,key,value)
 	try
 	{
 		email[key].push(value);
-		contact.email=email;
-	    saveUpdate(contact);
 	}
 	catch(error)
 	{
-		for(var record in email)
-		{
-			email[record].push(value);
-			break;
-		}
-		contact.email=email;
-	    saveUpdate(contact);
+		email[key]=[value];
 	}
-	
+	 contact.email=email;
+	 saveUpdate(contact);
 }
+
 //TODO: if user has no urls it will not work,  will not work on a key that doesn't already exist
 function updateSocialLink(id,key,value)
 {
@@ -93,19 +82,13 @@ function updateSocialLink(id,key,value)
 	try
 	{
 		url[key].push(value);
-		contact.url=url;
-	    saveUpdate(contact);
 	}
 	catch(error)
 	{
-		for(var record in url)
-		{
-			url[record].push(value);
-			break;
-		}
-		contact.url=url;
-	    saveUpdate(contact);
+		url[key]=[value];
 	}
+	contact.url=url;
+	saveUpdate(contact);
 }
 //IOS_ONLY
 function updateJobTitle(id,jobTitle)
@@ -133,5 +116,25 @@ function updateNote(id,note)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	contact.note=note;
+	saveUpdate(contact);
+}
+
+function updateAddress(id,key,street,city,country)
+{
+	var contact=Titanium.Contacts.getPersonByID(id);
+	var address= contact.address;
+	var value=new Array();
+		value['street']=street;
+		value['city']=city;
+		value['country']=country;
+	try
+	{
+		address[key].push(value);
+	}
+	catch(error)
+	{
+		address[key]=[value];
+	}
+	contact.address=address;
 	saveUpdate(contact);
 }

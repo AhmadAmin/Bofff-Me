@@ -148,7 +148,8 @@ function Controller() {
         if (privacyClicked) updatePrivacy(e); else if (ifImageClicked) {
             ifImageClicked = false;
             var bofffId = bofffs[e.itemId].contact_id;
-            updateNote(bofffId, "hi mother fuckeeeers !!!");
+            bofffId = parseInt(bofffId) + "";
+            updateEmail(bofffId, "work", bofffs[e.itemId].bofff.mails);
         } else {
             $.search.blur();
             var bofff;
@@ -307,7 +308,7 @@ function Controller() {
     _.extend($, $.__views);
     var args = arguments[0] || {};
     args.mainView;
-    Ti.include("contactsUpdate.js");
+    Ti.include("/contactsUpdate.js");
     try {
         var bofffs = args.bofffFriends;
         var bofffsList = args.bofffsList;

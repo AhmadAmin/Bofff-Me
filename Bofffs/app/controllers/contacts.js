@@ -69,13 +69,15 @@ function performAddressBookFunction()
  	getContactsReady();
  	
 };
-var refreshAssurance=0;
+var refreshAssurance=true;
 //This listens for any change in the user's phonebook if that happens it reloads the whole contact list
 Ti.Contacts.addEventListener('reload', function(e)
 {
-	// if(refreshAssurance==0)
+	// if(refreshAssurance==true)
 	// {
-		// refreshAssurance=1;
+		// refreshAssurance=false;
+		// setTimeout(function(){ alert('refreshAssurance: '+refreshAssurance);
+		// refreshAssurance = true; alert('refreshAssurance: '+refreshAssurance); }, 30000);
 	    // alert('Reloading contacts. Your contacts were changed externally!');
 	    // var contacts = Ti.Contacts.getAllPeople();
 	    // sortedContacts = [];
@@ -270,7 +272,6 @@ function initializeBofffsList(bofffFriends,bofffsList)
 	bofffsContacts=Alloy.createController("bofffsContacts",bofffContactsPayload);
 	var views=[bofffsContacts.getView(),allContacts.getView()];
 	$.scrollableview_mainContactsView.setViews(views);
-	refreshAssurance=0;
 }
 
 var allContactsPayload=

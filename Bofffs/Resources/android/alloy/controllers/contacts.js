@@ -11,6 +11,7 @@ function Controller() {
         sortedContacts = [];
         for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
         sortedContacts.sort(sortContacts);
+        getContactsReady();
     }
     function sortContacts(a, b) {
         if (a.fullName.toUpperCase() > b.fullName.toUpperCase()) return 1;
@@ -22,7 +23,28 @@ function Controller() {
         if (a.contactName.toUpperCase() < b.contactName.toUpperCase()) return -1;
         return 0;
     }
+    function getContactsReady() {
+        var contactNumbersAndIds = [];
+        var mobileNumbers;
+        var expression = /^\d+$/;
+        for (var contact in sortedContacts) {
+            mobileNumbers = sortedContacts[contact].getPhone();
+            if (!isEmpty(mobileNumbers)) for (var i in mobileNumbers) for (var x in mobileNumbers[i]) {
+                var trimmedNumber = "";
+                if (expression.test(mobileNumbers[i][x])) trimmedNumber = mobileNumbers[i][x]; else for (var character in mobileNumbers[i][x]) expression.test(mobileNumbers[i][x][character]) && (trimmedNumber += mobileNumbers[i][x][character]);
+                var numberAndId;
+                var numberAndId = {
+                    number: trimmedNumber,
+                    id: sortedContacts[contact].id
+                };
+                contactNumbersAndIds.push(numberAndId);
+            }
+        }
+        findBofffs(contactNumbersAndIds);
+    }
     function findBofffs(contactNumbers) {
+        var bofffFriends = [];
+        var contactNames = [];
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
@@ -41,7 +63,7 @@ function Controller() {
                     };
                     bofffsData.push(data);
                 }
-                addFriend(bofffsData);
+                addFriend(bofffsData, bofffFriends);
                 bofffFriends.sort(sortBofffs);
             },
             onerror: function() {
@@ -55,7 +77,8 @@ function Controller() {
         xhr.open("POST", url + "all_data_by_mobile/bofff");
         xhr.send(params);
     }
-    function addFriend(data) {
+    function addFriend(data, bofffFriends) {
+        var bofffsList = [];
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
@@ -131,32 +154,7 @@ function Controller() {
         e.success ? performAddressBookFunction() : addressBookDisallowed();
     }) : addressBookDisallowed();
     var sortedContacts;
-    Ti.Contacts.addEventListener("reload", function() {
-        var contacts = Ti.Contacts.getAllPeople();
-        sortedContacts = [];
-        for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
-        sortedContacts.sort(sortContacts);
-    });
-    var contactNumbersAndIds = [];
-    var mobileNumbers;
-    var expression = /^\d+$/;
-    for (var contact in sortedContacts) {
-        mobileNumbers = sortedContacts[contact].getPhone();
-        if (!isEmpty(mobileNumbers)) for (var i in mobileNumbers) for (var x in mobileNumbers[i]) {
-            var trimmedNumber = "";
-            if (expression.test(mobileNumbers[i][x])) trimmedNumber = mobileNumbers[i][x]; else for (var character in mobileNumbers[i][x]) expression.test(mobileNumbers[i][x][character]) && (trimmedNumber += mobileNumbers[i][x][character]);
-            var numberAndId;
-            var numberAndId = {
-                number: trimmedNumber,
-                id: sortedContacts[contact].id
-            };
-            contactNumbersAndIds.push(numberAndId);
-        }
-    }
-    findBofffs(contactNumbersAndIds);
-    var bofffFriends = [];
-    var contactNames = [];
-    var bofffsList = [];
+    Ti.Contacts.addEventListener("reload", function() {});
     var allContactsPayload = {
         mainView: $.scrollableview_mainContactsView,
         sortedContacts: sortedContacts
