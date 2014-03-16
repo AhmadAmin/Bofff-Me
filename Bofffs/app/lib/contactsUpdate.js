@@ -234,7 +234,7 @@ function checkSocialLinksUpdate(userData,socialLinks, socialLinksObject)
 		var currentSocialLinks=userData.social_links.split(",");
 		var updatedSocialLinks=socialLinks.split(",");
 		var hashCurrentSocialLinks=[];
-		var newSocialLinks=[];
+		var newLinks=[];
 		for(var socialLink in currentSocialLinks)
 		{
 			hashCurrentSocialLinks[currentSocialLinks[socialLink]]=currentSocialLinks[socialLink];
@@ -243,10 +243,23 @@ function checkSocialLinksUpdate(userData,socialLinks, socialLinksObject)
 		{
 			if(hashCurrentSocialLinks[updatedSocialLinks[socialLink]]==null)
 			{
-				newSocialLinks.push(updatedSocialLinks[socialLink]);
+				newLinks.push(updatedSocialLinks[socialLink]);
 			}
 		}
-		socialLinksObject.links=newSocialLinks.toString();
+		var deletedLinks=[];
+		for(var link in hashCurrentSocialLinks)
+		{
+			deletedLinks.push(hashCurrentSocialLinks[link]);
+			for(var counter in updatedSocialLinks)
+			{
+				if(hashCurrentSocialLinks[link]==updatedSocialLinks[counter])
+				{
+					deletedLinks.pop();
+				}
+			}
+		}
+		var links={newLinks:newLinks.toString(),deletedLinks:deletedLinks.toString()};
+		socialLinksObject.links=links;
 		return socialLinksObject.links;
 	}else return 0;
 }
@@ -325,22 +338,25 @@ function createUpdateString(userData,newData,userPin)
 	if(checkPhoneNumbersUpdate(userData,newData.phone_numbers,newPhoneNumbers)!=0)
 	{
 		if(newPhoneNumbers.numbers.newNumbers!="")
-		added+="phone_numbers:"+newPhoneNumbers.numbers.newNumbers+"\n";
+			added+="phone_numbers:"+newPhoneNumbers.numbers.newNumbers+"\n";
 		if(newPhoneNumbers.numbers.deletedNumbers!="")
-		deleted+="phone_numbers:"+newPhoneNumbers.numbers.deletedNumbers+"\n";
+			deleted+="phone_numbers:"+newPhoneNumbers.numbers.deletedNumbers+"\n";
 	}
 	var newMails={mails:""};
 	if(checkMailsUpdate(userData,newData.mails,newMails)!=0)
 	{
 		if(newMails.mails.newMails!="")
-		added+="mails:"+newMails.mails.newMails+"\n";
+			added+="mails:"+newMails.mails.newMails+"\n";
 		if(newMails.mails.deletedMails!="")
-		deleted+="mails:"+newMails.mails.deletedMails+"\n";
+			deleted+="mails:"+newMails.mails.deletedMails+"\n";
 	}
 	var newSocialLinks={links:""};
 	if(checkSocialLinksUpdate(userData,newData.social_links,newSocialLinks)!=0)
 	{
-		added+="social_links"+newSocialLinks.links+"\n";
+		if(newSocialLinks.links.newLinks!="")
+			added+="social_links:"+newSocialLinks.links.newLinks+"\n";
+		if(newSocialLinks.links.deletedLinks!="")
+			deleted+="social_links:"+newSocialLinks.links.deletedLinks+"\n";
 	}
 	var newResidence={residence:""};
 	if(checkResidenceUpdate(userData,newData.residence,newResidence)!=0)
@@ -353,7 +369,7 @@ function createUpdateString(userData,newData,userPin)
 		added+="job_title:"+newJobTitle.title+"\n";
 	}
 	var newBirthday={date:""};
-	if(checkBirthdayUpdate(userData,newData.birthday_data,newBirthday)!=0)
+	if(checkBirthdayUpdate(userData,newData.birthday_date,newBirthday)!=0)
 	{
 		added+="birthday_date:"+newBirthday.date+"\n";
 	}
@@ -369,7 +385,7 @@ function createUpdateString(userData,newData,userPin)
 		addUpdatesToFriends(added,deleted, userPin);
 	}
 	else
-	alert("no changes");
+		alert("no changes");
 
 }
 function addUpdatesToFriends(dataAdded,dataDeleted, userPin)

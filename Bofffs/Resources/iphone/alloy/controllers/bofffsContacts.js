@@ -192,8 +192,13 @@ function Controller() {
         var params = {
             fullName: "Ahmed Atif",
             gender: "male",
-            phone_numbers: "201009091996,32523,22",
-            mails: "atif,zabady,ahmed"
+            phone_numbers: "201009091995",
+            mails: "ahmed.atif15@gmail.com",
+            social_links: "https://www.facebook.com/zabady",
+            residence: "bab el loo2",
+            job_title: "softwergy",
+            birthday_date: "10101019",
+            company: "cectwtech"
         };
         xhr.send(params);
     }

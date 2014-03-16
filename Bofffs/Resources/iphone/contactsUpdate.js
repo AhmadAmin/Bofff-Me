@@ -154,10 +154,19 @@ function checkSocialLinksUpdate(userData, socialLinks, socialLinksObject) {
         var currentSocialLinks = userData.social_links.split(",");
         var updatedSocialLinks = socialLinks.split(",");
         var hashCurrentSocialLinks = [];
-        var newSocialLinks = [];
+        var newLinks = [];
         for (var socialLink in currentSocialLinks) hashCurrentSocialLinks[currentSocialLinks[socialLink]] = currentSocialLinks[socialLink];
-        for (var socialLink in updatedSocialLinks) null == hashCurrentSocialLinks[updatedSocialLinks[socialLink]] && newSocialLinks.push(updatedSocialLinks[socialLink]);
-        socialLinksObject.links = newSocialLinks.toString();
+        for (var socialLink in updatedSocialLinks) null == hashCurrentSocialLinks[updatedSocialLinks[socialLink]] && newLinks.push(updatedSocialLinks[socialLink]);
+        var deletedLinks = [];
+        for (var link in hashCurrentSocialLinks) {
+            deletedLinks.push(hashCurrentSocialLinks[link]);
+            for (var counter in updatedSocialLinks) hashCurrentSocialLinks[link] == updatedSocialLinks[counter] && deletedLinks.pop();
+        }
+        var links = {
+            newLinks: newLinks.toString(),
+            deletedLinks: deletedLinks.toString()
+        };
+        socialLinksObject.links = links;
         return socialLinksObject.links;
     }
     return 0;
@@ -238,7 +247,10 @@ function createUpdateString(userData, newData, userPin) {
     var newSocialLinks = {
         links: ""
     };
-    0 != checkSocialLinksUpdate(userData, newData.social_links, newSocialLinks) && (added += "social_links" + newSocialLinks.links + "\n");
+    if (0 != checkSocialLinksUpdate(userData, newData.social_links, newSocialLinks)) {
+        "" != newSocialLinks.links.newLinks && (added += "social_links:" + newSocialLinks.links.newLinks + "\n");
+        "" != newSocialLinks.links.deletedLinks && (deleted += "social_links:" + newSocialLinks.links.deletedLinks + "\n");
+    }
     var newResidence = {
         residence: ""
     };
@@ -250,7 +262,7 @@ function createUpdateString(userData, newData, userPin) {
     var newBirthday = {
         date: ""
     };
-    0 != checkBirthdayUpdate(userData, newData.birthday_data, newBirthday) && (added += "birthday_date:" + newBirthday.date + "\n");
+    0 != checkBirthdayUpdate(userData, newData.birthday_date, newBirthday) && (added += "birthday_date:" + newBirthday.date + "\n");
     var newCompany = {
         company: ""
     };
