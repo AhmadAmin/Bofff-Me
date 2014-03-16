@@ -283,7 +283,7 @@ function updatePrivacy(listItem)
 	    	alert("error");
 	    },
 	});
-	xhr.open("POST", url+"update_friend/bofff/user_friends/"+bofffsList[listItem.itemId].id);
+	xhr.open("POST", url+"update_friend_status/bofff/user_friends/"+bofffsList[listItem.itemId].id);
 	var params=
 	{
 		status: newStatus,
@@ -305,9 +305,9 @@ function showContact(e)
 	{
 		ifImageClicked=false;
 		var bofffId = bofffs[e.itemId].contact_id;
-		bofffId=parseInt(bofffId)+'';
-		updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
-		//updateAddress(bofffId,'home',"Farid Semika","Cairo","Egypt");
+		//updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
+		getUserData('95190228ae42e7652b098b5bce990aa8');
+		//alert(userData);
 	}
 	else
 	{
@@ -316,7 +316,7 @@ function showContact(e)
 		//is saved the actual contact id of this user
 		var bofff;
 		bofff=bofffs[e.itemId]['bofff'];
-	    var image = e.section.getItemAt(e.itemIndex).pic.image;
+		var image = e.section.getItemAt(e.itemIndex).pic.image;
 		//Here is to initialize a view that will contain the data of the user
 		var params=
 		{
@@ -332,5 +332,46 @@ function imageClicked(e)
 	ifImageClicked=true;
 }
 
-
-
+function getUserData(pin)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	var userData = JSON.parse(this.responseText).rows[0];
+	    	updateBofff(pin,userData);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	
+	xhr.open("POST", url+"search_user_by/bofff/user_accounts/pin/"+pin);
+	xhr.send();  
+}
+function updateBofff(pin,userData)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	manageUserUpdates(userData,pin);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert("error");
+	    },
+	});
+	xhr.open("POST", url+"update/bofff/user_accounts/"+pin);
+	var params=
+	{
+		fullName:"Ahmed Atif",
+		gender:"male",
+		phone_numbers:"201009091996,32523,22",
+		mails:"atif,zabady,ahmed",
+	};
+	xhr.send(params);  // request is actually sent with this statement
+}

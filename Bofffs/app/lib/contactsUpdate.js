@@ -24,7 +24,6 @@ function saveUpdate(contact)
 	}
 	alert("contact updated");
 }
-//TODO: will not work on a key that doesn't already exist
 function updateNumber(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
@@ -57,7 +56,6 @@ function updateNickname(id,bofffFullName)
 	saveUpdate(contact);
 }
 
-//TODO: if user has no mails it will not work,  will not work on a key that doesn't already exist
 function updateEmail(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
@@ -74,7 +72,6 @@ function updateEmail(id,key,value)
 	 saveUpdate(contact);
 }
 
-//TODO: if user has no urls it will not work,  will not work on a key that doesn't already exist
 function updateSocialLink(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
@@ -137,4 +134,264 @@ function updateAddress(id,key,street,city,country)
 	}
 	contact.address=address;
 	saveUpdate(contact);
+}
+
+function checkFullNameUpdate(userData,fullName, fullNameObject)
+{
+	if(userData.fullName!=fullName)
+	{
+		fullNameObject.name=fullName;
+		return fullName;
+	}else return 0;
+}
+
+function checkGender(userData,gender,genderObject)
+{
+	if(userData.gender!=gender)
+	{
+		genderObject.gender=gender;
+		return gender;
+	}else return 0;
+}
+
+function checkPhoneNumbersUpdate(userData,phoneNumbers, phoneNumbersObject)
+{
+	if(userData.phone_numbers!=phoneNumbers)
+	{
+		var currentNumbers=userData.phone_numbers.split(",");
+		var updatedNumbers=phoneNumbers.split(",");
+		var hashCurrentNumbers=[];
+		var newNumbers=[];
+		for(var number in currentNumbers)
+		{
+			hashCurrentNumbers[currentNumbers[number]]=currentNumbers[number];
+		}
+		for(var number in updatedNumbers)
+		{
+			if(hashCurrentNumbers[updatedNumbers[number]]==null)
+			{
+				newNumbers.push(updatedNumbers[number]);
+			}
+		}
+		var deletedNumbers=[];
+		for(var number in hashCurrentNumbers)
+		{
+			deletedNumbers.push(hashCurrentNumbers[number]);
+			for(var counter in updatedNumbers)
+			{
+				if(hashCurrentNumbers[number]==updatedNumbers[counter])
+				{
+					deletedNumbers.pop();
+				}
+			}
+		}
+		var numbers={newNumbers:newNumbers.toString(),deletedNumbers:deletedNumbers.toString()};
+		phoneNumbersObject.numbers= numbers;
+		return phoneNumbersObject.numbers;
+	}else return 0;
+}
+function checkMailsUpdate(userData,mails, mailsObject)
+{
+	if(userData.mails!=mails)
+	{
+		var currentMails=userData.mails.split(",");
+		var updatedMails=mails.split(",");
+		var hashCurrentMails=[];
+		var newMails=[];
+		for(var mail in currentMails)
+		{
+			hashCurrentMails[currentMails[mail]]=currentMails[mail];
+		}
+		for(var mail in updatedMails)
+		{
+			if(hashCurrentMails[updatedMails[mail]]==null)
+			{
+				newMails.push(updatedMails[mail]);
+			}
+		}
+		var deletedMails=[];
+		for(var mail in hashCurrentMails)
+		{
+			deletedMails.push(hashCurrentMails[mail]);
+			for(var counter in updatedMails)
+			{
+				if(hashCurrentMails[mail]==updatedMails[counter])
+				{
+					deletedMails.pop();
+				}
+			}
+		}
+		var mails={newMails:newMails.toString(),deletedMails:deletedMails.toString()};
+		mailsObject.mails=mails;
+		return mailsObject.mails;
+	}else return 0;
+}
+
+function checkSocialLinksUpdate(userData,socialLinks, socialLinksObject)
+{
+	if (userData.social_links!=socialLinks)
+	{
+		var currentSocialLinks=userData.social_links.split(",");
+		var updatedSocialLinks=socialLinks.split(",");
+		var hashCurrentSocialLinks=[];
+		var newSocialLinks=[];
+		for(var socialLink in currentSocialLinks)
+		{
+			hashCurrentSocialLinks[currentSocialLinks[socialLink]]=currentSocialLinks[socialLink];
+		}
+		for(var socialLink in updatedSocialLinks)
+		{
+			if(hashCurrentSocialLinks[updatedSocialLinks[socialLink]]==null)
+			{
+				newSocialLinks.push(updatedSocialLinks[socialLink]);
+			}
+		}
+		socialLinksObject.links=newSocialLinks.toString();
+		return socialLinksObject.links;
+	}else return 0;
+}
+
+function checkResidenceUpdate(userData,residence, residenceObject)
+{
+	if(userData.residence!=residence)
+	{
+		residenceObject.residence=residence;
+		return residence;
+	}else return 0;
+}
+
+function checkJobTitleUpdate(userData, jobTitle, jobTitleObject)
+{
+	if(userData.job_title!=jobTitle)
+	{
+		jobTitleObject.title=jobTitle;
+		return jobTitle;
+	}else return 0;
+}
+
+function checkBirthdayUpdate(userData, birthday, birthdayObject)
+{
+	if(userData.birthday_date!=birthday)
+	{
+		birthdayObject.date=birthday;
+		return birthday;
+	}else return 0;
+}
+
+function checkCompanyUpdate(userData, company, companyObject)
+{
+	if(userData.company!=company)
+	{
+		companyObject.company=company;
+		return company;
+	}else return 0;
+}
+
+function manageUserUpdates(oldUserData,pin)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	var newData = JSON.parse(this.responseText).rows[0];
+	    	createUpdateString(oldUserData,newData,pin);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	
+	xhr.open("POST", url+"search_user_by/bofff/user_accounts/pin/"+pin);
+	xhr.send();  
+}
+
+function createUpdateString(userData,newData,userPin)
+{
+	var added="";
+	var deleted="";
+	var newFullName= {name:""};
+	if(checkFullNameUpdate(userData,newData.fullName,newFullName)!=0)
+	{
+		added+="fullName:"+newFullName.name+"\n";
+	}
+	var newGender={gender:""};
+	if(checkGender(userData,newData.gender,newGender)!=0)
+	{
+		added+="gender:"+newGender.gender+"\n";
+	}
+	var newPhoneNumbers={numbers:""};
+	if(checkPhoneNumbersUpdate(userData,newData.phone_numbers,newPhoneNumbers)!=0)
+	{
+		if(newPhoneNumbers.numbers.newNumbers!="")
+		added+="phone_numbers:"+newPhoneNumbers.numbers.newNumbers+"\n";
+		if(newPhoneNumbers.numbers.deletedNumbers!="")
+		deleted+="phone_numbers:"+newPhoneNumbers.numbers.deletedNumbers+"\n";
+	}
+	var newMails={mails:""};
+	if(checkMailsUpdate(userData,newData.mails,newMails)!=0)
+	{
+		if(newMails.mails.newMails!="")
+		added+="mails:"+newMails.mails.newMails+"\n";
+		if(newMails.mails.deletedMails!="")
+		deleted+="mails:"+newMails.mails.deletedMails+"\n";
+	}
+	var newSocialLinks={links:""};
+	if(checkSocialLinksUpdate(userData,newData.social_links,newSocialLinks)!=0)
+	{
+		added+="social_links"+newSocialLinks.links+"\n";
+	}
+	var newResidence={residence:""};
+	if(checkResidenceUpdate(userData,newData.residence,newResidence)!=0)
+	{
+		added+="residence:"+newResidence.residence+"\n";
+	}
+	var newJobTitle={title:""};
+	if(checkJobTitleUpdate(userData,newData.job_title,newJobTitle)!=0)
+	{
+		added+="job_title:"+newJobTitle.title+"\n";
+	}
+	var newBirthday={date:""};
+	if(checkBirthdayUpdate(userData,newData.birthday_data,newBirthday)!=0)
+	{
+		added+="birthday_date:"+newBirthday.date+"\n";
+	}
+	var newCompany={company:""};
+	if(checkCompanyUpdate(userData,newData.company,newCompany)!=0)
+	{
+		added+="company:"+newCompany.company+"\n";
+	}
+	
+	if(added!=""||deleted!="")
+	{
+		alert(added);
+		addUpdatesToFriends(added,deleted, userPin);
+	}
+	else
+	alert("no changes");
+
+}
+function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	var response = JSON.parse(this.responseText);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	
+	xhr.open("POST", url+"update_friend_updates/bofff/user_friends/"+userPin);
+	var params=
+	{
+		friend_added_data: dataAdded,
+		friend_deleted_data	: dataDeleted,
+	};
+	xhr.send(params);  
 }

@@ -39,11 +39,11 @@
         </plist>
     </ios>
     <android xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest>
-        <uses-permission android:name="android.permission.READ_CONTACTS" />
-        <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-    </manifest>
-	</android>
+        <manifest>
+            <uses-permission android:name="android.permission.READ_CONTACTS"/>
+            <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+        </manifest>
+    </android>
     <mobileweb>
         <precache/>
         <splash>
@@ -61,7 +61,7 @@
         <target device="mobileweb">false</target>
         <target device="tizen">false</target>
     </deployment-targets>
-    <sdk-version>3.2.1.GA</sdk-version>
+    <sdk-version>3.2.2.GA</sdk-version>
     <plugins>
         <plugin version="1.0">ti.alloy</plugin>
     </plugins>

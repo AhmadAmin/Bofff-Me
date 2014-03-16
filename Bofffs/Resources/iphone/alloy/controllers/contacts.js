@@ -9,7 +9,7 @@ function Controller() {
     function performAddressBookFunction() {
         var contacts = Ti.Contacts.getAllPeople();
         sortedContacts = [];
-        for (var x = 0; contacts.length > x; x++) sortedContacts.push(contacts[x]);
+        for (var x in contacts) sortedContacts.push(contacts[x]);
         sortedContacts.sort(sortContacts);
         getContactsReady();
     }
@@ -24,6 +24,7 @@ function Controller() {
         return 0;
     }
     function getContactsReady() {
+        var repeatedNumberCheck = [];
         var contactNumbersAndIds = [];
         var mobileNumbers;
         var expression = /^\d+$/;
@@ -32,6 +33,8 @@ function Controller() {
             if (!isEmpty(mobileNumbers)) for (var i in mobileNumbers) for (var x in mobileNumbers[i]) {
                 var trimmedNumber = "";
                 if (expression.test(mobileNumbers[i][x])) trimmedNumber = mobileNumbers[i][x]; else for (var character in mobileNumbers[i][x]) expression.test(mobileNumbers[i][x][character]) && (trimmedNumber += mobileNumbers[i][x][character]);
+                if (null != repeatedNumberCheck[trimmedNumber]) continue;
+                repeatedNumberCheck[trimmedNumber] = 0;
                 var numberAndId;
                 var numberAndId = {
                     number: trimmedNumber,

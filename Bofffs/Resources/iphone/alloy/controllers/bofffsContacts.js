@@ -138,7 +138,7 @@ function Controller() {
                 alert("error");
             }
         });
-        xhr.open("POST", url + "update_friend/bofff/user_friends/" + bofffsList[listItem.itemId].id);
+        xhr.open("POST", url + "update_friend_status/bofff/user_friends/" + bofffsList[listItem.itemId].id);
         var params = {
             status: newStatus
         };
@@ -147,9 +147,8 @@ function Controller() {
     function showContact(e) {
         if (privacyClicked) updatePrivacy(e); else if (ifImageClicked) {
             ifImageClicked = false;
-            var bofffId = bofffs[e.itemId].contact_id;
-            bofffId = parseInt(bofffId) + "";
-            updateEmail(bofffId, "work", bofffs[e.itemId].bofff.mails);
+            bofffs[e.itemId].contact_id;
+            getUserData("95190228ae42e7652b098b5bce990aa8");
         } else {
             $.search.blur();
             var bofff;
@@ -164,6 +163,39 @@ function Controller() {
     }
     function imageClicked() {
         ifImageClicked = true;
+    }
+    function getUserData(pin) {
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                var userData = JSON.parse(this.responseText).rows[0];
+                updateBofff(pin, userData);
+            },
+            onerror: function() {
+                alert(this.responseText);
+            }
+        });
+        xhr.open("POST", url + "search_user_by/bofff/user_accounts/pin/" + pin);
+        xhr.send();
+    }
+    function updateBofff(pin, userData) {
+        var url = "http://www.bofffme.com/api/index.php/home/";
+        var xhr = Ti.Network.createHTTPClient({
+            onload: function() {
+                manageUserUpdates(userData, pin);
+            },
+            onerror: function() {
+                alert("error");
+            }
+        });
+        xhr.open("POST", url + "update/bofff/user_accounts/" + pin);
+        var params = {
+            fullName: "Ahmed Atif",
+            gender: "male",
+            phone_numbers: "201009091996,32523,22",
+            mails: "atif,zabady,ahmed"
+        };
+        xhr.send(params);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "bofffsContacts";

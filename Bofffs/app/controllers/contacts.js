@@ -61,7 +61,7 @@ function performAddressBookFunction()
 {  
 	var contacts = Ti.Contacts.getAllPeople();
  	sortedContacts = [];
-    for (var x = 0; x < contacts.length; x++)
+    for (var x in contacts)
     {
         sortedContacts.push(contacts[x]);
     }
@@ -119,6 +119,7 @@ function sortBofffs(a, b) {
 //gather contacts' numbers and change them to readable number string without special characters
 function getContactsReady()
 {
+	var repeatedNumberCheck=[];
 	var contactNumbersAndIds=[];
 	var mobileNumbers;
 	var expression = /^\d+$/;
@@ -145,6 +146,14 @@ function getContactsReady()
 					else
 					{
 						trimmedNumber=mobileNumbers[i][x];
+					}
+					if(repeatedNumberCheck[trimmedNumber]==null)
+					{
+						repeatedNumberCheck[trimmedNumber]=0;
+					}
+					else
+					{
+						continue;
 					}
 					if(OS_IOS)
 					{
