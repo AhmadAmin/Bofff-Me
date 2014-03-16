@@ -148,7 +148,7 @@ function Controller() {
         if (privacyClicked) updatePrivacy(e); else if (ifImageClicked) {
             ifImageClicked = false;
             bofffs[e.itemId].contact_id;
-            getUserData("95190228ae42e7652b098b5bce990aa8");
+            applyUpdatesOfFriend("95190228ae42e7652b098b5bce990aa8", "fbea0803a7d79e402d0557dcb7063a03", bofffsList);
         } else {
             $.search.blur();
             var bofff;
@@ -163,44 +163,6 @@ function Controller() {
     }
     function imageClicked() {
         ifImageClicked = true;
-    }
-    function getUserData(pin) {
-        var url = "http://www.bofffme.com/api/index.php/home/";
-        var xhr = Ti.Network.createHTTPClient({
-            onload: function() {
-                var userData = JSON.parse(this.responseText).rows[0];
-                updateBofff(pin, userData);
-            },
-            onerror: function() {
-                alert(this.responseText);
-            }
-        });
-        xhr.open("POST", url + "search_user_by/bofff/user_accounts/pin/" + pin);
-        xhr.send();
-    }
-    function updateBofff(pin, userData) {
-        var url = "http://www.bofffme.com/api/index.php/home/";
-        var xhr = Ti.Network.createHTTPClient({
-            onload: function() {
-                manageUserUpdates(userData, pin);
-            },
-            onerror: function() {
-                alert("error");
-            }
-        });
-        xhr.open("POST", url + "update/bofff/user_accounts/" + pin);
-        var params = {
-            fullName: "Ahmed Atif",
-            gender: "male",
-            phone_numbers: "201009091995",
-            mails: "ahmed.atif15@gmail.com",
-            social_links: "https://www.facebook.com/zabady",
-            residence: "bab el loo2",
-            job_title: "softwergy",
-            birthday_date: "10101019",
-            company: "cectwtech"
-        };
-        xhr.send(params);
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "bofffsContacts";

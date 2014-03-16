@@ -273,6 +273,25 @@ function createUpdateString(userData, newData, userPin) {
     } else alert("no changes");
 }
 
+function applyUpdatesOfFriend(friend_pin, user_pin, bofffsList) {
+    for (var record in bofffsList) if (bofffsList[record].friend_pin_code == friend_pin) {
+        var stringToUpdate = bofffsList[record].friend_added_data;
+        "" != stringToUpdate && parsingUpdateString(stringToUpdate);
+        stringToUpdate = bofffsList[record].friend_deleted_data;
+        "" != stringToUpdate && parsingUpdateString(stringToUpdate);
+    }
+}
+
+function parsingUpdateString(updateString) {
+    var stringLines = updateString.split("\n");
+    var stringObjects = {};
+    for (var line in stringLines) if ("" != stringLines[line]) {
+        var stringColon = stringLines[line].split(":");
+        stringObjects[stringColon[0]] = stringColon[1].split(",");
+    }
+    alert(stringObjects);
+}
+
 function addUpdatesToFriends(dataAdded, dataDeleted, userPin) {
     var url = "http://www.bofffme.com/api/index.php/home/";
     var xhr = Ti.Network.createHTTPClient({
