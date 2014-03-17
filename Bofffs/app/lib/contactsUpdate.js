@@ -24,7 +24,7 @@ function saveUpdate(contact)
 	}
 	alert("contact updated");
 }
-function updateNumber(id,key,value)
+function addNumber(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	var phone= contact.phone;
@@ -39,8 +39,50 @@ function updateNumber(id,key,value)
 	contact.phone=phone;
 	saveUpdate(contact);
 }
+function deleteNumber(id,value)
+{
+	var contact=Titanium.Contacts.getPersonByID(id);
+	var phone= contact.phone;
+	var phoneAfterDeletion={};
+	for(var key in phone)
+	{
+		for(var number in phone[key])
+		{
+			var phoneNumber=phone[key][number];
+			var trimmedPhoneNumber="";
+			var expression = /^\d+$/;
+			if(!expression.test(phoneNumber))
+			{
+				for(var digit in phoneNumber)
+				{
+					if(expression.test(phoneNumber[digit]))
+					{
+						trimmedPhoneNumber+=phoneNumber[digit];
+					}
+				}
+			}
+			else
+			{
+				trimmedPhoneNumber=phoneNumber;
+			}
+			if(trimmedPhoneNumber!=value)
+			{
+				try
+				{
+					phoneAfterDeletion[key].push(trimmedPhoneNumber);
+				}
+				catch(error)
+				{
+					phoneAfterDeletion[key]=[trimmedPhoneNumber];
+				}
+			}
+		}
+	}
+	contact.phone=phoneAfterDeletion;
+	saveUpdate(contact);
+}
 
-function updateNickname(id,bofffFullName)
+function addNickname(id,bofffFullName)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	var nickname= contact.nickname;
@@ -56,7 +98,7 @@ function updateNickname(id,bofffFullName)
 	saveUpdate(contact);
 }
 
-function updateEmail(id,key,value)
+function addEmail(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	var email= contact.email;
@@ -71,8 +113,32 @@ function updateEmail(id,key,value)
 	 contact.email=email;
 	 saveUpdate(contact);
 }
-
-function updateSocialLink(id,key,value)
+function deleteEmail(id,value)
+{
+	var contact=Titanium.Contacts.getPersonByID(id);
+	var email= contact.email;
+	var emailAfterDeletion={};
+	for(var key in email)
+	{
+		for(var record in email[key])
+		{
+			if(email[key][record]!=value)
+			{
+				try
+				{
+					emailAfterDeletion[key].push(email[key][record]);
+				}
+				catch(error)
+				{
+					emailAfterDeletion[key]=[email[key][record]];
+				}
+			}
+		}
+	}
+	contact.email=emailAfterDeletion;
+	saveUpdate(contact);
+}
+function addSocialLink(id,key,value)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	var url= contact.url;
@@ -87,36 +153,64 @@ function updateSocialLink(id,key,value)
 	contact.url=url;
 	saveUpdate(contact);
 }
+
+function deleteSocialLink(id,value)
+{
+	value= value.replace("http://","");
+	var contact=Titanium.Contacts.getPersonByID(id);
+	var url= contact.url;
+	var urlAfterDeletion={};
+	for(var key in url)
+	{
+		for(var record in url[key])
+		{
+			url[key][record]=url[key][record].replace("http://","");
+			if(url[key][record]!=value)
+			{
+				try
+				{
+					urlAfterDeletion[key].push(url[key][record]);
+				}
+				catch(error)
+				{
+					urlAfterDeletion[key]=[url[key][record]];
+				}
+			}
+		}
+	}
+	contact.url=urlAfterDeletion;
+	saveUpdate(contact);
+}
 //IOS_ONLY
-function updateJobTitle(id,jobTitle)
+function addJobTitle(id,jobTitle)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	contact.jobTitle=jobTitle;
 	saveUpdate(contact);
 }
 
-function updateCompany(id,company)
+function addCompany(id,company)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	contact.organization=company;
 	saveUpdate(contact);
 }
 //Date format is "yyyy-MM-ddTHH:mm:ss.SSS+0000"
-function updateBirthday(id,birthday)
+function addBirthday(id,birthday)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	contact.birthday=birthday;
 	saveUpdate(contact);
 }
 
-function updateNote(id,note)
+function addNote(id,note)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	contact.note=note;
 	saveUpdate(contact);
 }
 
-function updateAddress(id,key,street,city,country)
+function addAddress(id,key,street,city,country)
 {
 	var contact=Titanium.Contacts.getPersonByID(id);
 	var address= contact.address;
@@ -419,8 +513,30 @@ function parsingUpdateString(updateString)
 			stringObjects[stringColon[0]]=stringColon[1].split(",");
 		}
 	}
-	alert(stringObjects);
-	
+	determineUpdateType(stringObjects);
+}
+
+function determineUpdateType(stringObjects)
+{
+	for(var object in stringObjects)
+	{
+		switch(object)
+		{
+			case 'phone_numbers':
+			{
+				for(var record in stringObjects[object])
+				{
+					alert(stringObjects[object][record]);
+				}
+				break;
+			}
+			default:
+			{
+				alert("no known");
+				break;
+			}
+		}
+	}
 }
 function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
 {

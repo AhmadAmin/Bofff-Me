@@ -305,6 +305,7 @@ function showContact(e)
 	{
 		ifImageClicked=false;
 		var bofffId = bofffs[e.itemId].contact_id;
+		//deleteSocialLink(bofffId,"http://tttt");
 		//updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
 		//getUserData('95190228ae42e7652b098b5bce990aa8');
 		//alert(userData);
