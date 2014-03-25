@@ -307,9 +307,10 @@ function showContact(e)
 		var bofffId = bofffs[e.itemId].contact_id;
 		//deleteSocialLink(bofffId,"http://tttt");
 		//updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
-		//getUserData('95190228ae42e7652b098b5bce990aa8');
+		getUserData('95190228ae42e7652b098b5bce990aa8');
 		//alert(userData);
-		applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8','fbea0803a7d79e402d0557dcb7063a03',bofffsList);
+		
+		//applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8','fbea0803a7d79e402d0557dcb7063a03',bofffsList);
 	}
 	else
 	{
@@ -372,7 +373,7 @@ function updateBofff(pin,userData)
 	{
 		fullName:"Ahmed Atif",
 		gender:"male",
-		phone_numbers:"201009091995",
+		phone_numbers:"2010090919917",
 		mails:"ahmed.atif15@gmail.com",
 		social_links:"https://www.facebook.com/zabady",
 		residence:"bab el loo2",

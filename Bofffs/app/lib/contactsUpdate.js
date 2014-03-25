@@ -545,6 +545,7 @@ function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
 	{
 	    onload: function(e) 
 	    {
+	    	alert(this.responseText);
 	    	var response = JSON.parse(this.responseText);
 	    },
 	    onerror: function(e) 

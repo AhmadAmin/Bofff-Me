@@ -1,6 +1,7 @@
 var args = arguments[0] || {};
 var image= args.image;
 var bofffName= args.bofffName;
+var iconImage= args.iconImage;
 
 //this is the back button on the title bar
 var prevButton = Titanium.UI.createButton({
@@ -15,4 +16,5 @@ prevButton.addEventListener('click',function(e)
 $.win_bofffImage.leftNavButton= prevButton;
 //assigning the contact name to the window title 
 $.win_bofffImage.title=bofffName;
+$.img_bofffImage.defaultImage=iconImage;
 $.img_bofffImage.image=image;

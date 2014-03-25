@@ -356,6 +356,7 @@ function addUpdatesToFriends(dataAdded, dataDeleted, userPin) {
     var url = "http://www.bofffme.com/api/index.php/home/";
     var xhr = Ti.Network.createHTTPClient({
         onload: function() {
+            alert(this.responseText);
             JSON.parse(this.responseText);
         },
         onerror: function() {

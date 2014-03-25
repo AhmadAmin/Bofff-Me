@@ -3,6 +3,7 @@ function Controller() {
         var url = "http://www.bofffme.com/api/index.php/home/";
         var xhr = Ti.Network.createHTTPClient({
             onload: function() {
+                alert(this.responseText);
                 var response = JSON.parse(this.responseText);
                 alert(response.rows);
             },
@@ -21,8 +22,10 @@ function Controller() {
             gender: "male",
             primary_mobile: $.txt_phoneNumber.value,
             mails: $.txt_mails.value,
+            icon_image: iconImage,
             profile_picture: $.img_profilePicture.image,
             mails_privacy: $.txt_mailsPrivacy.value,
+            social_links: $.txt_socialLinks.value,
             social_links_privacy: $.txt_profilePicturePrivacy.value,
             profile_picture_privacy: $.txt_socialLinksPrivacy.value
         };

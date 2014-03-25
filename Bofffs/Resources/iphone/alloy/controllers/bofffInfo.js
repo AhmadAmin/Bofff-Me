@@ -12,7 +12,8 @@ function Controller() {
     function enlargeImage() {
         var params = {
             bofffName: bofff.fullName,
-            image: image
+            image: bofff.profile_picture,
+            iconImage: bofff.icon_image
         };
         Ti.App.bofffsListTab.open(Alloy.createController("bofffImage", params).getView());
     }

@@ -8,6 +8,7 @@ function sendData(e)
 	{
 	    onload: function(e) 
 	    {
+	    	alert(this.responseText);
 			var response = JSON.parse(this.responseText);
 			//this returns the pin of the user you should convert it to md5
 	        alert(response.rows);
@@ -32,8 +33,10 @@ function sendData(e)
 		gender:					"male",
 		primary_mobile:			$.txt_phoneNumber.value,
 		mails: 					$.txt_mails.value,
+		icon_image:				iconImage,
 		profile_picture: 		$.img_profilePicture.image,
 		mails_privacy:			$.txt_mailsPrivacy.value,
+		social_links:			$.txt_socialLinks.value,
 		social_links_privacy:	$.txt_profilePicturePrivacy.value,
 		profile_picture_privacy:$.txt_socialLinksPrivacy.value,
     };

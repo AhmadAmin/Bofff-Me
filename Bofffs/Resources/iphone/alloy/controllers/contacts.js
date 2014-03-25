@@ -59,7 +59,7 @@ function Controller() {
                     contactNames.push(fullName);
                     var data = {
                         fullName: bofffFriends[record]["bofff"].fullName,
-                        icon_image: bofffFriends[record]["bofff"].profile_picture,
+                        icon_image: bofffFriends[record]["bofff"].icon_image,
                         friend_pin_code: bofffFriends[record]["bofff"].pin,
                         user_pin_code: "fbea0803a7d79e402d0557dcb7063a03",
                         contactName: fullName

@@ -24,6 +24,7 @@ function Controller() {
     var args = arguments[0] || {};
     var image = args.image;
     var bofffName = args.bofffName;
+    var iconImage = args.iconImage;
     var prevButton = Titanium.UI.createButton({
         title: "Back"
     });
@@ -32,6 +33,9 @@ function Controller() {
     });
     $.win_bofffImage.leftNavButton = prevButton;
     $.win_bofffImage.title = bofffName;
+    $.img_bofffImage.defaultImage = iconImage;
+    $.img_bofffImage.touchEnabled = true;
+    $.img_bofffImage.enableZoomControls = true;
     $.img_bofffImage.image = image;
     _.extend($, exports);
 }
