@@ -365,11 +365,39 @@ function checkSocialLinksUpdate(userData,newUserData, socialLinksObject)
 
 function checkResidenceUpdate(userData,newUserData, residenceObject)
 {
-	var residence=newUserData.residence;
-	if(userData.residence!=residence)
+	var residences=newUserData.residence;
+	if(userData.residence!=residences)
 	{
-		residenceObject.residence=residence;
-		return residence;
+		var currentResidences=userData.residence.split(",");
+		var updatedResidences=residences.split(",");
+		var hashCurrentResidences=[];
+		var newResidences=[];
+		for(var residence in currentResidences)
+		{
+			hashCurrentResidences[currentResidences[residence]]=currentResidences[residence];
+		}
+		for(var residence in updatedResidences)
+		{
+			if(hashCurrentResidences[updatedResidences[residence]]==null)
+			{
+				newResidences.push(updatedResidences[residence]);
+			}
+		}
+		var deletedResidences=[];
+		for(var residence in hashCurrentResidences)
+		{
+			deletedResidences.push(hashCurrentResidences[residence]);
+			for(var counter in updatedResidences)
+			{
+				if(hashCurrentResidences[residence]==updatedResidences[counter])
+				{
+					deletedResidences.pop();
+				}
+			}
+		}
+		var residences={newResidences:newResidences.toString(),deletedResidences:deletedResidences.toString()};
+		residenceObject.residences=residences;
+		return residenceObject.residences;
 	}else return 0;
 }
 
@@ -423,25 +451,44 @@ function manageUserUpdates(oldUserData,pin)
 	xhr.send();  
 }
 
-function createUpdateString(userData,newData,userPin)
+function createUpdateString(userData,newData,userPin,bofffsSpecificData)
 {
-	var added="";
-	var deleted="";
+	var added=["fullName","gender","phone_numbers","mails","social_links","residence","job_title",
+	"birthday_date","company"];
+	var deleted=["phone_numbers","mails","social_links","residence"];
+	var friendsToSendAdded=["fullName","gender","phone_numbers","mails","social_links","residence","job_title",
+	"birthday_date","company"];
+	var friendsToSendDeleted=["phone_numbers","mails","social_links","residence"];
 	var newFullName= {name:""};
 	if(checkFullNameUpdate(userData,newData,newFullName)!=0)
 	{
-		added+="fullName:"+newFullName.name+"\n";
+		added[fullName].push(newFullName.name+"\n");
+		for(var friend in bofffsSpecificData)
+		{
+			friendsToSendAdded["fullName"].push(bofffsSpecificData[friend].friend_pin_code);
+		}
 	}
 	var newGender={gender:""};
 	if(checkGender(userData,newData,newGender)!=0)
 	{
-		added+="gender:"+newGender.gender+"\n";
+		added.push({gender:+newGender.gender+"\n"});
+		for(var friend in bofffsSpecificData)
+		{
+			friendsToSendAdded["gender"].push(bofffsSpecificData[friend].friend_pin_code);
+		}
 	}
 	var newPhoneNumbers={numbers:""};
 	if(checkPhoneNumbersUpdate(userData,newData,newPhoneNumbers)!=0)
 	{
 		if(newPhoneNumbers.numbers.newNumbers!="")
-			added+="phone_numbers$"+newPhoneNumbers.numbers.newNumbers+"\n";
+		var newNumbers=newPhoneNumbers.numbers.newNumbers.split(",");
+		for (var number in newNumbers)
+		{
+			if(checkPrivacySettings(fieldToUpdate,fieldPrivacy,valueOfField,newUserData,bofffsSpecificData,friendsToSendTo))
+			{
+				added+="phone_numbers$"+newPhoneNumbers.numbers.newNumbers+"\n";
+			}
+		}
 		if(newPhoneNumbers.numbers.deletedNumbers!="")
 			deleted+="phone_numbers$"+newPhoneNumbers.numbers.deletedNumbers+"\n";
 	}
@@ -461,10 +508,13 @@ function createUpdateString(userData,newData,userPin)
 		if(newSocialLinks.links.deletedLinks!="")
 			deleted+="social_links$"+newSocialLinks.links.deletedLinks+"\n";
 	}
-	var newResidence={residence:""};
-	if(checkResidenceUpdate(userData,newData,newResidence)!=0)
+	var newResidences={residences:""};
+	if(checkResidenceUpdate(userData,newData,newResidences)!=0)
 	{
-		added+="residence$"+newResidence.residence+"\n";
+		if(newResidences.residences.newResidences!="")
+			added+="residence$"+newResidences.residences.newResidences+"\n";
+		if(newResidences.residences.deletedResidences!="")
+			deleted+="residence$"+newResidences.residences.deletedResidences+"\n";
 	}
 	var newJobTitle={title:""};
 	if(checkJobTitleUpdate(userData,newData,newJobTitle)!=0)
@@ -491,6 +541,46 @@ function createUpdateString(userData,newData,userPin)
 		alert("no changes");
 
 }
+function checkPrivacySettings(fieldToUpdate,fieldPrivacy,valueOfField,newUserData,bofffsSpecificData,friendsToSendTo)
+{
+	var privacyNumber={public:0,"not favorite":1,friends:1,favorite:2, favorites:2,onlyMe:3};
+	var indexOfTheUpdateValue=newUserData[fieldToUpdate].split(",").indexOf(valueOfField);
+	var valuePrivacy=newUserData[fieldPrivacy].split(",")[indexOfTheUpdateValue];
+	for(var friend in bofffsSpecificData)
+	{
+		var isFriendFavorite=bofffsSpecificData[friend].status;
+		if(privacyNumber[isFriendFavorite]>=privacyNumber[valuePrivacy])
+		{
+			friendsToSendTo.push(bofffsSpecificData[friend].friend_pin_code);
+		}
+	}
+	return true;
+}
+function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	alert(this.responseText);
+	    	var response = JSON.parse(this.responseText);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	
+	xhr.open("POST", url+"update_friend_updates/bofff/user_friends/"+userPin);
+	var params=
+	{
+		friend_added_data: dataAdded,
+		friend_deleted_data	: dataDeleted,
+	};
+	xhr.send(params);  
+}
+
 function applyUpdatesOfFriend(friend_pin,bofffsList,bofffsData)
 {
 	for(var record in bofffsList)
@@ -524,11 +614,9 @@ function parsingUpdateString(updateString,addOrDelete,userFriendAppId,bofffsSpec
 	}
 	determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData);
 }
-var privacyNumber={public:0,"not favorite":1,friends:1,favorite:2, favorites:2,onlyMe:3};
 //TODO:remove alerts and put the action to do instead
 function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
 {
-	var privacyOfBofff=bofffsSpecificData[userFriendAppId].privacy_of_friend;
 	for(var object in stringObjects)
 	{
 		switch(object)
@@ -537,8 +625,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['phone_numbers_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('phone_numbers','phone_numbers_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('phone: '+ stringObjects[object][record]);
 					
@@ -554,8 +642,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['mails_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('mails','mails_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('mails: '+stringObjects[object][record]);
 					
@@ -571,8 +659,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['social_links_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('social_links','social_links_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('sociallinks: '+stringObjects[object][record]);
 					}
@@ -587,9 +675,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					
-					var privacyOfField=bofffsData[userFriendAppId].bofff['residence_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('residence','residence_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('residence: '+stringObjects[object][record]);
 					}
@@ -604,8 +691,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['job_title_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('job_title','job_title_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('jobtitle: '+stringObjects[object][record]);
 					}
@@ -620,8 +707,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['birthday_date_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('birthday_date','birthday_date_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('birthdate: '+stringObjects[object][record]);
 					}
@@ -636,8 +723,8 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			{
 				for(var record in stringObjects[object])
 				{
-					var privacyOfField=bofffsData[userFriendAppId].bofff['company_privacy'];
-					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					if(checkPrivacySettings('company','company_privacy',
+					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
 					{
 						alert('company: '+stringObjects[object][record]);
 					}
@@ -655,28 +742,4 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 			}
 		}
 	}
-}
-function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
-{
-	var url =  'http://www.bofffme.com/api/index.php/home/';
-	var xhr = Ti.Network.createHTTPClient(
-	{
-	    onload: function(e) 
-	    {
-	    	alert(this.responseText);
-	    	var response = JSON.parse(this.responseText);
-	    },
-	    onerror: function(e) 
-	    {
-	    	alert(this.responseText);
-	    },
-	});
-	
-	xhr.open("POST", url+"update_friend_updates/bofff/user_friends/"+userPin);
-	var params=
-	{
-		friend_added_data: dataAdded,
-		friend_deleted_data	: dataDeleted,
-	};
-	xhr.send(params);  
 }

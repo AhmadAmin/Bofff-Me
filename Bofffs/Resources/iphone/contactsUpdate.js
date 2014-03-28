@@ -227,10 +227,25 @@ function checkSocialLinksUpdate(userData, newUserData, socialLinksObject) {
 }
 
 function checkResidenceUpdate(userData, newUserData, residenceObject) {
-    var residence = newUserData.residence;
-    if (userData.residence != residence) {
-        residenceObject.residence = residence;
-        return residence;
+    var residences = newUserData.residence;
+    if (userData.residence != residences) {
+        var currentResidences = userData.residence.split(",");
+        var updatedResidences = residences.split(",");
+        var hashCurrentResidences = [];
+        var newResidences = [];
+        for (var residence in currentResidences) hashCurrentResidences[currentResidences[residence]] = currentResidences[residence];
+        for (var residence in updatedResidences) null == hashCurrentResidences[updatedResidences[residence]] && newResidences.push(updatedResidences[residence]);
+        var deletedResidences = [];
+        for (var residence in hashCurrentResidences) {
+            deletedResidences.push(hashCurrentResidences[residence]);
+            for (var counter in updatedResidences) hashCurrentResidences[residence] == updatedResidences[counter] && deletedResidences.pop();
+        }
+        var residences = {
+            newResidences: newResidences.toString(),
+            deletedResidences: deletedResidences.toString()
+        };
+        residenceObject.residences = residences;
+        return residenceObject.residences;
     }
     return 0;
 }
@@ -309,10 +324,13 @@ function createUpdateString(userData, newData, userPin) {
         "" != newSocialLinks.links.newLinks && (added += "social_links$" + newSocialLinks.links.newLinks + "\n");
         "" != newSocialLinks.links.deletedLinks && (deleted += "social_links$" + newSocialLinks.links.deletedLinks + "\n");
     }
-    var newResidence = {
-        residence: ""
+    var newResidences = {
+        residences: ""
     };
-    0 != checkResidenceUpdate(userData, newData, newResidence) && (added += "residence$" + newResidence.residence + "\n");
+    if (0 != checkResidenceUpdate(userData, newData, newResidences)) {
+        "" != newResidences.residences.newResidences && (added += "residence$" + newResidences.residences.newResidences + "\n");
+        "" != newResidences.residences.deletedResidences && (deleted += "residence$" + newResidences.residences.deletedResidences + "\n");
+    }
     var newJobTitle = {
         title: ""
     };
@@ -350,56 +368,52 @@ function parsingUpdateString(updateString, addOrDelete, userFriendAppId, bofffsS
     determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData);
 }
 
-function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
+function checkPrivacySettings(fieldToUpdate, fieldPrivacy, valueOfFieldToUpdate, userFriendAppId, bofffsSpecificData, bofffsData) {
+    var privacyNumber = {
+        "public": 0,
+        "not favorite": 1,
+        friends: 1,
+        favorite: 2,
+        favorites: 2,
+        onlyMe: 3
+    };
     var privacyOfBofff = bofffsSpecificData[userFriendAppId].privacy_of_friend;
+    var fieldValues = bofffsData[userFriendAppId].bofff[fieldToUpdate].split(",");
+    var privacyOfField = bofffsData[userFriendAppId].bofff[fieldPrivacy].split(",");
+    var indexOfValueToUpdate = fieldValues.indexOf(valueOfFieldToUpdate);
+    if (-1 != indexOfValueToUpdate) return privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField[indexOfValueToUpdate]] ? true : false;
+    alert("this is deleted number");
+    return false;
+}
+
+function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
     for (var object in stringObjects) switch (object) {
       case "phone_numbers":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["phone_numbers_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("phone: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("phone_numbers", "phone_numbers_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("phone: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "mails":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["mails_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("mails: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("mails", "mails_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("mails: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "social_links":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["social_links_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("sociallinks: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("social_links", "social_links_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("sociallinks: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "residence":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["residence_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("residence: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("residence", "residence_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("residence: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "job_title":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["job_title_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("jobtitle: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("job_title", "job_title_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("jobtitle: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "birthday_date":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["birthday_date_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("birthdate: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("birthday_date", "birthday_date_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("birthdate: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       case "company":
-        for (var record in stringObjects[object]) {
-            var privacyOfField = bofffsData[userFriendAppId].bofff["company_privacy"];
-            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("company: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
-        }
+        for (var record in stringObjects[object]) checkPrivacySettings("company", "company_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("company: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
         break;
 
       default:
@@ -425,12 +439,3 @@ function addUpdatesToFriends(dataAdded, dataDeleted, userPin) {
     };
     xhr.send(params);
 }
-
-var privacyNumber = {
-    "public": 0,
-    "not favorite": 1,
-    friends: 1,
-    favorite: 2,
-    favorites: 2,
-    onlyMe: 3
-};

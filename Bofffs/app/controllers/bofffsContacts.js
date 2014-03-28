@@ -315,10 +315,8 @@ function showContact(e)
 		var bofffId = bofffs[e.itemId].contact_id;
 		//deleteSocialLink(bofffId,"http://tttt");
 		//updateEmail(bofffId,'work',bofffs[e.itemId].bofff.mails);
-		getUserData('95190228ae42e7652b098b5bce990aa8');
-		//alert(userData);
-		
-		//applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8',bofffsList,bofffs);
+		//getUserData('95190228ae42e7652b098b5bce990aa8');
+		applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8',bofffsList,bofffs);
 	}
 	else
 	{
@@ -381,13 +379,20 @@ function updateBofff(pin,userData)
 	{
 		fullName:"Ahmed Ati",
 		gender:"mal",
-		phone_numbers:"201009091991",
-		mails:"ahmed.atif15@gmail.com",
-		social_links:"https://www.facebook.com/zabady",
-		residence:"bab el loo2",
-		job_title:"softwergy",
-		birthday_date:"10101019",
-		company:"cectwtech",
+		phone_numbers:"no1,no2,no3,no4",
+		phone_numbers_privacy:"friends,onlyMe,favorite,public",
+		mails:"ahmed.atif15@gmail.com,mail2,mail3,mail4",
+		mails_privacy:"friends,onlyMe,favorites,public",
+		social_links:"https://www.facebook.com/zabady,link2,link3,link4",
+		social_links_privacy:"friends,onlyMe,favorites,public",
+		residence:"bab el loo2,res2,res3,res4,res5",
+		residence_privacy:"friends,onlyMe,favorites,public,onlyMe",
+		job_title:"softwerg",
+		job_title_privacy:"public",
+		birthday_date:"1010101",
+		birthday_date_privacy:"friends",
+		company:"cectwtec",
+		company_privacy:"favorites",
 	};
 	xhr.send(params);  // request is actually sent with this statement
 }
