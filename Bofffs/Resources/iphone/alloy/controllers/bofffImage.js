@@ -34,8 +34,6 @@ function Controller() {
     $.win_bofffImage.leftNavButton = prevButton;
     $.win_bofffImage.title = bofffName;
     $.img_bofffImage.defaultImage = iconImage;
-    $.img_bofffImage.touchEnabled = true;
-    $.img_bofffImage.enableZoomControls = true;
     $.img_bofffImage.image = image;
     _.extend($, exports);
 }

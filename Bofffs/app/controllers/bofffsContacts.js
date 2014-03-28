@@ -139,15 +139,22 @@ function changeSearchableText(searchableText,searchableTextPrivacy)
 		{
 			var item= section.items[itemCounter];
 			var itemId=item.properties.itemId;
-			var privacyOfBofff=bofffsList[itemId].privacy_of_friend;
-			var privacyOfField=bofffs[itemId].bofff[searchableTextPrivacy];
-			if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+			if(searchableText=="fullName")
 			{
-				item.properties.searchableText=bofffs[itemId].bofff[searchableText];
+				item.properties.searchableText=bofffsList[itemId].contactName;
 			}
 			else
 			{
-				item.properties.searchableText="";
+				var privacyOfBofff=bofffsList[itemId].privacy_of_friend;
+				var privacyOfField=bofffs[itemId].bofff[searchableTextPrivacy];
+				if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+				{
+					item.properties.searchableText=bofffs[itemId].bofff[searchableText];
+				}
+				else
+				{
+					item.properties.searchableText="";
+				}
 			}
 			
 			items.push(item);
@@ -310,7 +317,7 @@ function showContact(e)
 		getUserData('95190228ae42e7652b098b5bce990aa8');
 		//alert(userData);
 		
-		//applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8','fbea0803a7d79e402d0557dcb7063a03',bofffsList);
+		//applyUpdatesOfFriend('95190228ae42e7652b098b5bce990aa8',bofffsList,bofffs);
 	}
 	else
 	{
@@ -371,9 +378,9 @@ function updateBofff(pin,userData)
 	xhr.open("POST", url+"update/bofff/user_accounts/"+pin);
 	var params=
 	{
-		fullName:"Ahmed Atif",
-		gender:"male",
-		phone_numbers:"2010090919917",
+		fullName:"Ahmed Ati",
+		gender:"mal",
+		phone_numbers:"201009091991",
 		mails:"ahmed.atif15@gmail.com",
 		social_links:"https://www.facebook.com/zabady",
 		residence:"bab el loo2",

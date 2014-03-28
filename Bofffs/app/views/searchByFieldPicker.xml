@@ -2,7 +2,7 @@
 	<View id="view_picker" width="0" height="0" backgroundColor="white">
 		<Picker  width="Ti.UI.SIZE" height="Ti.UI.SIZE" id="picker" selectionIndicator="true" >
 			<Row dbName="fullName" dbPrivacy="" title="Name" />
-			<Row dbName="phone_numbers" dbPrivacy="primary_numbers_privacy" title="Phone Number"/>
+			<Row dbName="phone_numbers" dbPrivacy="phone_numbers_privacy" title="Phone Number"/>
 			<Row dbName="mails" dbPrivacy="mails_privacy" title="E-mail"/>
 			<Row dbName="social_links" dbPrivacy="social_links_privacy" title="Social Network"/>
 			<Row dbName="job_title" dbPrivacy="job_title_privacy" title="Job Title"/>

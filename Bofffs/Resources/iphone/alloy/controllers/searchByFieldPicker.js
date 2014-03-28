@@ -30,7 +30,7 @@ function Controller() {
     __alloyId23.push($.__views.__alloyId24);
     $.__views.__alloyId25 = Ti.UI.createPickerRow({
         dbName: "phone_numbers",
-        dbPrivacy: "primary_numbers_privacy",
+        dbPrivacy: "phone_numbers_privacy",
         title: "Phone Number",
         id: "__alloyId25"
     });

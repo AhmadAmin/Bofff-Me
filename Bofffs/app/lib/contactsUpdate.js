@@ -230,8 +230,9 @@ function addAddress(id,key,street,city,country)
 	saveUpdate(contact);
 }
 
-function checkFullNameUpdate(userData,fullName, fullNameObject)
+function checkFullNameUpdate(userData,newUserData, fullNameObject)
 {
+	var fullName=newUserData.fullName;
 	if(userData.fullName!=fullName)
 	{
 		fullNameObject.name=fullName;
@@ -239,8 +240,9 @@ function checkFullNameUpdate(userData,fullName, fullNameObject)
 	}else return 0;
 }
 
-function checkGender(userData,gender,genderObject)
+function checkGender(userData,newUserData,genderObject)
 {
+	var gender=newUserData.gender;
 	if(userData.gender!=gender)
 	{
 		genderObject.gender=gender;
@@ -248,8 +250,9 @@ function checkGender(userData,gender,genderObject)
 	}else return 0;
 }
 
-function checkPhoneNumbersUpdate(userData,phoneNumbers, phoneNumbersObject)
+function checkPhoneNumbersUpdate(userData,newUserData, phoneNumbersObject)
 {
+	var phoneNumbers=newUserData.phone_numbers;
 	if(userData.phone_numbers!=phoneNumbers)
 	{
 		var currentNumbers=userData.phone_numbers.split(",");
@@ -284,8 +287,9 @@ function checkPhoneNumbersUpdate(userData,phoneNumbers, phoneNumbersObject)
 		return phoneNumbersObject.numbers;
 	}else return 0;
 }
-function checkMailsUpdate(userData,mails, mailsObject)
+function checkMailsUpdate(userData,newUserData, mailsObject)
 {
+	var mails=newUserData.mails;
 	if(userData.mails!=mails)
 	{
 		var currentMails=userData.mails.split(",");
@@ -321,8 +325,9 @@ function checkMailsUpdate(userData,mails, mailsObject)
 	}else return 0;
 }
 
-function checkSocialLinksUpdate(userData,socialLinks, socialLinksObject)
+function checkSocialLinksUpdate(userData,newUserData, socialLinksObject)
 {
+	var socialLinks=newUserData.social_links;
 	if (userData.social_links!=socialLinks)
 	{
 		var currentSocialLinks=userData.social_links.split(",");
@@ -358,8 +363,9 @@ function checkSocialLinksUpdate(userData,socialLinks, socialLinksObject)
 	}else return 0;
 }
 
-function checkResidenceUpdate(userData,residence, residenceObject)
+function checkResidenceUpdate(userData,newUserData, residenceObject)
 {
+	var residence=newUserData.residence;
 	if(userData.residence!=residence)
 	{
 		residenceObject.residence=residence;
@@ -367,8 +373,9 @@ function checkResidenceUpdate(userData,residence, residenceObject)
 	}else return 0;
 }
 
-function checkJobTitleUpdate(userData, jobTitle, jobTitleObject)
+function checkJobTitleUpdate(userData, newUserData, jobTitleObject)
 {
+	var jobTitle=newUserData.job_title;
 	if(userData.job_title!=jobTitle)
 	{
 		jobTitleObject.title=jobTitle;
@@ -376,8 +383,9 @@ function checkJobTitleUpdate(userData, jobTitle, jobTitleObject)
 	}else return 0;
 }
 
-function checkBirthdayUpdate(userData, birthday, birthdayObject)
+function checkBirthdayUpdate(userData, newUserData, birthdayObject)
 {
+	var birthday= newUserData.birthday_date;
 	if(userData.birthday_date!=birthday)
 	{
 		birthdayObject.date=birthday;
@@ -385,8 +393,9 @@ function checkBirthdayUpdate(userData, birthday, birthdayObject)
 	}else return 0;
 }
 
-function checkCompanyUpdate(userData, company, companyObject)
+function checkCompanyUpdate(userData, newUserData, companyObject)
 {
+	var company=newUserData.company;
 	if(userData.company!=company)
 	{
 		companyObject.company=company;
@@ -419,58 +428,58 @@ function createUpdateString(userData,newData,userPin)
 	var added="";
 	var deleted="";
 	var newFullName= {name:""};
-	if(checkFullNameUpdate(userData,newData.fullName,newFullName)!=0)
+	if(checkFullNameUpdate(userData,newData,newFullName)!=0)
 	{
 		added+="fullName:"+newFullName.name+"\n";
 	}
 	var newGender={gender:""};
-	if(checkGender(userData,newData.gender,newGender)!=0)
+	if(checkGender(userData,newData,newGender)!=0)
 	{
 		added+="gender:"+newGender.gender+"\n";
 	}
 	var newPhoneNumbers={numbers:""};
-	if(checkPhoneNumbersUpdate(userData,newData.phone_numbers,newPhoneNumbers)!=0)
+	if(checkPhoneNumbersUpdate(userData,newData,newPhoneNumbers)!=0)
 	{
 		if(newPhoneNumbers.numbers.newNumbers!="")
-			added+="phone_numbers:"+newPhoneNumbers.numbers.newNumbers+"\n";
+			added+="phone_numbers$"+newPhoneNumbers.numbers.newNumbers+"\n";
 		if(newPhoneNumbers.numbers.deletedNumbers!="")
-			deleted+="phone_numbers:"+newPhoneNumbers.numbers.deletedNumbers+"\n";
+			deleted+="phone_numbers$"+newPhoneNumbers.numbers.deletedNumbers+"\n";
 	}
 	var newMails={mails:""};
-	if(checkMailsUpdate(userData,newData.mails,newMails)!=0)
+	if(checkMailsUpdate(userData,newData,newMails)!=0)
 	{
 		if(newMails.mails.newMails!="")
-			added+="mails:"+newMails.mails.newMails+"\n";
+			added+="mails$"+newMails.mails.newMails+"\n";
 		if(newMails.mails.deletedMails!="")
-			deleted+="mails:"+newMails.mails.deletedMails+"\n";
+			deleted+="mails$"+newMails.mails.deletedMails+"\n";
 	}
 	var newSocialLinks={links:""};
-	if(checkSocialLinksUpdate(userData,newData.social_links,newSocialLinks)!=0)
+	if(checkSocialLinksUpdate(userData,newData,newSocialLinks)!=0)
 	{
 		if(newSocialLinks.links.newLinks!="")
-			added+="social_links:"+newSocialLinks.links.newLinks+"\n";
+			added+="social_links$"+newSocialLinks.links.newLinks+"\n";
 		if(newSocialLinks.links.deletedLinks!="")
-			deleted+="social_links:"+newSocialLinks.links.deletedLinks+"\n";
+			deleted+="social_links$"+newSocialLinks.links.deletedLinks+"\n";
 	}
 	var newResidence={residence:""};
-	if(checkResidenceUpdate(userData,newData.residence,newResidence)!=0)
+	if(checkResidenceUpdate(userData,newData,newResidence)!=0)
 	{
-		added+="residence:"+newResidence.residence+"\n";
+		added+="residence$"+newResidence.residence+"\n";
 	}
 	var newJobTitle={title:""};
-	if(checkJobTitleUpdate(userData,newData.job_title,newJobTitle)!=0)
+	if(checkJobTitleUpdate(userData,newData,newJobTitle)!=0)
 	{
-		added+="job_title:"+newJobTitle.title+"\n";
+		added+="job_title$"+newJobTitle.title+"\n";
 	}
 	var newBirthday={date:""};
-	if(checkBirthdayUpdate(userData,newData.birthday_date,newBirthday)!=0)
+	if(checkBirthdayUpdate(userData,newData,newBirthday)!=0)
 	{
-		added+="birthday_date:"+newBirthday.date+"\n";
+		added+="birthday_date$"+newBirthday.date+"\n";
 	}
 	var newCompany={company:""};
-	if(checkCompanyUpdate(userData,newData.company,newCompany)!=0)
+	if(checkCompanyUpdate(userData,newData,newCompany)!=0)
 	{
-		added+="company:"+newCompany.company+"\n";
+		added+="company$"+newCompany.company+"\n";
 	}
 	
 	if(added!=""||deleted!="")
@@ -482,7 +491,7 @@ function createUpdateString(userData,newData,userPin)
 		alert("no changes");
 
 }
-function applyUpdatesOfFriend(friend_pin,user_pin,bofffsList)
+function applyUpdatesOfFriend(friend_pin,bofffsList,bofffsData)
 {
 	for(var record in bofffsList)
 	{
@@ -491,17 +500,17 @@ function applyUpdatesOfFriend(friend_pin,user_pin,bofffsList)
 			var stringToUpdate=bofffsList[record].friend_added_data;
 			if(stringToUpdate!="")
 			{
-				parsingUpdateString(stringToUpdate);
+				parsingUpdateString(stringToUpdate,"add",record,bofffsList,bofffsData);
 			}
 			stringToUpdate=bofffsList[record].friend_deleted_data;
 			if(stringToUpdate!="")
 			{
-				parsingUpdateString(stringToUpdate);
+				parsingUpdateString(stringToUpdate,"delete",record,bofffsList,bofffsData);
 			}
 		}
 	}
 }
-function parsingUpdateString(updateString)
+function parsingUpdateString(updateString,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
 {
 	var stringLines=updateString.split("\n");
 	var stringObjects= {};
@@ -509,15 +518,17 @@ function parsingUpdateString(updateString)
 	{
 		if(stringLines[line]!="")
 		{
-			var stringColon=stringLines[line].split(":");
+			var stringColon=stringLines[line].split("$");
 			stringObjects[stringColon[0]]=stringColon[1].split(",");
 		}
 	}
-	determineUpdateType(stringObjects);
+	determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData);
 }
-
-function determineUpdateType(stringObjects)
+var privacyNumber={public:0,"not favorite":1,friends:1,favorite:2, favorites:2,onlyMe:3};
+//TODO:remove alerts and put the action to do instead
+function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
 {
+	var privacyOfBofff=bofffsSpecificData[userFriendAppId].privacy_of_friend;
 	for(var object in stringObjects)
 	{
 		switch(object)
@@ -526,7 +537,114 @@ function determineUpdateType(stringObjects)
 			{
 				for(var record in stringObjects[object])
 				{
-					alert(stringObjects[object][record]);
+					var privacyOfField=bofffsData[userFriendAppId].bofff['phone_numbers_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('phone: '+ stringObjects[object][record]);
+					
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'mails':
+			{
+				for(var record in stringObjects[object])
+				{
+					var privacyOfField=bofffsData[userFriendAppId].bofff['mails_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('mails: '+stringObjects[object][record]);
+					
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'social_links':
+			{
+				for(var record in stringObjects[object])
+				{
+					var privacyOfField=bofffsData[userFriendAppId].bofff['social_links_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('sociallinks: '+stringObjects[object][record]);
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'residence':
+			{
+				for(var record in stringObjects[object])
+				{
+					
+					var privacyOfField=bofffsData[userFriendAppId].bofff['residence_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('residence: '+stringObjects[object][record]);
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'job_title':
+			{
+				for(var record in stringObjects[object])
+				{
+					var privacyOfField=bofffsData[userFriendAppId].bofff['job_title_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('jobtitle: '+stringObjects[object][record]);
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'birthday_date':
+			{
+				for(var record in stringObjects[object])
+				{
+					var privacyOfField=bofffsData[userFriendAppId].bofff['birthday_date_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('birthdate: '+stringObjects[object][record]);
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
+				}
+				break;
+			}
+			case 'company':
+			{
+				for(var record in stringObjects[object])
+				{
+					var privacyOfField=bofffsData[userFriendAppId].bofff['company_privacy'];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						alert('company: '+stringObjects[object][record]);
+					}
+					else
+					{
+						alert("privacy doesn't allow this update");
+					}
 				}
 				break;
 			}

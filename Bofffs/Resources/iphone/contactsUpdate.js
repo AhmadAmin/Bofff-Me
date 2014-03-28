@@ -136,7 +136,8 @@ function addAddress(id, key, street, city, country) {
     saveUpdate(contact);
 }
 
-function checkFullNameUpdate(userData, fullName, fullNameObject) {
+function checkFullNameUpdate(userData, newUserData, fullNameObject) {
+    var fullName = newUserData.fullName;
     if (userData.fullName != fullName) {
         fullNameObject.name = fullName;
         return fullName;
@@ -144,7 +145,8 @@ function checkFullNameUpdate(userData, fullName, fullNameObject) {
     return 0;
 }
 
-function checkGender(userData, gender, genderObject) {
+function checkGender(userData, newUserData, genderObject) {
+    var gender = newUserData.gender;
     if (userData.gender != gender) {
         genderObject.gender = gender;
         return gender;
@@ -152,7 +154,8 @@ function checkGender(userData, gender, genderObject) {
     return 0;
 }
 
-function checkPhoneNumbersUpdate(userData, phoneNumbers, phoneNumbersObject) {
+function checkPhoneNumbersUpdate(userData, newUserData, phoneNumbersObject) {
+    var phoneNumbers = newUserData.phone_numbers;
     if (userData.phone_numbers != phoneNumbers) {
         var currentNumbers = userData.phone_numbers.split(",");
         var updatedNumbers = phoneNumbers.split(",");
@@ -175,7 +178,8 @@ function checkPhoneNumbersUpdate(userData, phoneNumbers, phoneNumbersObject) {
     return 0;
 }
 
-function checkMailsUpdate(userData, mails, mailsObject) {
+function checkMailsUpdate(userData, newUserData, mailsObject) {
+    var mails = newUserData.mails;
     if (userData.mails != mails) {
         var currentMails = userData.mails.split(",");
         var updatedMails = mails.split(",");
@@ -198,7 +202,8 @@ function checkMailsUpdate(userData, mails, mailsObject) {
     return 0;
 }
 
-function checkSocialLinksUpdate(userData, socialLinks, socialLinksObject) {
+function checkSocialLinksUpdate(userData, newUserData, socialLinksObject) {
+    var socialLinks = newUserData.social_links;
     if (userData.social_links != socialLinks) {
         var currentSocialLinks = userData.social_links.split(",");
         var updatedSocialLinks = socialLinks.split(",");
@@ -221,7 +226,8 @@ function checkSocialLinksUpdate(userData, socialLinks, socialLinksObject) {
     return 0;
 }
 
-function checkResidenceUpdate(userData, residence, residenceObject) {
+function checkResidenceUpdate(userData, newUserData, residenceObject) {
+    var residence = newUserData.residence;
     if (userData.residence != residence) {
         residenceObject.residence = residence;
         return residence;
@@ -229,7 +235,8 @@ function checkResidenceUpdate(userData, residence, residenceObject) {
     return 0;
 }
 
-function checkJobTitleUpdate(userData, jobTitle, jobTitleObject) {
+function checkJobTitleUpdate(userData, newUserData, jobTitleObject) {
+    var jobTitle = newUserData.job_title;
     if (userData.job_title != jobTitle) {
         jobTitleObject.title = jobTitle;
         return jobTitle;
@@ -237,7 +244,8 @@ function checkJobTitleUpdate(userData, jobTitle, jobTitleObject) {
     return 0;
 }
 
-function checkBirthdayUpdate(userData, birthday, birthdayObject) {
+function checkBirthdayUpdate(userData, newUserData, birthdayObject) {
+    var birthday = newUserData.birthday_date;
     if (userData.birthday_date != birthday) {
         birthdayObject.date = birthday;
         return birthday;
@@ -245,7 +253,8 @@ function checkBirthdayUpdate(userData, birthday, birthdayObject) {
     return 0;
 }
 
-function checkCompanyUpdate(userData, company, companyObject) {
+function checkCompanyUpdate(userData, newUserData, companyObject) {
+    var company = newUserData.company;
     if (userData.company != company) {
         companyObject.company = company;
         return company;
@@ -274,77 +283,123 @@ function createUpdateString(userData, newData, userPin) {
     var newFullName = {
         name: ""
     };
-    0 != checkFullNameUpdate(userData, newData.fullName, newFullName) && (added += "fullName:" + newFullName.name + "\n");
+    0 != checkFullNameUpdate(userData, newData, newFullName) && (added += "fullName:" + newFullName.name + "\n");
     var newGender = {
         gender: ""
     };
-    0 != checkGender(userData, newData.gender, newGender) && (added += "gender:" + newGender.gender + "\n");
+    0 != checkGender(userData, newData, newGender) && (added += "gender:" + newGender.gender + "\n");
     var newPhoneNumbers = {
         numbers: ""
     };
-    if (0 != checkPhoneNumbersUpdate(userData, newData.phone_numbers, newPhoneNumbers)) {
-        "" != newPhoneNumbers.numbers.newNumbers && (added += "phone_numbers:" + newPhoneNumbers.numbers.newNumbers + "\n");
-        "" != newPhoneNumbers.numbers.deletedNumbers && (deleted += "phone_numbers:" + newPhoneNumbers.numbers.deletedNumbers + "\n");
+    if (0 != checkPhoneNumbersUpdate(userData, newData, newPhoneNumbers)) {
+        "" != newPhoneNumbers.numbers.newNumbers && (added += "phone_numbers$" + newPhoneNumbers.numbers.newNumbers + "\n");
+        "" != newPhoneNumbers.numbers.deletedNumbers && (deleted += "phone_numbers$" + newPhoneNumbers.numbers.deletedNumbers + "\n");
     }
     var newMails = {
         mails: ""
     };
-    if (0 != checkMailsUpdate(userData, newData.mails, newMails)) {
-        "" != newMails.mails.newMails && (added += "mails:" + newMails.mails.newMails + "\n");
-        "" != newMails.mails.deletedMails && (deleted += "mails:" + newMails.mails.deletedMails + "\n");
+    if (0 != checkMailsUpdate(userData, newData, newMails)) {
+        "" != newMails.mails.newMails && (added += "mails$" + newMails.mails.newMails + "\n");
+        "" != newMails.mails.deletedMails && (deleted += "mails$" + newMails.mails.deletedMails + "\n");
     }
     var newSocialLinks = {
         links: ""
     };
-    if (0 != checkSocialLinksUpdate(userData, newData.social_links, newSocialLinks)) {
-        "" != newSocialLinks.links.newLinks && (added += "social_links:" + newSocialLinks.links.newLinks + "\n");
-        "" != newSocialLinks.links.deletedLinks && (deleted += "social_links:" + newSocialLinks.links.deletedLinks + "\n");
+    if (0 != checkSocialLinksUpdate(userData, newData, newSocialLinks)) {
+        "" != newSocialLinks.links.newLinks && (added += "social_links$" + newSocialLinks.links.newLinks + "\n");
+        "" != newSocialLinks.links.deletedLinks && (deleted += "social_links$" + newSocialLinks.links.deletedLinks + "\n");
     }
     var newResidence = {
         residence: ""
     };
-    0 != checkResidenceUpdate(userData, newData.residence, newResidence) && (added += "residence:" + newResidence.residence + "\n");
+    0 != checkResidenceUpdate(userData, newData, newResidence) && (added += "residence$" + newResidence.residence + "\n");
     var newJobTitle = {
         title: ""
     };
-    0 != checkJobTitleUpdate(userData, newData.job_title, newJobTitle) && (added += "job_title:" + newJobTitle.title + "\n");
+    0 != checkJobTitleUpdate(userData, newData, newJobTitle) && (added += "job_title$" + newJobTitle.title + "\n");
     var newBirthday = {
         date: ""
     };
-    0 != checkBirthdayUpdate(userData, newData.birthday_date, newBirthday) && (added += "birthday_date:" + newBirthday.date + "\n");
+    0 != checkBirthdayUpdate(userData, newData, newBirthday) && (added += "birthday_date$" + newBirthday.date + "\n");
     var newCompany = {
         company: ""
     };
-    0 != checkCompanyUpdate(userData, newData.company, newCompany) && (added += "company:" + newCompany.company + "\n");
+    0 != checkCompanyUpdate(userData, newData, newCompany) && (added += "company$" + newCompany.company + "\n");
     if ("" != added || "" != deleted) {
         alert(added);
         addUpdatesToFriends(added, deleted, userPin);
     } else alert("no changes");
 }
 
-function applyUpdatesOfFriend(friend_pin, user_pin, bofffsList) {
+function applyUpdatesOfFriend(friend_pin, bofffsList, bofffsData) {
     for (var record in bofffsList) if (bofffsList[record].friend_pin_code == friend_pin) {
         var stringToUpdate = bofffsList[record].friend_added_data;
-        "" != stringToUpdate && parsingUpdateString(stringToUpdate);
+        "" != stringToUpdate && parsingUpdateString(stringToUpdate, "add", record, bofffsList, bofffsData);
         stringToUpdate = bofffsList[record].friend_deleted_data;
-        "" != stringToUpdate && parsingUpdateString(stringToUpdate);
+        "" != stringToUpdate && parsingUpdateString(stringToUpdate, "delete", record, bofffsList, bofffsData);
     }
 }
 
-function parsingUpdateString(updateString) {
+function parsingUpdateString(updateString, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
     var stringLines = updateString.split("\n");
     var stringObjects = {};
     for (var line in stringLines) if ("" != stringLines[line]) {
-        var stringColon = stringLines[line].split(":");
+        var stringColon = stringLines[line].split("$");
         stringObjects[stringColon[0]] = stringColon[1].split(",");
     }
-    determineUpdateType(stringObjects);
+    determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData);
 }
 
-function determineUpdateType(stringObjects) {
+function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
+    var privacyOfBofff = bofffsSpecificData[userFriendAppId].privacy_of_friend;
     for (var object in stringObjects) switch (object) {
       case "phone_numbers":
-        for (var record in stringObjects[object]) alert(stringObjects[object][record]);
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["phone_numbers_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("phone: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "mails":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["mails_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("mails: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "social_links":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["social_links_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("sociallinks: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "residence":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["residence_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("residence: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "job_title":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["job_title_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("jobtitle: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "birthday_date":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["birthday_date_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("birthdate: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
+        break;
+
+      case "company":
+        for (var record in stringObjects[object]) {
+            var privacyOfField = bofffsData[userFriendAppId].bofff["company_privacy"];
+            privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? alert("company: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        }
         break;
 
       default:
@@ -370,3 +425,12 @@ function addUpdatesToFriends(dataAdded, dataDeleted, userPin) {
     };
     xhr.send(params);
 }
+
+var privacyNumber = {
+    "public": 0,
+    "not favorite": 1,
+    friends: 1,
+    favorite: 2,
+    favorites: 2,
+    onlyMe: 3
+};

@@ -58,9 +58,11 @@ function Controller() {
             for (var itemCounter in section.items) {
                 var item = section.items[itemCounter];
                 var itemId = item.properties.itemId;
-                var privacyOfBofff = bofffsList[itemId].privacy_of_friend;
-                var privacyOfField = bofffs[itemId].bofff[searchableTextPrivacy];
-                item.properties.searchableText = privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? bofffs[itemId].bofff[searchableText] : "";
+                if ("fullName" == searchableText) item.properties.searchableText = bofffsList[itemId].contactName; else {
+                    var privacyOfBofff = bofffsList[itemId].privacy_of_friend;
+                    var privacyOfField = bofffs[itemId].bofff[searchableTextPrivacy];
+                    item.properties.searchableText = privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? bofffs[itemId].bofff[searchableText] : "";
+                }
                 items.push(item);
             }
             $.list_bofffContacts.sections[sectionCounter].replaceItemsAt(0, section.items.length, items);
@@ -190,9 +192,9 @@ function Controller() {
         });
         xhr.open("POST", url + "update/bofff/user_accounts/" + pin);
         var params = {
-            fullName: "Ahmed Atif",
-            gender: "male",
-            phone_numbers: "2010090919917",
+            fullName: "Ahmed Ati",
+            gender: "mal",
+            phone_numbers: "201009091991",
             mails: "ahmed.atif15@gmail.com",
             social_links: "https://www.facebook.com/zabady",
             residence: "bab el loo2",
