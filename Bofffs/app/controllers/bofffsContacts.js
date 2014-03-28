@@ -145,18 +145,19 @@ function changeSearchableText(searchableText,searchableTextPrivacy)
 			}
 			else
 			{
+				item.properties.searchableText='';
 				var privacyOfBofff=bofffsList[itemId].privacy_of_friend;
-				var privacyOfField=bofffs[itemId].bofff[searchableTextPrivacy];
-				if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+				var searchableTextValues=bofffs[itemId].bofff[searchableText].split(",");
+				var searchableTextPrivacyValues=bofffs[itemId].bofff[searchableTextPrivacy].split(",");
+				for(var record in searchableTextValues)
 				{
-					item.properties.searchableText=bofffs[itemId].bofff[searchableText];
-				}
-				else
-				{
-					item.properties.searchableText="";
+					var privacyOfField=searchableTextPrivacyValues[record];
+					if(privacyNumber[privacyOfBofff]>=privacyNumber[privacyOfField])
+					{
+						item.properties.searchableText+=searchableTextValues[record];
+					}
 				}
 			}
-			
 			items.push(item);
 		}
 		$.list_bofffContacts.sections[sectionCounter].replaceItemsAt(0,section.items.length,items);
@@ -347,7 +348,7 @@ function getUserData(pin)
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
 	{
-	    onload: function(e) 
+		onload: function(e) 
 	    {
 	    	var userData = JSON.parse(this.responseText).rows[0];
 	    	updateBofff(pin,userData);

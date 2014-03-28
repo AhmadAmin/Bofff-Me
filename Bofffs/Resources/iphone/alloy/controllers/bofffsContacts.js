@@ -59,9 +59,14 @@ function Controller() {
                 var item = section.items[itemCounter];
                 var itemId = item.properties.itemId;
                 if ("fullName" == searchableText) item.properties.searchableText = bofffsList[itemId].contactName; else {
+                    item.properties.searchableText = "";
                     var privacyOfBofff = bofffsList[itemId].privacy_of_friend;
-                    var privacyOfField = bofffs[itemId].bofff[searchableTextPrivacy];
-                    item.properties.searchableText = privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] ? bofffs[itemId].bofff[searchableText] : "";
+                    var searchableTextValues = bofffs[itemId].bofff[searchableText].split(",");
+                    var searchableTextPrivacyValues = bofffs[itemId].bofff[searchableTextPrivacy].split(",");
+                    for (var record in searchableTextValues) {
+                        var privacyOfField = searchableTextPrivacyValues[record];
+                        privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField] && (item.properties.searchableText += searchableTextValues[record]);
+                    }
                 }
                 items.push(item);
             }
