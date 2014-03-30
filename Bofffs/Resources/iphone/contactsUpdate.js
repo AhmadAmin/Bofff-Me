@@ -277,12 +277,12 @@ function checkCompanyUpdate(userData, newUserData, companyObject) {
     return 0;
 }
 
-function manageUserUpdates(oldUserData, pin) {
+function manageUserUpdates(oldUserData, pin, bofffsSpecificData) {
     var url = "http://www.bofffme.com/api/index.php/home/";
     var xhr = Ti.Network.createHTTPClient({
         onload: function() {
             var newData = JSON.parse(this.responseText).rows[0];
-            createUpdateString(oldUserData, newData, pin);
+            createUpdateString(oldUserData, newData, pin, bofffsSpecificData);
         },
         onerror: function() {
             alert(this.responseText);
@@ -292,35 +292,87 @@ function manageUserUpdates(oldUserData, pin) {
     xhr.send();
 }
 
-function createUpdateString(userData, newData, userPin) {
-    var added = "";
-    var deleted = "";
+function createUpdateString(userData, newData, userPin, bofffsSpecificData) {
+    var added = [];
+    var deleted = [];
+    var friendsToSendAdded = [];
+    var friendsToSendDeleted = [];
     var newFullName = {
         name: ""
     };
-    0 != checkFullNameUpdate(userData, newData, newFullName) && (added += "fullName:" + newFullName.name + "\n");
+    var upadteHappened = false;
+    if (0 != checkFullNameUpdate(userData, newData, newFullName)) {
+        upadteHappened = true;
+        added[0] = [];
+        added[0].push("fullName$" + newFullName.name + "\n");
+        friendsToSendAdded[0] = [];
+        friendsToSendAdded[0][0] = [];
+        for (var friend in bofffsSpecificData) friendsToSendAdded[0][0].push(bofffsSpecificData[friend].friend_pin_code);
+    }
     var newGender = {
         gender: ""
     };
-    0 != checkGender(userData, newData, newGender) && (added += "gender:" + newGender.gender + "\n");
+    if (0 != checkGender(userData, newData, newGender)) {
+        upadteHappened = true;
+        added[1] = [];
+        added[1].push("gender$" + newGender.gender + "\n");
+        friendsToSendAdded[1] = [];
+        friendsToSendAdded[1][0] = [];
+        for (var friend in bofffsSpecificData) friendsToSendAdded[1][0].push(bofffsSpecificData[friend].friend_pin_code);
+    }
     var newPhoneNumbers = {
         numbers: ""
     };
     if (0 != checkPhoneNumbersUpdate(userData, newData, newPhoneNumbers)) {
-        "" != newPhoneNumbers.numbers.newNumbers && (added += "phone_numbers$" + newPhoneNumbers.numbers.newNumbers + "\n");
-        "" != newPhoneNumbers.numbers.deletedNumbers && (deleted += "phone_numbers$" + newPhoneNumbers.numbers.deletedNumbers + "\n");
+        upadteHappened = true;
+        if ("" != newPhoneNumbers.numbers.newNumbers) {
+            var newNumbers = newPhoneNumbers.numbers.newNumbers.split(",");
+            added[2] = [];
+            friendsToSendAdded[2] = [];
+            for (var number in newNumbers) {
+                friendsToSendAdded[2][number] = [];
+                checkPrivacySettings("phone_numbers", "phone_numbers_privacy", newNumbers[number], newData, bofffsSpecificData, friendsToSendAdded[2][number]) && added[2].push("phone_number$" + newNumbers[number] + "\n");
+            }
+        }
+        if ("" != newPhoneNumbers.numbers.deletedNumbers) {
+            var deletedNumbers = newPhoneNumbers.numbers.deletedNumbers.split(",");
+            deleted[2] = [];
+            friendsToSendDeleted[2] = [];
+            for (var number in deletedNumbers) {
+                friendsToSendDeleted[2][number] = [];
+                checkPrivacySettings("phone_numbers", "phone_numbers_privacy", deletedNumbers[number], userData, bofffsSpecificData, friendsToSendDeleted[2][number]) && deleted[2].push("phone_number$" + deletedNumbers[number] + "\n");
+            }
+        }
     }
     var newMails = {
         mails: ""
     };
     if (0 != checkMailsUpdate(userData, newData, newMails)) {
-        "" != newMails.mails.newMails && (added += "mails$" + newMails.mails.newMails + "\n");
-        "" != newMails.mails.deletedMails && (deleted += "mails$" + newMails.mails.deletedMails + "\n");
+        upadteHappened = true;
+        if ("" != newMails.mails.newMails) {
+            var addedMails = newMails.mails.newMails.split(",");
+            added[3] = [];
+            friendsToSendAdded[3] = [];
+            for (var mail in addedMails) {
+                friendsToSendAdded[3][mail] = [];
+                checkPrivacySettings("mails", "mails_privacy", addedMails[mail], newData, bofffsSpecificData, friendsToSendAdded[3][mail]) && added[3].push("mails$" + addedMails[mail] + "\n");
+            }
+        }
+        if ("" != newMails.mails.deletedMails) {
+            var deletedMails = newMails.mails.deletedMails.split(",");
+            deleted[3] = [];
+            friendsToSendDeleted[3] = [];
+            for (var mail in deletedMails) {
+                friendsToSendDeleted[3][mail] = [];
+                checkPrivacySettings("mails", "mails_privacy", deletedMails[mail], userData, bofffsSpecificData, friendsToSendDeleted[3][mail]) && deleted[3].push("mails$" + deletedMails[mail] + "\n");
+            }
+        }
     }
     var newSocialLinks = {
         links: ""
     };
     if (0 != checkSocialLinksUpdate(userData, newData, newSocialLinks)) {
+        upadteHappened = true;
         "" != newSocialLinks.links.newLinks && (added += "social_links$" + newSocialLinks.links.newLinks + "\n");
         "" != newSocialLinks.links.deletedLinks && (deleted += "social_links$" + newSocialLinks.links.deletedLinks + "\n");
     }
@@ -328,25 +380,73 @@ function createUpdateString(userData, newData, userPin) {
         residences: ""
     };
     if (0 != checkResidenceUpdate(userData, newData, newResidences)) {
+        upadteHappened = true;
         "" != newResidences.residences.newResidences && (added += "residence$" + newResidences.residences.newResidences + "\n");
         "" != newResidences.residences.deletedResidences && (deleted += "residence$" + newResidences.residences.deletedResidences + "\n");
     }
     var newJobTitle = {
         title: ""
     };
-    0 != checkJobTitleUpdate(userData, newData, newJobTitle) && (added += "job_title$" + newJobTitle.title + "\n");
+    if (0 != checkJobTitleUpdate(userData, newData, newJobTitle)) {
+        upadteHappened = true;
+        added += "job_title$" + newJobTitle.title + "\n";
+    }
     var newBirthday = {
         date: ""
     };
-    0 != checkBirthdayUpdate(userData, newData, newBirthday) && (added += "birthday_date$" + newBirthday.date + "\n");
+    if (0 != checkBirthdayUpdate(userData, newData, newBirthday)) {
+        upadteHappened = true;
+        added += "birthday_date$" + newBirthday.date + "\n";
+    }
     var newCompany = {
         company: ""
     };
-    0 != checkCompanyUpdate(userData, newData, newCompany) && (added += "company$" + newCompany.company + "\n");
-    if ("" != added || "" != deleted) {
-        alert(added);
-        addUpdatesToFriends(added, deleted, userPin);
+    if (0 != checkCompanyUpdate(userData, newData, newCompany)) {
+        upadteHappened = true;
+        added += "company$" + newCompany.company + "\n";
+    }
+    if (upadteHappened) {
+        upadteHappened = false;
+        addUpdatesToFriends(added, deleted, friendsToSendAdded, friendsToSendDeleted, userPin);
     } else alert("no changes");
+}
+
+function checkPrivacySettings(fieldToUpdate, fieldPrivacy, valueOfField, newUserData, bofffsSpecificData, friendsToSendTo) {
+    var privacyNumber = {
+        "public": 0,
+        "not favorite": 1,
+        friends: 1,
+        favorite: 2,
+        favorites: 2,
+        onlyMe: 3
+    };
+    var indexOfTheUpdateValue = newUserData[fieldToUpdate].split(",").indexOf(valueOfField);
+    var valuePrivacy = newUserData[fieldPrivacy].split(",")[indexOfTheUpdateValue];
+    for (var friend in bofffsSpecificData) {
+        var isFriendFavorite = bofffsSpecificData[friend].status;
+        privacyNumber[isFriendFavorite] >= privacyNumber[valuePrivacy] && friendsToSendTo.push(bofffsSpecificData[friend].friend_pin_code);
+    }
+    return true;
+}
+
+function addUpdatesToFriends(dataAdded, dataDeleted, friendsToSendAdded, friendsToSendDeleted, userPin) {
+    var url = "http://www.bofffme.com/api/index.php/home/";
+    var xhr = Ti.Network.createHTTPClient({
+        onload: function() {
+            alert(this.responseText);
+        },
+        onerror: function() {
+            alert(this.responseText);
+        }
+    });
+    xhr.open("POST", url + "update_friend_updates/bofff/user_friends/" + userPin);
+    var params = {
+        friend_added_data: JSON.stringify(dataAdded),
+        friend_deleted_data: JSON.stringify(dataDeleted),
+        friendsToSendAdded: JSON.stringify(friendsToSendAdded),
+        friendsToSendDeleted: JSON.stringify(friendsToSendDeleted)
+    };
+    xhr.send(params);
 }
 
 function applyUpdatesOfFriend(friend_pin, bofffsList, bofffsData) {
@@ -366,24 +466,6 @@ function parsingUpdateString(updateString, addOrDelete, userFriendAppId, bofffsS
         stringObjects[stringColon[0]] = stringColon[1].split(",");
     }
     determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData);
-}
-
-function checkPrivacySettings(fieldToUpdate, fieldPrivacy, valueOfFieldToUpdate, userFriendAppId, bofffsSpecificData, bofffsData) {
-    var privacyNumber = {
-        "public": 0,
-        "not favorite": 1,
-        friends: 1,
-        favorite: 2,
-        favorites: 2,
-        onlyMe: 3
-    };
-    var privacyOfBofff = bofffsSpecificData[userFriendAppId].privacy_of_friend;
-    var fieldValues = bofffsData[userFriendAppId].bofff[fieldToUpdate].split(",");
-    var privacyOfField = bofffsData[userFriendAppId].bofff[fieldPrivacy].split(",");
-    var indexOfValueToUpdate = fieldValues.indexOf(valueOfFieldToUpdate);
-    if (-1 != indexOfValueToUpdate) return privacyNumber[privacyOfBofff] >= privacyNumber[privacyOfField[indexOfValueToUpdate]] ? true : false;
-    alert("this is deleted number");
-    return false;
 }
 
 function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
@@ -419,23 +501,4 @@ function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffs
       default:
         alert("no known");
     }
-}
-
-function addUpdatesToFriends(dataAdded, dataDeleted, userPin) {
-    var url = "http://www.bofffme.com/api/index.php/home/";
-    var xhr = Ti.Network.createHTTPClient({
-        onload: function() {
-            alert(this.responseText);
-            JSON.parse(this.responseText);
-        },
-        onerror: function() {
-            alert(this.responseText);
-        }
-    });
-    xhr.open("POST", url + "update_friend_updates/bofff/user_friends/" + userPin);
-    var params = {
-        friend_added_data: dataAdded,
-        friend_deleted_data: dataDeleted
-    };
-    xhr.send(params);
 }

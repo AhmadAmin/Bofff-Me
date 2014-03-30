@@ -431,7 +431,7 @@ function checkCompanyUpdate(userData, newUserData, companyObject)
 	}else return 0;
 }
 
-function manageUserUpdates(oldUserData,pin)
+function manageUserUpdates(oldUserData,pin,bofffsSpecificData)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
@@ -439,7 +439,7 @@ function manageUserUpdates(oldUserData,pin)
 	    onload: function(e) 
 	    {
 	    	var newData = JSON.parse(this.responseText).rows[0];
-	    	createUpdateString(oldUserData,newData,pin);
+	    	createUpdateString(oldUserData,newData,pin,bofffsSpecificData);
 	    },
 	    onerror: function(e) 
 	    {
@@ -453,89 +453,161 @@ function manageUserUpdates(oldUserData,pin)
 
 function createUpdateString(userData,newData,userPin,bofffsSpecificData)
 {
-	var added=["fullName","gender","phone_numbers","mails","social_links","residence","job_title",
-	"birthday_date","company"];
-	var deleted=["phone_numbers","mails","social_links","residence"];
-	var friendsToSendAdded=["fullName","gender","phone_numbers","mails","social_links","residence","job_title",
-	"birthday_date","company"];
-	var friendsToSendDeleted=["phone_numbers","mails","social_links","residence"];
+	var added=[];
+	var deleted=[];
+	var friendsToSendAdded=[];
+	var friendsToSendDeleted=[];
 	var newFullName= {name:""};
+	var upadteHappened=false;
 	if(checkFullNameUpdate(userData,newData,newFullName)!=0)
 	{
-		added[fullName].push(newFullName.name+"\n");
+		upadteHappened=true;
+		added[0]=[];
+		added[0].push("fullName$"+newFullName.name+"\n");
+		friendsToSendAdded[0]=[];
+		friendsToSendAdded[0][0]=[];
 		for(var friend in bofffsSpecificData)
 		{
-			friendsToSendAdded["fullName"].push(bofffsSpecificData[friend].friend_pin_code);
+			friendsToSendAdded[0][0].push(bofffsSpecificData[friend].friend_pin_code);
 		}
 	}
 	var newGender={gender:""};
 	if(checkGender(userData,newData,newGender)!=0)
 	{
-		added.push({gender:+newGender.gender+"\n"});
+		upadteHappened=true;
+		added[1]=[];
+		added[1].push("gender$"+newGender.gender+"\n");
+		friendsToSendAdded[1]=[];
+		friendsToSendAdded[1][0]=[];
 		for(var friend in bofffsSpecificData)
 		{
-			friendsToSendAdded["gender"].push(bofffsSpecificData[friend].friend_pin_code);
+			friendsToSendAdded[1][0].push(bofffsSpecificData[friend].friend_pin_code);
 		}
 	}
 	var newPhoneNumbers={numbers:""};
 	if(checkPhoneNumbersUpdate(userData,newData,newPhoneNumbers)!=0)
 	{
+		upadteHappened=true;
 		if(newPhoneNumbers.numbers.newNumbers!="")
-		var newNumbers=newPhoneNumbers.numbers.newNumbers.split(",");
-		for (var number in newNumbers)
 		{
-			if(checkPrivacySettings(fieldToUpdate,fieldPrivacy,valueOfField,newUserData,bofffsSpecificData,friendsToSendTo))
+			var newNumbers=newPhoneNumbers.numbers.newNumbers.split(",");
+			added[2]=[];
+			friendsToSendAdded[2]=[];
+			for (var number in newNumbers)
 			{
-				added+="phone_numbers$"+newPhoneNumbers.numbers.newNumbers+"\n";
+				friendsToSendAdded[2][number]=[];
+				if(checkPrivacySettings("phone_numbers","phone_numbers_privacy",newNumbers[number],
+				newData,bofffsSpecificData,friendsToSendAdded[2][number]))
+				{
+					added[2].push("phone_number$"+newNumbers[number]+"\n");
+				}
 			}
 		}
 		if(newPhoneNumbers.numbers.deletedNumbers!="")
-			deleted+="phone_numbers$"+newPhoneNumbers.numbers.deletedNumbers+"\n";
+		{
+			var deletedNumbers=newPhoneNumbers.numbers.deletedNumbers.split(",");
+			deleted[2]=[];
+			friendsToSendDeleted[2]=[];
+			for(var number in deletedNumbers)
+			{
+				friendsToSendDeleted[2][number]=[];
+				if(checkPrivacySettings("phone_numbers","phone_numbers_privacy",deletedNumbers[number],
+				userData,bofffsSpecificData,friendsToSendDeleted[2][number]))
+				{
+					deleted[2].push("phone_number$"+deletedNumbers[number]+"\n");
+				}
+			}
+		}
 	}
 	var newMails={mails:""};
 	if(checkMailsUpdate(userData,newData,newMails)!=0)
 	{
+		upadteHappened=true;
 		if(newMails.mails.newMails!="")
-			added+="mails$"+newMails.mails.newMails+"\n";
+		{
+			var addedMails=newMails.mails.newMails.split(",");
+			added[3]=[];
+			friendsToSendAdded[3]=[];
+			for(var mail in addedMails)
+			{
+				friendsToSendAdded[3][mail]=[];
+				if(checkPrivacySettings("mails","mails_privacy",addedMails[mail],
+				newData,bofffsSpecificData,friendsToSendAdded[3][mail]))
+				{
+					added[3].push("mails$"+addedMails[mail]+"\n");
+				}
+			}
+		}
 		if(newMails.mails.deletedMails!="")
-			deleted+="mails$"+newMails.mails.deletedMails+"\n";
+		{
+			var deletedMails=newMails.mails.deletedMails.split(",");
+			deleted[3]=[];
+			friendsToSendDeleted[3]=[];
+			for(var mail in deletedMails)
+			{
+				friendsToSendDeleted[3][mail]=[];
+				if(checkPrivacySettings("mails","mails_privacy",deletedMails[mail],
+				userData,bofffsSpecificData,friendsToSendDeleted[3][mail]))
+				{
+					deleted[3].push("mails$"+deletedMails[mail]+"\n");
+				}
+			}
+		}
 	}
 	var newSocialLinks={links:""};
 	if(checkSocialLinksUpdate(userData,newData,newSocialLinks)!=0)
 	{
+		upadteHappened=true;
 		if(newSocialLinks.links.newLinks!="")
+		{
 			added+="social_links$"+newSocialLinks.links.newLinks+"\n";
+		}
 		if(newSocialLinks.links.deletedLinks!="")
+		{
 			deleted+="social_links$"+newSocialLinks.links.deletedLinks+"\n";
+		}
 	}
 	var newResidences={residences:""};
 	if(checkResidenceUpdate(userData,newData,newResidences)!=0)
 	{
+		upadteHappened=true;
 		if(newResidences.residences.newResidences!="")
+		{
 			added+="residence$"+newResidences.residences.newResidences+"\n";
+		}
 		if(newResidences.residences.deletedResidences!="")
+		{
 			deleted+="residence$"+newResidences.residences.deletedResidences+"\n";
+		}
 	}
 	var newJobTitle={title:""};
 	if(checkJobTitleUpdate(userData,newData,newJobTitle)!=0)
 	{
+		upadteHappened=true;
 		added+="job_title$"+newJobTitle.title+"\n";
 	}
 	var newBirthday={date:""};
 	if(checkBirthdayUpdate(userData,newData,newBirthday)!=0)
 	{
+		upadteHappened=true;
 		added+="birthday_date$"+newBirthday.date+"\n";
 	}
 	var newCompany={company:""};
 	if(checkCompanyUpdate(userData,newData,newCompany)!=0)
 	{
+		upadteHappened=true;
 		added+="company$"+newCompany.company+"\n";
 	}
-	
-	if(added!=""||deleted!="")
+	if(upadteHappened)
 	{
-		alert(added);
-		addUpdatesToFriends(added,deleted, userPin);
+		upadteHappened=false;
+		//alert("updating");
+		//alert(added);
+		//alert(deleted);
+		//alert(friendsToSendAdded);
+		//alert(friendsToSendDeleted);
+		addUpdatesToFriends(added,deleted,friendsToSendAdded
+		,friendsToSendDeleted, userPin);
 	}
 	else
 		alert("no changes");
@@ -556,7 +628,7 @@ function checkPrivacySettings(fieldToUpdate,fieldPrivacy,valueOfField,newUserDat
 	}
 	return true;
 }
-function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
+function addUpdatesToFriends(dataAdded,dataDeleted,friendsToSendAdded,friendsToSendDeleted, userPin)
 {
 	var url =  'http://www.bofffme.com/api/index.php/home/';
 	var xhr = Ti.Network.createHTTPClient(
@@ -564,7 +636,7 @@ function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
 	    onload: function(e) 
 	    {
 	    	alert(this.responseText);
-	    	var response = JSON.parse(this.responseText);
+	    	//var response = JSON.parse(this.responseText);
 	    },
 	    onerror: function(e) 
 	    {
@@ -575,8 +647,10 @@ function addUpdatesToFriends(dataAdded,dataDeleted, userPin)
 	xhr.open("POST", url+"update_friend_updates/bofff/user_friends/"+userPin);
 	var params=
 	{
-		friend_added_data: dataAdded,
-		friend_deleted_data	: dataDeleted,
+		friend_added_data: JSON.stringify(dataAdded),
+		friend_deleted_data	: JSON.stringify(dataDeleted),
+		friendsToSendAdded:JSON.stringify(friendsToSendAdded),
+		friendsToSendDeleted:JSON.stringify(friendsToSendDeleted),
 	};
 	xhr.send(params);  
 }
