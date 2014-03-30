@@ -560,11 +560,33 @@ function createUpdateString(userData,newData,userPin,bofffsSpecificData)
 		upadteHappened=true;
 		if(newSocialLinks.links.newLinks!="")
 		{
-			added+="social_links$"+newSocialLinks.links.newLinks+"\n";
+			var addedLinks=newSocialLinks.links.newLinks.split(",");
+			added[4]=[];
+			friendsToSendAdded[4]=[];
+			for(var link in addedLinks)
+			{
+				friendsToSendAdded[4][link]=[];
+				if(checkPrivacySettings("social_links","social_links_privacy",addedLinks[link],
+				newData,bofffsSpecificData,friendsToSendAdded[4][link]))
+				{
+					added[4].push("social_links$"+addedLinks[link]+"\n");
+				}
+			}
 		}
 		if(newSocialLinks.links.deletedLinks!="")
 		{
-			deleted+="social_links$"+newSocialLinks.links.deletedLinks+"\n";
+			var deletedLinks= newSocialLinks.links.deletedLinks.split(",");
+			deleted[4]=[];
+			friendsToSendDeleted[4]=[];
+			for(var link in deletedLinks)
+			{
+				friendsToSendDeleted[4][link]=[];
+				if(checkPrivacySettings("social_links","social_links_privacy",deletedLinks[link],
+				userData,bofffsSpecificData,friendsToSendDeleted[4][link]))
+				{
+					deleted[4].push("social_links$"+deletedLinks[link]+"\n");
+				}
+			}
 		}
 	}
 	var newResidences={residences:""};
@@ -573,30 +595,67 @@ function createUpdateString(userData,newData,userPin,bofffsSpecificData)
 		upadteHappened=true;
 		if(newResidences.residences.newResidences!="")
 		{
-			added+="residence$"+newResidences.residences.newResidences+"\n";
+			var addedResidences=newResidences.residences.newResidences.split(",");
+			added[5]=[];
+			friendsToSendAdded[5]=[];
+			for(var residence in addedResidences)
+			{
+				friendsToSendAdded[5][residence]=[];
+				if(checkPrivacySettings("residence","residence_privacy",addedResidences[residence],
+				newData,bofffsSpecificData,friendsToSendAdded[5][residence]))
+				{
+					added[5].push("residence$"+addedResidences[residence]+"\n");
+				}
+			}
 		}
 		if(newResidences.residences.deletedResidences!="")
 		{
-			deleted+="residence$"+newResidences.residences.deletedResidences+"\n";
+			var deletedResidences=newResidences.residences.deletedResidences.split(",");
+			deleted[5]=[];
+			friendsToSendDeleted[5]=[];
+			for(var residence in deletedResidences)
+			{
+				friendsToSendDeleted[5][residence]=[];
+				if(checkPrivacySettings("residence","residence_privacy",deletedResidences[residence],
+				userData,bofffsSpecificData,friendsToSendDeleted[5][residence]))
+				{
+					deleted[5].push("residence$"+deletedResidences[residence]+"\n");
+				}
+			}
 		}
 	}
 	var newJobTitle={title:""};
 	if(checkJobTitleUpdate(userData,newData,newJobTitle)!=0)
 	{
 		upadteHappened=true;
-		added+="job_title$"+newJobTitle.title+"\n";
+		added[6]=[];
+		added[6].push("job_title$"+newJobTitle.title+"\n");
+		friendsToSendAdded[6]=[];
+		friendsToSendAdded[6][0]=[];
+		checkPrivacySettings("job_title","job_title_privacy",newJobTitle.title,
+				newData,bofffsSpecificData,friendsToSendAdded[6][0]);
 	}
 	var newBirthday={date:""};
 	if(checkBirthdayUpdate(userData,newData,newBirthday)!=0)
 	{
 		upadteHappened=true;
-		added+="birthday_date$"+newBirthday.date+"\n";
+		added[7]=[];
+		added[7].push("birthday_date$"+newBirthday.date+"\n");
+		friendsToSendAdded[7]=[];
+		friendsToSendAdded[7][0]=[];
+		checkPrivacySettings("birthday_date","birthday_date_privacy",newBirthday.date,
+				newData,bofffsSpecificData,friendsToSendAdded[7][0]);
 	}
 	var newCompany={company:""};
 	if(checkCompanyUpdate(userData,newData,newCompany)!=0)
 	{
 		upadteHappened=true;
-		added+="company$"+newCompany.company+"\n";
+		added[8]=[];
+		added[8].push("company$"+newCompany.company+"\n");
+		friendsToSendAdded[8]=[];
+		friendsToSendAdded[8][0]=[];
+		checkPrivacySettings("company","company_privacy",newCompany.company,
+				newData,bofffsSpecificData,friendsToSendAdded[8][0]);
 	}
 	if(upadteHappened)
 	{
@@ -683,130 +742,50 @@ function parsingUpdateString(updateString,addOrDelete,userFriendAppId,bofffsSpec
 		if(stringLines[line]!="")
 		{
 			var stringColon=stringLines[line].split("$");
-			stringObjects[stringColon[0]]=stringColon[1].split(",");
+			stringObjects[stringColon[0]]=stringColon[1];
+			determineUpdateType(stringColon[0],stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData);
 		}
 	}
-	determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData);
+	
 }
 //TODO:remove alerts and put the action to do instead
-function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
+function determineUpdateType(fieldType,stringObjects,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
 {
-	for(var object in stringObjects)
-	{
-		switch(object)
+	switch(fieldType)
 		{
-			case 'phone_numbers':
+			case 'phone_number':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('phone_numbers','phone_numbers_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('phone: '+ stringObjects[object][record]);
-					
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('phone: '+ stringObjects[fieldType]);
 				break;
 			}
 			case 'mails':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('mails','mails_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('mails: '+stringObjects[object][record]);
-					
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('mails: '+stringObjects[fieldType]);
 				break;
 			}
 			case 'social_links':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('social_links','social_links_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('sociallinks: '+stringObjects[object][record]);
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('sociallinks: '+stringObjects[fieldType]);
 				break;
 			}
 			case 'residence':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('residence','residence_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('residence: '+stringObjects[object][record]);
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('residence: '+stringObjects[fieldType]);
 				break;
 			}
 			case 'job_title':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('job_title','job_title_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('jobtitle: '+stringObjects[object][record]);
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('jobtitle: '+stringObjects[fieldType]);
 				break;
 			}
 			case 'birthday_date':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('birthday_date','birthday_date_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('birthdate: '+stringObjects[object][record]);
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('birthdate: '+stringObjects[fieldType]);
 				break;
 			}
 			case 'company':
 			{
-				for(var record in stringObjects[object])
-				{
-					if(checkPrivacySettings('company','company_privacy',
-					stringObjects[object][record],userFriendAppId,bofffsSpecificData,bofffsData))
-					{
-						alert('company: '+stringObjects[object][record]);
-					}
-					else
-					{
-						alert("privacy doesn't allow this update");
-					}
-				}
+				alert('company: '+stringObjects[fieldType]);
 				break;
 			}
 			default:
@@ -815,5 +794,4 @@ function determineUpdateType(stringObjects,addOrDelete,userFriendAppId,bofffsSpe
 				break;
 			}
 		}
-	}
 }

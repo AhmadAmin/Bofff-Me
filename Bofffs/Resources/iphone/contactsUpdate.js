@@ -373,37 +373,81 @@ function createUpdateString(userData, newData, userPin, bofffsSpecificData) {
     };
     if (0 != checkSocialLinksUpdate(userData, newData, newSocialLinks)) {
         upadteHappened = true;
-        "" != newSocialLinks.links.newLinks && (added += "social_links$" + newSocialLinks.links.newLinks + "\n");
-        "" != newSocialLinks.links.deletedLinks && (deleted += "social_links$" + newSocialLinks.links.deletedLinks + "\n");
+        if ("" != newSocialLinks.links.newLinks) {
+            var addedLinks = newSocialLinks.links.newLinks.split(",");
+            added[4] = [];
+            friendsToSendAdded[4] = [];
+            for (var link in addedLinks) {
+                friendsToSendAdded[4][link] = [];
+                checkPrivacySettings("social_links", "social_links_privacy", addedLinks[link], newData, bofffsSpecificData, friendsToSendAdded[4][link]) && added[4].push("social_links$" + addedLinks[link] + "\n");
+            }
+        }
+        if ("" != newSocialLinks.links.deletedLinks) {
+            var deletedLinks = newSocialLinks.links.deletedLinks.split(",");
+            deleted[4] = [];
+            friendsToSendDeleted[4] = [];
+            for (var link in deletedLinks) {
+                friendsToSendDeleted[4][link] = [];
+                checkPrivacySettings("social_links", "social_links_privacy", deletedLinks[link], userData, bofffsSpecificData, friendsToSendDeleted[4][link]) && deleted[4].push("social_links$" + deletedLinks[link] + "\n");
+            }
+        }
     }
     var newResidences = {
         residences: ""
     };
     if (0 != checkResidenceUpdate(userData, newData, newResidences)) {
         upadteHappened = true;
-        "" != newResidences.residences.newResidences && (added += "residence$" + newResidences.residences.newResidences + "\n");
-        "" != newResidences.residences.deletedResidences && (deleted += "residence$" + newResidences.residences.deletedResidences + "\n");
+        if ("" != newResidences.residences.newResidences) {
+            var addedResidences = newResidences.residences.newResidences.split(",");
+            added[5] = [];
+            friendsToSendAdded[5] = [];
+            for (var residence in addedResidences) {
+                friendsToSendAdded[5][residence] = [];
+                checkPrivacySettings("residence", "residence_privacy", addedResidences[residence], newData, bofffsSpecificData, friendsToSendAdded[5][residence]) && added[5].push("residence$" + addedResidences[residence] + "\n");
+            }
+        }
+        if ("" != newResidences.residences.deletedResidences) {
+            var deletedResidences = newResidences.residences.deletedResidences.split(",");
+            deleted[5] = [];
+            friendsToSendDeleted[5] = [];
+            for (var residence in deletedResidences) {
+                friendsToSendDeleted[5][residence] = [];
+                checkPrivacySettings("residence", "residence_privacy", deletedResidences[residence], userData, bofffsSpecificData, friendsToSendDeleted[5][residence]) && deleted[5].push("residence$" + deletedResidences[residence] + "\n");
+            }
+        }
     }
     var newJobTitle = {
         title: ""
     };
     if (0 != checkJobTitleUpdate(userData, newData, newJobTitle)) {
         upadteHappened = true;
-        added += "job_title$" + newJobTitle.title + "\n";
+        added[6] = [];
+        added[6].push("job_title$" + newJobTitle.title + "\n");
+        friendsToSendAdded[6] = [];
+        friendsToSendAdded[6][0] = [];
+        checkPrivacySettings("job_title", "job_title_privacy", newJobTitle.title, newData, bofffsSpecificData, friendsToSendAdded[6][0]);
     }
     var newBirthday = {
         date: ""
     };
     if (0 != checkBirthdayUpdate(userData, newData, newBirthday)) {
         upadteHappened = true;
-        added += "birthday_date$" + newBirthday.date + "\n";
+        added[7] = [];
+        added[7].push("birthday_date$" + newBirthday.date + "\n");
+        friendsToSendAdded[7] = [];
+        friendsToSendAdded[7][0] = [];
+        checkPrivacySettings("birthday_date", "birthday_date_privacy", newBirthday.date, newData, bofffsSpecificData, friendsToSendAdded[7][0]);
     }
     var newCompany = {
         company: ""
     };
     if (0 != checkCompanyUpdate(userData, newData, newCompany)) {
         upadteHappened = true;
-        added += "company$" + newCompany.company + "\n";
+        added[8] = [];
+        added[8].push("company$" + newCompany.company + "\n");
+        friendsToSendAdded[8] = [];
+        friendsToSendAdded[8][0] = [];
+        checkPrivacySettings("company", "company_privacy", newCompany.company, newData, bofffsSpecificData, friendsToSendAdded[8][0]);
     }
     if (upadteHappened) {
         upadteHappened = false;
@@ -463,39 +507,39 @@ function parsingUpdateString(updateString, addOrDelete, userFriendAppId, bofffsS
     var stringObjects = {};
     for (var line in stringLines) if ("" != stringLines[line]) {
         var stringColon = stringLines[line].split("$");
-        stringObjects[stringColon[0]] = stringColon[1].split(",");
+        stringObjects[stringColon[0]] = stringColon[1];
+        determineUpdateType(stringColon[0], stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData);
     }
-    determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData);
 }
 
-function determineUpdateType(stringObjects, addOrDelete, userFriendAppId, bofffsSpecificData, bofffsData) {
-    for (var object in stringObjects) switch (object) {
-      case "phone_numbers":
-        for (var record in stringObjects[object]) checkPrivacySettings("phone_numbers", "phone_numbers_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("phone: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+function determineUpdateType(fieldType, stringObjects) {
+    switch (fieldType) {
+      case "phone_number":
+        alert("phone: " + stringObjects[fieldType]);
         break;
 
       case "mails":
-        for (var record in stringObjects[object]) checkPrivacySettings("mails", "mails_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("mails: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("mails: " + stringObjects[fieldType]);
         break;
 
       case "social_links":
-        for (var record in stringObjects[object]) checkPrivacySettings("social_links", "social_links_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("sociallinks: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("sociallinks: " + stringObjects[fieldType]);
         break;
 
       case "residence":
-        for (var record in stringObjects[object]) checkPrivacySettings("residence", "residence_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("residence: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("residence: " + stringObjects[fieldType]);
         break;
 
       case "job_title":
-        for (var record in stringObjects[object]) checkPrivacySettings("job_title", "job_title_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("jobtitle: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("jobtitle: " + stringObjects[fieldType]);
         break;
 
       case "birthday_date":
-        for (var record in stringObjects[object]) checkPrivacySettings("birthday_date", "birthday_date_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("birthdate: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("birthdate: " + stringObjects[fieldType]);
         break;
 
       case "company":
-        for (var record in stringObjects[object]) checkPrivacySettings("company", "company_privacy", stringObjects[object][record], userFriendAppId, bofffsSpecificData, bofffsData) ? alert("company: " + stringObjects[object][record]) : alert("privacy doesn't allow this update");
+        alert("company: " + stringObjects[fieldType]);
         break;
 
       default:
