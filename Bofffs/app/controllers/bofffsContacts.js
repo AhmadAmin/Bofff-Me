@@ -376,7 +376,7 @@ function updateBofff(pin,userData,bofffsSpecificData)
 	    	alert("error");
 	    },
 	});
-	xhr.open("POST", url+"update/bofff/user_accounts/"+pin);
+	xhr.open("POST", url+"update_with_pin/bofff/user_accounts/"+pin);
 	var params=
 	{
 		fullName:"Ahmed Atif",

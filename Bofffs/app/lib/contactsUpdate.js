@@ -723,15 +723,41 @@ function applyUpdatesOfFriend(friend_pin,bofffsList,bofffsData)
 			var stringToUpdate=bofffsList[record].friend_added_data;
 			if(stringToUpdate!="")
 			{
+				deleteUpdatesOffriend(bofffsList[record].id);
 				parsingUpdateString(stringToUpdate,"add",record,bofffsList,bofffsData);
+				bofffsList[record].friend_added_data="";
 			}
 			stringToUpdate=bofffsList[record].friend_deleted_data;
 			if(stringToUpdate!="")
 			{
 				parsingUpdateString(stringToUpdate,"delete",record,bofffsList,bofffsData);
+				bofffsList[record].friend_deleted_data="";
 			}
 		}
 	}
+}
+function deleteUpdatesOffriend(friendId)
+{
+	var url =  'http://www.bofffme.com/api/index.php/home/';
+	var xhr = Ti.Network.createHTTPClient(
+	{
+	    onload: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	    onerror: function(e) 
+	    {
+	    	alert(this.responseText);
+	    },
+	});
+	
+	xhr.open("POST", url+"update_with_id/bofff/user_friends/"+friendId);
+	var params=
+	{
+		friend_added_data: "",
+		friend_deleted_data	: "",
+	};
+	xhr.send(params);  
 }
 function parsingUpdateString(updateString,addOrDelete,userFriendAppId,bofffsSpecificData,bofffsData)
 {
